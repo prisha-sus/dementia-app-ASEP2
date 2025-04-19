@@ -1,0 +1,9 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/lucifer/projects/ADapp/build/cmake_install.cmake",
+		"/home/lucifer/projects/ADapp/build/flutter/cmake_install.cmake",
+		"/home/lucifer/projects/ADapp/build/runner/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

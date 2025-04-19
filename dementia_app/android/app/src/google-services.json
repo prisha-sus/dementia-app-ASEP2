@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "346094437623",
+    "project_id": "dementia-app-dc774",
+    "storage_bucket": "dementia-app-dc774.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346094437623:android:c159dc6f4fe8967fb6fff2",
+        "android_client_info": {
+          "package_name": "com.example.dementia_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346094437623-cerrc2cjs919spfmrmspd5jb15igkn62.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dementia_app",
+            "certificate_hash": "20d2958c299fbf866e08754a72a1f478e24d14cd"
+          }
+        },
+        {
+          "client_id": "346094437623-cbpbbicf4otb32kr3u3j076sjhrlp2m3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWojnG8WhPRSbvToWDLYN6TfMxAZ9kuDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346094437623-cbpbbicf4otb32kr3u3j076sjhrlp2m3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

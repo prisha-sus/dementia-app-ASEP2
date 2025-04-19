@@ -1,0 +1,134 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 87,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 94,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 97,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 100,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 111,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 118,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 121,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Runtime",
+			"type" : "code"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Runtime",
+			"destination" : "/home/lucifer/projects/ADapp/build/bundle",
+			"paths" : 
+			[
+				"intermediates_do_not_run/dementia_app"
+			],
+			"targetId" : "dementia_app::@056c4f61b0156d1d9b06",
+			"targetIndex" : 0,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Runtime",
+			"destination" : "/home/lucifer/projects/ADapp/build/bundle/data",
+			"paths" : 
+			[
+				"flutter/ephemeral/icudtl.dat"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Runtime",
+			"destination" : "/home/lucifer/projects/ADapp/build/bundle/lib",
+			"paths" : 
+			[
+				"flutter/ephemeral/libflutter_linux_gtk.so"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 5,
+			"component" : "Runtime",
+			"destination" : "/home/lucifer/projects/ADapp/build/bundle/lib",
+			"paths" : 
+			[
+				{
+					"from" : "/home/lucifer/projects/ADapp/dementia_app/build/native_assets/linux",
+					"to" : "."
+				}
+			],
+			"type" : "directory"
+		},
+		{
+			"backtrace" : 6,
+			"component" : "Runtime",
+			"type" : "code"
+		},
+		{
+			"backtrace" : 7,
+			"component" : "Runtime",
+			"destination" : "/home/lucifer/projects/ADapp/build/bundle/data",
+			"paths" : 
+			[
+				"/home/lucifer/projects/ADapp/dementia_app/build//flutter_assets"
+			],
+			"type" : "directory"
+		}
+	],
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	}
+}

@@ -1,0 +1,23 @@
+import 'package:flutter/material.dart';
+import 'package:mytestapp/caregivers/caregivers.dart';
+import 'package:mytestapp/medicineInfo/medicine_info.dart';
+import 'package:mytestapp/memory_aid/memory_aid.dart';
+import 'package:mytestapp/profile/profile.dart';
+import 'package:mytestapp/home/home.dart';
+import 'package:mytestapp/login/login.dart';
+import 'package:mytestapp/puzzles/puzzles.dart';
+import 'package:mytestapp/voice/voice.dart';
+
+
+
+final Map<String, WidgetBuilder> appRoutes = {
+  '/': (BuildContext context) => const HomeScreen(),
+  '/login': (BuildContext context) => const LoginScreen(),
+  '/profile': (BuildContext context) => const ProfileScreen(),
+  '/medicineInfo': (BuildContext context) => const MedicineInfoScreen(),
+  '/caregivers': (BuildContext context) => const CaregiversScreen(),
+  '/memoryAid': (BuildContext context) => const MemoryAidScreen(),
+  '/puzzles': (BuildContext context) => const PuzzleScreen(),
+  '/voice': (BuildContext context) => const VoiceScreen(),
+  
+};
