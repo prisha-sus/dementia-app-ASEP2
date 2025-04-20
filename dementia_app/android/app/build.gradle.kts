@@ -2,21 +2,13 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services") // ✅ Correct spot for plugin
 }
 
 android {
     namespace = "com.example.dementia_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
 
     defaultConfig {
         applicationId = "com.example.dementia_app"
@@ -27,6 +19,16 @@ android {
         multiDexEnabled = true
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true // ✅ Kotlin DSL syntax
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
@@ -35,17 +37,13 @@ android {
 }
 
 dependencies {
-    // Import the Firebase BoM
+    // Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
-    // Firebase Analytics
+    implementation ("com.google.firebase:firebase-messaging:latest_version")
+    // Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
-    // Add any other Firebase dependencies you need
-     implementation("com.google.firebase:firebase-firestore")
-    
-}
+    implementation("com.google.firebase:firebase-firestore")
 
-apply(plugin = "com.google.gms.google-services")
-
-flutter {
-    source = "../.."
+    // Desugaring library for Java 8 features
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4") // ✅ Kotlin DSL fix
 }
