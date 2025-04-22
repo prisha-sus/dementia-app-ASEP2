@@ -18,11 +18,11 @@ class ConnectScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showNotification(
-            title: "👋 Hello!",
-            body: "This is a local push notification.",
+            title: "New Message!",
+            body: "Caregiver Send you a new text",
           );
         },
-        child: const Icon(Icons.notifications),
+        child: const Icon(Icons.message),
       ),
       bottomNavigationBar: const BottomNavBar(),
     );

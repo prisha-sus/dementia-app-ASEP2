@@ -7,8 +7,8 @@ import 'package:mytestapp/home/home.dart';
 import 'package:mytestapp/login/login.dart';
 import 'package:mytestapp/puzzles/puzzles.dart';
 import 'package:mytestapp/voice/voice.dart';
-
-
+import 'package:mytestapp/role/role.dart';
+import 'package:mytestapp/connect/connect.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/': (BuildContext context) => const HomeScreen(),
@@ -19,5 +19,6 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/memoryAid': (BuildContext context) => const MemoryAidScreen(),
   '/puzzles': (BuildContext context) => const PuzzleScreen(),
   '/voice': (BuildContext context) => const VoiceScreen(),
-  
+  '/role': (BuildContext context) => const RoleScreen(),
+  '/connect': (BuildContext context) => const ConnectScreen(),
 };

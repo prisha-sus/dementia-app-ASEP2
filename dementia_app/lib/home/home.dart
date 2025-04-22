@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mytestapp/login/login.dart';
 import 'package:mytestapp/services/auth.dart';
-import 'package:mytestapp/connect/connect.dart';
+// import 'package:mytestapp/connect/connect.dart';
+import 'package:mytestapp/role/role.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,7 +19,7 @@ class HomeScreen extends StatelessWidget {
               child: Text("error"),
             );
           } else if (snapshot.hasData) {
-            return const ConnectScreen();
+            return const RoleScreen ();
           } else {
             return const LoginScreen();
           }
