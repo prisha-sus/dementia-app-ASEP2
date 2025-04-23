@@ -68,6 +68,30 @@ app.post('/send_mail', async (req, res) => {
     res.status(500).send('Failed to send email.');
   }
 });
+app.post('/send_otp', async (req, res) => {
+  const { otp } = req.body;
+  const message = `Your verification code is: ${otp}`;
+
+  try {
+    await twilioClient.messages.create({
+      from: fromWhatsAppNumber,
+      to: toWhatsAppNumber,
+      body: message,
+    });
+
+    await transporter.sendMail({
+      from: 'biradartejas842@gmail.com',
+      to: 'atharva.shirke24@vit.edu',
+      subject: 'OTP Verification',
+      text: message,
+    });
+
+    res.status(200).send('OTP sent via WhatsApp and Email');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Failed to send OTP');
+  }
+});
 
 /* --- Firestore Danger Listener --- */
 const logsRef = db.collection('logs');
