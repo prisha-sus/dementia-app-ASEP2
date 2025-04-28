@@ -400,9 +400,9 @@ class ConnectScreen extends StatelessWidget {
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.blueAccent,
                       elevation: 8,
-                      icon: const Icon(Icons.message_rounded),
+                      icon: const Icon(Icons.volunteer_activism_rounded),
                       label: const Text(
-                        "Messages",
+                        "Chatbot",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
