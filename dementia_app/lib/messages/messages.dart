@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class MessageScreen extends StatefulWidget {
@@ -32,13 +31,15 @@ class _MessageScreenState extends State<MessageScreen> {
     if (userId.isNotEmpty) {
       try {
         // Fetch user document from Firestore using the UID
-        DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(userId).get();
         if (userDoc.exists) {
           var userRole = userDoc['role']; // Fetch the role directly from the DB
           if (userRole != null) {
             setState(() {
               _userType = userRole; // Update user role state
-              _roleGreeting = 'Hey $userRole, how can we help today?'; // Update greeting with user role
+              _roleGreeting =
+                  'Hey $userRole, how can we help today?'; // Update greeting with user role
             });
             print("User role: $_userType"); // Debugging: Print user role
           } else {
@@ -104,21 +105,27 @@ class _MessageScreenState extends State<MessageScreen> {
             child: StreamBuilder<QuerySnapshot>(
               stream: _firestore
                   .collection('messages')
-                  .orderBy('timestamp', descending: true) // Order messages by timestamp
+                  .orderBy('timestamp',
+                      descending: true) // Order messages by timestamp
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator()); // Show loading spinner while waiting
+                  return Center(
+                      child:
+                          CircularProgressIndicator()); // Show loading spinner while waiting
                 }
 
                 if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}')); // Show error if there's an issue
+                  return Center(
+                      child: Text(
+                          'Error: ${snapshot.error}')); // Show error if there's an issue
                 }
 
                 final messages = snapshot.data?.docs ?? [];
 
                 return ListView.builder(
-                  reverse: true, // Reverse list to show most recent messages at the bottom
+                  reverse:
+                      true, // Reverse list to show most recent messages at the bottom
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     var messageData = messages[index];
@@ -136,19 +143,26 @@ class _MessageScreenState extends State<MessageScreen> {
                             : Alignment.centerLeft,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: isSentByUser ? Colors.blue[100] : Colors.grey[300],
+                            color: isSentByUser
+                                ? Colors.blue[100]
+                                : Colors.grey[300],
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 15),
                           child: Text(
                             message,
-                            style: TextStyle(fontSize: 16, color: Colors.black), // Set message text color to black
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors
+                                    .black), // Set message text color to black
                           ),
                         ),
                       ),
                       subtitle: Text(
                         timestamp != null
-                            ? DateTime.parse(timestamp.toDate().toString()).toString() // Format timestamp
+                            ? DateTime.parse(timestamp.toDate().toString())
+                                .toString() // Format timestamp
                             : '',
                         style: TextStyle(fontSize: 12),
                       ),
@@ -175,7 +189,8 @@ class _MessageScreenState extends State<MessageScreen> {
                 ),
                 IconButton(
                   icon: Icon(Icons.send),
-                  onPressed: sendMessage, // Call sendMessage when button is pressed
+                  onPressed:
+                      sendMessage, // Call sendMessage when button is pressed
                   color: Colors.blue,
                 ),
               ],

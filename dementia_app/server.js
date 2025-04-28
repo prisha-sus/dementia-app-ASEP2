@@ -1,4 +1,3 @@
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -112,5 +111,5 @@ logsRef.onSnapshot(snapshot => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running on http://192.168.2.125:${port}`);
+  console.log(`Server running on http://192.168.27.125:${port}`);
 });
