@@ -150,8 +150,7 @@ class _MessageScreenState extends State<MessageScreen> {
               _useLocalFallback = true;
             });
             aiResponse =
-                "I'm having trouble connecting to my knowledge base. I'll switch to offline mode for now. " +
-                    _getFallbackResponse(userMessage);
+                "I'm having trouble connecting to my knowledge base. I'll switch to offline mode for now. ${_getFallbackResponse(userMessage)}";
           } else {
             aiResponse =
                 "I'm sorry, I encountered a technical issue. Please try again.";

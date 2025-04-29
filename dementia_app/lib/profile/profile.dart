@@ -31,6 +31,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? role;
   String? generatedOTP;
   bool connectedToPatient = false;
+  String? linkedPatientId;
+  String? linkedPatientName; // Add this line
   final TextEditingController _otpController = TextEditingController();
 
   String generateOTP() {
@@ -45,6 +47,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     getUserRole();
+    getUserName();
+  }
+
+  String userName = "User";
+
+  Future<void> getUserName() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (doc.exists) {
+        setState(() {
+          userName = doc.get('name') ?? "User";
+        });
+      }
+    }
   }
 
   Future<void> getUserRole() async {
@@ -79,14 +99,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() {
           connectedToPatient = true;
         });
+
+        final patientId = query.docs.first.get('patientId');
+        final patientDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(patientId)
+            .get();
+
+        if (patientDoc.exists) {
+          setState(() {
+            linkedPatientId = patientDoc.get('publicId');
+            linkedPatientName = patientDoc.get('name');
+          });
+        }
       }
     }
   }
 
   Widget buildLogList() {
+    if (role == 'caregiver' && linkedPatientId == null) {
+      return const Center(
+        child: Text(
+          'No patient connected',
+          style: TextStyle(color: Colors.white),
+        ),
+      );
+    }
+
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('logs')
+          .doc(linkedPatientId ?? FirebaseAuth.instance.currentUser?.uid)
+          .collection('realLogs')
           .orderBy('timestamp', descending: true)
           .limit(10)
           .snapshots(includeMetadataChanges: true),
@@ -311,6 +355,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         if (otpQuery.docs.isNotEmpty) {
           final otpDoc = otpQuery.docs.first;
+          final patientId = otpDoc.get('patientId');
+
+          // Fetch patient info
+          final patientDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(patientId)
+              .get();
 
           await otpDoc.reference.update({
             'verified': true,
@@ -320,11 +371,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           setState(() {
             connectedToPatient = true;
+            linkedPatientName = patientDoc.get('name');
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Connected to patient successfully!'),
+            SnackBar(
+              content: Text('Connected to $linkedPatientName successfully!'),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ),
@@ -456,9 +508,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              FirebaseAuth.instance.currentUser?.displayName ??
-                                  "User",
-                              style: TextStyle(
+                              userName,
+                              style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -549,14 +600,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.connect_without_contact),
                               SizedBox(width: 8),
-                              Text(
-                                "Generate Connection Code",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              Flexible(
+                                child: Text(
+                                  "Generate Connection Code",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.visible,
+                                  softWrap: true,
                                 ),
                               ),
                             ],
