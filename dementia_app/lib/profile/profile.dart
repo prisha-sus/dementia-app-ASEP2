@@ -78,14 +78,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (query.docs.isNotEmpty) {
         setState(() {
           connectedToPatient = true;
-          // Store patientId for logs query
-          _patientId = query.docs.first.get('patientId');
         });
       }
     }
   }
-
-  String? _patientId; // Add this variable at the top of the class
 
   Widget buildLogList() {
     return StreamBuilder<QuerySnapshot>(
@@ -93,11 +89,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .collection('logs')
           .orderBy('timestamp', descending: true)
           .limit(10)
-          .snapshots(),
+          .snapshots(includeMetadataChanges: true),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(color: Colors.white),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Error: ${snapshot.error}',
+              style: const TextStyle(color: Colors.white),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(
+            child: const Text(
+              'No logs available.',
+              style: TextStyle(color: Colors.white),
+            ),
           );
         }
 
@@ -297,7 +311,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         if (otpQuery.docs.isNotEmpty) {
           final otpDoc = otpQuery.docs.first;
-          final patientId = otpDoc.get('patientId');
 
           await otpDoc.reference.update({
             'verified': true,
@@ -307,7 +320,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           setState(() {
             connectedToPatient = true;
-            _patientId = patientId;
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
