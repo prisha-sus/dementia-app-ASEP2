@@ -350,7 +350,7 @@ class ConnectScreen extends StatelessWidget {
                                   icon: Icons.sports_esports_rounded,
                                   gradientStart: const Color(0xFF4776E6),
                                   gradientEnd: const Color(0xFF8E54E9),
-                                  route: '/quizzes',
+                                  route: '/puzzles',
                                   tag: 'btn1',
                                 ),
                                 _buildFeatureButton(

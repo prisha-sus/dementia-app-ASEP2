@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
-// import 'package:family_tree_app/main.dart'; 
-// import 'package:mytestapp/memory_aid/darshan.dart'; // Correct path if it's in the same file
 
 void main() => runApp(FamilyTreeApp());
 
@@ -18,13 +16,19 @@ class FamilyTreeApp extends StatelessWidget {
     );
   }
 }
+
 class FamilyMember {
   final String id;
   final String name;
   final String relation;
   final File image;
 
-  FamilyMember({required this.id, required this.name, required this.relation, required this.image});
+  FamilyMember({
+    required this.id,
+    required this.name,
+    required this.relation,
+    required this.image,
+  });
 }
 
 class FamilyTreeScreen extends StatefulWidget {
