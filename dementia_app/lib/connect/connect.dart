@@ -350,7 +350,7 @@ class ConnectScreen extends StatelessWidget {
                                   icon: Icons.sports_esports_rounded,
                                   gradientStart: const Color(0xFF4776E6),
                                   gradientEnd: const Color(0xFF8E54E9),
-                                  route: '/quizzes',
+                                  route: '/puzzles',
                                   tag: 'btn1',
                                 ),
                                 _buildFeatureButton(
@@ -377,10 +377,10 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: 'Community',
                                   description: 'Connect with others',
-                                  icon: Icons.people_alt_rounded,
+                                  icon: Icons.alarm,
                                   gradientStart: const Color(0xFF396AFC),
                                   gradientEnd: const Color(0xFF2948FF),
-                                  route: '/community',
+                                  route: '/medicine',
                                   tag: 'btn4',
                                 ),
                               ],
@@ -400,9 +400,9 @@ class ConnectScreen extends StatelessWidget {
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.blueAccent,
                       elevation: 8,
-                      icon: const Icon(Icons.message_rounded),
+                      icon: const Icon(Icons.volunteer_activism_rounded),
                       label: const Text(
-                        "Messages",
+                        "Chatbot",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
