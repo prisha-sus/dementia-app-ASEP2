@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mytestapp/routes.dart';
+import 'package:mytestapp/services/medicinealert.dart';
 import 'package:mytestapp/theme.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,9 @@ import 'package:http/http.dart' as http;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+// Global instance of MedicationReminderService
+late MedicationReminderService medicationReminderService;
 
 bool isFirebaseInitialized = false; // Flag to track Firebase initialization
 bool isFirstInit = true; // Flag to handle first initialization
@@ -60,19 +64,25 @@ Future<void> sendDangerAlert() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
   try {
+    // Initialize Firebase
     await Firebase.initializeApp();
     isFirebaseInitialized = true;
     print('✅ Firebase initialized');
 
+    // Initialize local notifications
+    await _initializeLocalNotifications();
+    print('✅ Flutter local notifications initialized');
+    
+    // Initialize medication reminder service
+    medicationReminderService = MedicationReminderService();
+    await medicationReminderService.initialize();
+    print('✅ Medication reminder service initialized');
+
+    // Set up FCM for background messages
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     _requestNotificationPermission();
-
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    const initSettings = InitializationSettings(android: androidSettings);
-    await flutterLocalNotificationsPlugin.initialize(initSettings);
-    print('✅ Flutter local notifications initialized');
 
     // Set up FCM foreground message handling
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -85,16 +95,53 @@ void main() async {
     });
 
     // Setup listeners for realtime logs
-    setupRealLogsListeners();
+    await setupRealLogsListeners();
 
     runApp(const App());
   } catch (e) {
-    print('❌ Firebase init error: $e');
-    runApp(const ErrorApp());
+    print('❌ App initialization error: $e');
+    runApp(ErrorApp(errorMessage: 'Initialization Error: $e'));
   }
 }
 
-void setupRealLogsListeners() async {
+Future<void> _initializeLocalNotifications() async {
+  const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const iosSettings = DarwinInitializationSettings(
+    requestSoundPermission: true,
+    requestBadgePermission: true,
+    requestAlertPermission: true,
+  );
+  
+  const initSettings = InitializationSettings(
+    android: androidSettings,
+    iOS: iosSettings,
+  );
+  
+  await flutterLocalNotificationsPlugin.initialize(
+    initSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      print('📱 Notification response: ${response.payload}');
+    },
+  );
+  
+  // Create notification channel
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'channel_id',
+    'channel_name',
+    description: 'App Notifications',
+    importance: Importance.high,
+  );
+  
+  final plugin = flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+  
+  if (plugin != null) {
+    await plugin.createNotificationChannel(channel);
+  }
+}
+
+Future<void> setupRealLogsListeners() async {
   try {
     // Get all users with publicIds from the users collection
     final usersSnapshot = await FirebaseFirestore.instance
@@ -141,6 +188,7 @@ void setupRealLogsListeners() async {
     });
   } catch (e) {
     print('❌ Error setting up listeners: $e');
+    // Don't rethrow - we want the app to continue even if this fails
   }
 }
 
@@ -192,18 +240,6 @@ void listenToRealLogsForPublicId(String publicId) {
           // Safely get timestamp and ensure it's not null
           final timestampData = data['timestamp'];
           if (timestampData is! Timestamp) continue;
-
-          // Skip if this log is older than or equal to our last processed timestamp
-          // if (lastTimestamp != null) {
-          //   // Both timestamps are now guaranteed to be non-null
-          //   final currentTimestamp = timestampData;
-          //   // Fix: Handle nullable previousTimestamp properly
-          //   if (currentTimestamp.compareTo(lastTimestamp) <= 0) {
-          //     print(
-          //         '⏭️ Skipping old log from ${currentTimestamp.toDate()} for $publicId');
-          //     continue;
-          //   }
-          // }
 
           // Update lastTimestamp to this new message's timestamp
           lastTimestamp = timestampData;
@@ -277,7 +313,15 @@ void processLogForNotification(
 }
 
 void _requestNotificationPermission() async {
-  NotificationSettings settings = await _firebaseMessaging.requestPermission();
+  NotificationSettings settings = await _firebaseMessaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+    announcement: false,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+  );
   print('🔐 Notification permission: ${settings.authorizationStatus}');
 }
 
@@ -289,8 +333,17 @@ void showNotification({required String title, required String body}) async {
     importance: Importance.high,
     priority: Priority.high,
   );
+  
+  const iosDetails = DarwinNotificationDetails(
+    presentAlert: true,
+    presentBadge: true,
+    presentSound: true,
+  );
 
-  const details = NotificationDetails(android: androidDetails);
+  const details = NotificationDetails(
+    android: androidDetails,
+    iOS: iosDetails,
+  );
 
   await flutterLocalNotificationsPlugin.show(
     0,
@@ -314,12 +367,35 @@ class App extends StatelessWidget {
 }
 
 class ErrorApp extends StatelessWidget {
-  const ErrorApp({super.key});
+  final String errorMessage;
+  
+  const ErrorApp({super.key, this.errorMessage = 'Firebase Init Error'});
+  
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
-        body: Center(child: Text('Firebase Init Error')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: Colors.red, size: 64),
+                const SizedBox(height: 16),
+                Text(
+                  'Error',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  errorMessage,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

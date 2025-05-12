@@ -18,7 +18,7 @@ class _GamesScreenState extends State<GamesScreen> {
   List<String> correctAnswers = ["Bear", "Baboon", "Bat"];
   String listeningStatus = "Tap the microphone to start";
 
-  Future<void> startListening() async {
+   Future<void> startListening() async {
     try {
       developer.log('Checking microphone permission');
       var status = await Permission.microphone.status;
