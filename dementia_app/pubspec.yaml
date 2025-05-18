@@ -62,6 +62,9 @@ dependencies:
   timezone: ^0.9.2
   # workmanager: 0.4.1
   audioplayers: ^5.0.0
+  firebase_storage: ^12.4.5
+  graphview: ^1.2.0
+
 flutter_icons:
   android: true
   ios: true
