@@ -361,7 +361,9 @@ class App extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: appRoutes,
-      theme: appTheme,
+      theme: appLightTheme,
+      darkTheme: appDarkTheme,
+      themeMode: ThemeMode.system,
     );
   }
 }

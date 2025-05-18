@@ -7,7 +7,7 @@ class CaregiversScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        //backgroundColor: Colors.blue,
         title: Text("Connect to caregivers"),
       ),
       bottomNavigationBar: BottomNavBar(),

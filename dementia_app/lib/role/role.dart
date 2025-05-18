@@ -44,34 +44,109 @@ class RoleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+   // ...existing code...
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Your Role')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton.icon(
-              icon: const FaIcon(FontAwesomeIcons.userInjured),
-              label: const Text("I'm a Patient"),
-              onPressed: () => setRole('patient', context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              icon: const FaIcon(FontAwesomeIcons.userDoctor),
-              label: const Text("I'm a Caregiver"),
-              onPressed: () => setRole("caregiver", context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              ),
-            ),
-          ],
+      appBar: AppBar(
+        title: Text(
+          'Select Your Role',
+          style: TextStyle(
+            color: colorScheme.tertiary,
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            letterSpacing: 1.5,
+          ),
         ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: theme.colorScheme.background,
+        foregroundColor: theme.appBarTheme.foregroundColor,
+        elevation: 0, // Remove AppBar shadow for a clean divider
       ),
+      body: Column(
+        children: [
+          // Line after AppBar
+          Container(
+            height: 3,
+            color: colorScheme.tertiary,
+            margin: const EdgeInsets.only(left: 20, right: 20, top: 10),
+          ),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 260,
+                    child: ElevatedButton.icon(
+                      icon: FaIcon(
+                        FontAwesomeIcons.userInjured,
+                        color: colorScheme.onPrimary,
+                        size: 22,
+                      ),
+                      label: Text(
+                        "I'm a Patient",
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: colorScheme.onPrimary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
+                      ),
+                      onPressed: () => setRole('patient', context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 8,
+                        shadowColor: colorScheme.primary.withOpacity(0.5),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 50),
+                  SizedBox(
+                    width: 260,
+                    child: ElevatedButton.icon(
+                      icon: FaIcon(
+                        FontAwesomeIcons.userDoctor,
+                        color: colorScheme.background,
+                        size: 22,
+                      ),
+                      label: Text(
+                        "I'm a Caregiver",
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: colorScheme.background,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
+                      ),
+                      onPressed: () => setRole("caregiver", context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.onSurface,
+                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 8,
+                        shadowColor: colorScheme.primary.withOpacity(0.5),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: theme.scaffoldBackgroundColor,
     );
   }
-}
+// ...existing code...
+  }

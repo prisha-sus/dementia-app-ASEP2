@@ -49,12 +49,17 @@ class ConnectScreen extends StatelessWidget {
                   String displayName = user.displayName ?? 'Unknown User';
                   String? photoURL = user.photoURL;
 
+                  final theme = Theme.of(context);
+                  final textTheme = theme.textTheme;
+                  final textColor = theme.colorScheme.onBackground;
+                  final colorScheme = theme.colorScheme;
+
                   return Scaffold(
                     extendBodyBehindAppBar: true,
                     drawer: Drawer(
                       elevation: 16.0,
                       child: Container(
-                        color: const Color(0xFF1A1A2E),
+                        color: colorScheme.onSurface,
                         child: ListView(
                           padding: EdgeInsets.zero,
                           children: [
@@ -159,12 +164,11 @@ class ConnectScreen extends StatelessWidget {
                         "Welcome",
                         style: TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.bold,
                           letterSpacing: 0.8,
                         ),
                       ),
-                      backgroundColor: Colors.black.withOpacity(0.5),
+                      backgroundColor: colorScheme.background,
                       elevation: 0,
                       flexibleSpace: ClipRRect(
                         child: BackdropFilter(
@@ -185,50 +189,52 @@ class ConnectScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    body: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0xFF0F2027),
-                            Color(0xFF203A43),
-                            Color(0xFF2C5364)
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                    
+      body:  Container(
+                      decoration:  BoxDecoration(
+                        //gradient: LinearGradient(
+                          color: colorScheme.background,
+                            
+                          
+                         // stops: const [0.3, 0.7, 0.9],
+                          //begin: Alignment.topCenter,
+                          //end: Alignment.bottomRight,
+                        //),
                       ),
                       child: SafeArea(
-                        top: false,
+                        top: true,
                         child: ListView(
                           padding: const EdgeInsets.only(
-                              top: 100, left: 20, right: 20, bottom: 30),
+                              top: 10, left: 20, right: 20, bottom: 20),
                           physics: const BouncingScrollPhysics(),
                           children: [
                             // User Profile Card
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 25),
+                              padding: const EdgeInsets.only(bottom: 20),
                               child: Hero(
                                 tag: 'role-badge',
                                 child: Material(
-                                  color: Colors.transparent,
+                                  color: colorScheme.background,
                                   child: Container(
+                                    height: 140,
                                     padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
+                                    decoration: BoxDecoration(                    
+                                      color: colorScheme.background,
+                                      /*gradient: LinearGradient(
                                         colors: [
                                           Colors.white.withOpacity(0.1),
                                           Colors.white.withOpacity(0.05),
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
-                                      ),
+                                      ),*/
                                       borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(color: Colors.white24),
+                                      //border: Border.all(color: Colors.white24),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 15,
-                                          offset: const Offset(0, 8),
+                                          color: colorScheme.onBackground.withOpacity(0.2),
+                                          blurRadius: 8,
+                                          //offset: const Offset(0, 8),
                                         )
                                       ],
                                     ),
@@ -236,8 +242,8 @@ class ConnectScreen extends StatelessWidget {
                                       children: [
                                         // Profile Image
                                         Container(
-                                          width: 70,
-                                          height: 70,
+                                          width: 75,
+                                          height: 75,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(
@@ -254,12 +260,11 @@ class ConnectScreen extends StatelessWidget {
                                                     fit: BoxFit.cover,
                                                   ),
                                             boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.3),
-                                                blurRadius: 8,
+                                             /* BoxShadow(
+                                                color: colorScheme.surface,
+                                                blurRadius: 5,
                                                 offset: const Offset(0, 4),
-                                              ),
+                                              ),*/
                                             ],
                                           ),
                                         ),
@@ -272,10 +277,10 @@ class ConnectScreen extends StatelessWidget {
                                             children: [
                                               Text(
                                                 displayName,
-                                                style: const TextStyle(
-                                                  fontSize: 24,
+                                                style: TextStyle(
+                                                  fontSize: 20,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.white,
+                                                  color:colorScheme.onBackground,
                                                 ),
                                               ),
                                               const SizedBox(height: 5),
@@ -285,21 +290,19 @@ class ConnectScreen extends StatelessWidget {
                                                         horizontal: 12,
                                                         vertical: 6),
                                                 decoration: BoxDecoration(
-                                                  color: Colors.blueAccent
-                                                      .withOpacity(0.2),
+                                                  color: colorScheme.tertiary.withOpacity(0.2),
                                                   borderRadius:
                                                       BorderRadius.circular(30),
                                                   border: Border.all(
-                                                    color: Colors.blueAccent
-                                                        .withOpacity(0.5),
+                                                    color: colorScheme.tertiary                                               ,
                                                   ),
                                                 ),
                                                 child: Text(
                                                   role,
                                                   style: TextStyle(
                                                     fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.blue[100],
+                                                    fontWeight: FontWeight.bold,
+                                                    color: colorScheme.tertiary
                                                   ),
                                                 ),
                                               ),
@@ -307,9 +310,9 @@ class ConnectScreen extends StatelessWidget {
                                           ),
                                         ),
                                         IconButton(
-                                          icon: const Icon(
+                                          icon:Icon(
                                             Icons.edit_rounded,
-                                            color: Colors.white70,
+                                            color: colorScheme.onBackground,
                                           ),
                                           onPressed: () {},
                                         ),
@@ -321,14 +324,18 @@ class ConnectScreen extends StatelessWidget {
                             ),
 
                             // Section Title
-                            const Padding(
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                             Padding(
                               padding: EdgeInsets.only(left: 5, bottom: 15),
                               child: Text(
                                 "Quick Access",
                                 style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color:colorScheme.onBackground,
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -347,9 +354,11 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: 'Games',
                                   description: 'Play brain games',
+                                  textColor: colorScheme.background,
                                   icon: Icons.sports_esports_rounded,
-                                  gradientStart: const Color(0xFF4776E6),
-                                  gradientEnd: const Color(0xFF8E54E9),
+                                  /*gradientStart: const Color(0xFF4776E6),
+                                  gradientEnd: const Color(0xFF8E54E9),*/
+                                  color: colorScheme.tertiary,
                                   route: '/puzzles',
                                   tag: 'btn1',
                                 ),
@@ -357,9 +366,9 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: 'Medical Info',
                                   description: 'Track your health',
+                                  textColor: colorScheme.onBackground,
                                   icon: Icons.medical_services_rounded,
-                                  gradientStart: const Color(0xFF11998E),
-                                  gradientEnd: const Color(0xFF38EF7D),
+                                  color: colorScheme.primary,
                                   route: '/medicineInfo',
                                   tag: 'btn2',
                                 ),
@@ -367,9 +376,9 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: 'Memory Aid',
                                   description: 'Remember important things',
+                                  textColor: colorScheme.onBackground,
                                   icon: Icons.psychology_rounded,
-                                  gradientStart: const Color(0xFFFF512F),
-                                  gradientEnd: const Color(0xFFDD2476),
+                                  color: colorScheme.primary,
                                   route: '/memoryAid',
                                   tag: 'btn3',
                                 ),
@@ -377,9 +386,9 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: 'Community',
                                   description: 'Connect with others',
+                                  textColor: colorScheme.background,
                                   icon: Icons.alarm,
-                                  gradientStart: const Color(0xFF396AFC),
-                                  gradientEnd: const Color(0xFF2948FF),
+                                  color: colorScheme.tertiary,
                                   route: '/medicine',
                                   tag: 'btn4',
                                 ),
@@ -387,8 +396,11 @@ class ConnectScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+                          ]
                       ),
                     ),
+                  ),
+  
                     floatingActionButton: FloatingActionButton.extended(
                       onPressed: () {
                         showNotification(
@@ -397,9 +409,13 @@ class ConnectScreen extends StatelessWidget {
                         );
                         Navigator.pushNamed(context, '/message');
                       },
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.blueAccent,
+                      
+                      backgroundColor: colorScheme.background,
+                      foregroundColor: colorScheme.tertiary,
                       elevation: 8,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)
+                      ),
                       icon: const Icon(Icons.volunteer_activism_rounded),
                       label: const Text(
                         "Chatbot",
@@ -454,10 +470,13 @@ class ConnectScreen extends StatelessWidget {
     required String label,
     required String description,
     required IconData icon,
-    required Color gradientStart,
-    required Color gradientEnd,
+    //required Color gradientStart,
+    //required Color gradientEnd,
     required String route,
     required String tag,
+    required Color color,
+    required Color textColor,
+    
   }) {
     return Hero(
       tag: tag,
@@ -469,17 +488,19 @@ class ConnectScreen extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              color: color,
+              /*gradient: LinearGradient(
                 colors: [gradientStart, gradientEnd],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-              ),
+              ),*/
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: gradientStart.withOpacity(0.4),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
+                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+                  spreadRadius: 2,
+                  blurRadius: 8,
+                  //offset: const Offset(0, 8),
                 ),
               ],
             ),
@@ -489,21 +510,22 @@ class ConnectScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: textColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Icon(
                     icon,
-                    color: Colors.white,
+                    color: textColor,
                     size: 32,
                   ),
                 ),
-                const Spacer(),
+                //const Spacer(),
+                const SizedBox(height: 10),
                 Text(
                   label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
+                  style:  TextStyle(
+                    color: textColor,
+                    fontSize: 21,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
                   ),
@@ -512,8 +534,9 @@ class ConnectScreen extends StatelessWidget {
                 Text(
                   description,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 12,
+                    color: textColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
                   ),
                 ),
               ],
