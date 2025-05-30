@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mytestapp/services/auth.dart';
 import 'package:mytestapp/main.dart';
 import 'dart:ui';
+import 'package:google_fonts/google_fonts.dart';
 
 class ConnectScreen extends StatelessWidget {
   const ConnectScreen({super.key});
@@ -57,108 +58,111 @@ class ConnectScreen extends StatelessWidget {
                   return Scaffold(
                     extendBodyBehindAppBar: true,
                     drawer: Drawer(
-                      elevation: 16.0,
-                      child: Container(
-                        color: colorScheme.onSurface,
-                        child: ListView(
-                          padding: EdgeInsets.zero,
-                          children: [
-                            UserAccountsDrawerHeader(
-                              accountName: Text(
-                                displayName,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              accountEmail: Text(
-                                user.email ?? '',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                              currentAccountPicture: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      spreadRadius: 1,
-                                      blurRadius: 5,
-                                    ),
-                                  ],
-                                ),
-                                child: CircleAvatar(
-                                  backgroundImage: photoURL != null
-                                      ? NetworkImage(photoURL)
-                                      : const AssetImage('assets/default.png')
-                                          as ImageProvider,
-                                  backgroundColor: Colors.white,
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF16213E),
-                                    Color(0xFF0F3460)
-                                  ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            _buildDrawerItem(
-                              icon: Icons.dashboard_rounded,
-                              title: 'Dashboard',
-                              onTap: () => Navigator.of(context)
-                                  .pop(), // Fixed context usage
-                            ),
-                            _buildDrawerItem(
-                              icon: Icons.trending_up_rounded,
-                              title: 'Analytics',
-                              onTap: () {},
-                            ),
-                            _buildDrawerItem(
-                              icon: Icons.notifications_rounded,
-                              title: 'Notifications',
-                              onTap: () {},
-                            ),
-                            _buildDrawerItem(
-                              icon: Icons.settings_rounded,
-                              title: 'Settings',
-                              onTap: () {},
-                            ),
-                            const Divider(color: Colors.white24),
-                            _buildDrawerItem(
-                              icon: Icons.help_outline_rounded,
-                              title: 'Help & Support',
-                              onTap: () {},
-                            ),
-                            _buildDrawerItem(
-                              icon: Icons.logout_rounded,
-                              title: 'Logout',
-                              onTap: () async {
-                                await FirebaseAuth.instance.signOut();
-                                Navigator.pushReplacementNamed(context, '/');
-                              },
-                            ),
-                          ],
-                        ),
+  elevation: 16.0,
+  child: Container(
+    color: colorScheme.secondary,
+    child: ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        Container(
+          padding: const EdgeInsets.fromLTRB(16, 40, 16, 16), // Avoid overflow
+          color: colorScheme.primary,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.primary.withOpacity(0.3),
+                        spreadRadius: 2,
+                        blurRadius: 8,
                       ),
-                    ),
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage: photoURL != null
+                        ? NetworkImage(photoURL)
+                        : const AssetImage('assets/default.png') as ImageProvider,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                displayName,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onPrimary,
+                ),
+              ),
+              Text(
+                user.email ?? '',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 20),
+        _buildDrawerItem(
+          icon: Icons.dashboard_rounded,
+          title: 'Dashboard',
+          onTap: () => Navigator.of(context).pop(),
+        ),
+        const SizedBox(height: 20),
+        _buildDrawerItem(
+          icon: Icons.trending_up_rounded,
+          title: 'Analytics',
+          onTap: () {},
+        ),
+        const SizedBox(height: 20),
+        _buildDrawerItem(
+          icon: Icons.notifications_rounded,
+          title: 'Notifications',
+          onTap: () {},
+        ),
+        const SizedBox(height: 20),
+        _buildDrawerItem(
+          icon: Icons.settings_rounded,
+          title: 'Settings',
+          onTap: () {},
+        ),
+        const SizedBox(height: 100),
+        const Divider(
+          color: Colors.white,
+          thickness: 2,
+          indent: 0,
+          endIndent: 20,
+        ),
+        _buildDrawerItem(
+          icon: Icons.help_outline_rounded,
+          title: 'Help & Support',
+          onTap: () {},
+        ),
+        const SizedBox(height: 20),
+        _buildDrawerItem(
+          icon: Icons.logout_rounded,
+          title: 'Logout',
+          onTap: () async {
+            await FirebaseAuth.instance.signOut();
+            Navigator.pushReplacementNamed(context, '/');
+          },
+        ),
+      ],
+    ),
+  ),
+),
+
                     appBar: AppBar(
                       title: const Text(
                         "Welcome",
@@ -364,12 +368,12 @@ class ConnectScreen extends StatelessWidget {
                                 ),
                                 _buildFeatureButton(
                                   context,
-                                  label: 'Medical Info',
-                                  description: 'Track your health',
+                                  label: 'Medicine Reminders',
+                                  description: '',// 'Remember your medicines!',
                                   textColor: colorScheme.onBackground,
                                   icon: Icons.medical_services_rounded,
                                   color: colorScheme.primary,
-                                  route: '/medicineInfo',
+                                  route: '/medicine',
                                   tag: 'btn2',
                                 ),
                                 _buildFeatureButton(
@@ -384,12 +388,12 @@ class ConnectScreen extends StatelessWidget {
                                 ),
                                 _buildFeatureButton(
                                   context,
-                                  label: 'Community',
-                                  description: 'Connect with others',
+                                  label: 'Chatbot',
+                                  description: 'Chat with your friendly bot',
                                   textColor: colorScheme.background,
-                                  icon: Icons.alarm,
+                                  icon: Icons.volunteer_activism_rounded,
                                   color: colorScheme.tertiary,
-                                  route: '/medicine',
+                                  route: '/message',
                                   tag: 'btn4',
                                 ),
                               ],
@@ -401,7 +405,7 @@ class ConnectScreen extends StatelessWidget {
                     ),
                   ),
   
-                    floatingActionButton: FloatingActionButton.extended(
+                    /*floatingActionButton: FloatingActionButton.extended(
                       onPressed: () {
                         showNotification(
                           title: "New Message!",
@@ -424,7 +428,7 @@ class ConnectScreen extends StatelessWidget {
                           letterSpacing: 0.5,
                         ),
                       ),
-                    ),
+                    ),*/
                     bottomNavigationBar: const BottomNavBar(),
                   );
                 }
@@ -441,6 +445,7 @@ class ConnectScreen extends StatelessWidget {
   }
 
   Widget _buildDrawerItem({
+    
     required IconData icon,
     required String title,
     required VoidCallback onTap,
@@ -448,14 +453,16 @@ class ConnectScreen extends StatelessWidget {
     return ListTile(
       leading: Icon(
         icon,
-        color: Colors.white70,
-        size: 22,
+        color: Colors.white,
+        size: 28,
       ),
       title: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          fontSize: 22,
+          fontFamily: GoogleFonts.nunito().fontFamily,
         ),
       ),
       onTap: onTap,
