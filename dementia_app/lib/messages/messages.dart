@@ -324,10 +324,11 @@ class _MessageScreenState extends State<MessageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: Text('Healthcare ChatBot'),
-        backgroundColor: Colors.blue,
+        backgroundColor: colorScheme.primary,
         actions: [
           // Show API status indicator
           Padding(
@@ -429,7 +430,7 @@ class _MessageScreenState extends State<MessageScreen> {
                             style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 247, 245, 245)),
+                                color:colorScheme.onPrimary),
                           ),
 
                           // Message bubble
@@ -440,14 +441,14 @@ class _MessageScreenState extends State<MessageScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: isSentByUser
-                                  ? const Color.fromARGB(255, 2, 138, 250)
-                                  : const Color.fromARGB(255, 2, 247, 22),
+                                  ? colorScheme.tertiary.withOpacity(0.5)
+                                  : colorScheme.surface,
                               borderRadius: BorderRadius.circular(15),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color.fromARGB(255, 252, 251, 251).withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 2,
+                                  color: colorScheme.onPrimary.withOpacity(0.2),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
                                   offset: Offset(0, 1),
                                 ),
                               ],
@@ -456,7 +457,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                 vertical: 10, horizontal: 15),
                             child: Text(
                               message,
-                              style: TextStyle(fontSize: 16, color: Colors.black),
+                              style: TextStyle(fontSize: 16, color: colorScheme.onPrimary),
                             ),
                           ),
 
@@ -468,7 +469,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                   ? _formatTimestamp(timestamp.toDate())
                                   : '',
                               style:
-                                  TextStyle(fontSize: 10, color: const Color.fromARGB(255, 255, 254, 254)),
+                                  TextStyle(fontSize: 10, color: colorScheme.onPrimary.withOpacity(0.6),)
                             ),
                           ),
                         ],
@@ -486,13 +487,20 @@ class _MessageScreenState extends State<MessageScreen> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Type your message...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
+                    style: TextStyle(color: colorScheme.onPrimary), // Change input text color here
+          decoration: InputDecoration(
+            hintText: 'Type your message...',
+            hintStyle: TextStyle(color: colorScheme.onPrimary.withOpacity(0.6)), // Change hint text color here
+                      enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide(color: colorScheme.tertiary), // Border color when not focused
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(25),
+              borderSide: BorderSide(color: colorScheme.tertiary, width: 2.0), // Border when focused
+            ),
                       filled: true,
-                      fillColor: const Color.fromARGB(255, 5, 5, 5),
+                      fillColor: colorScheme.background,
                     ),
                     onSubmitted: (_) => sendMessage(),
                   ),
@@ -500,11 +508,11 @@ class _MessageScreenState extends State<MessageScreen> {
                 SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: colorScheme.tertiary,
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    icon: Icon(Icons.send, color: Colors.white),
+                    icon: Icon(Icons.send, color: colorScheme.background),
                     onPressed: _isTyping ? null : sendMessage,
                   ),
                 ),
