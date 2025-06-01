@@ -65,7 +65,7 @@ class RoleScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: theme.colorScheme.surface,
         foregroundColor: theme.appBarTheme.foregroundColor,
         elevation: 0, // Remove AppBar shadow for a clean divider
       ),
@@ -116,13 +116,13 @@ class RoleScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       icon: FaIcon(
                         FontAwesomeIcons.userDoctor,
-                        color: colorScheme.background,
+                        color: colorScheme.surface,
                         size: 22,
                       ),
                       label: Text(
                         "I'm a Caregiver",
                         style: textTheme.bodyLarge?.copyWith(
-                          color: colorScheme.background,
+                          color: colorScheme.surface,
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
                         ),

@@ -10,9 +10,9 @@ class BottomNavBar extends StatelessWidget {
     final textTheme = theme.textTheme;  
     final colorScheme = theme.colorScheme;
     return BottomNavigationBar(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       selectedItemColor: colorScheme.tertiary,
-      unselectedItemColor: colorScheme.onBackground,
+      unselectedItemColor: colorScheme.onSurface,
       items: [
         BottomNavigationBarItem(
             icon: Icon(FontAwesomeIcons.kitMedical, size: 20),

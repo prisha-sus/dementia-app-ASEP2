@@ -51,7 +51,7 @@ class ConnectScreen extends StatelessWidget {
 
                   final theme = Theme.of(context);
                   final textTheme = theme.textTheme;
-                  final textColor = theme.colorScheme.onBackground;
+                  final textColor = theme.colorScheme.onSurface;
                   final colorScheme = theme.colorScheme;
 
                   return Scaffold(
@@ -168,7 +168,7 @@ class ConnectScreen extends StatelessWidget {
                           letterSpacing: 0.8,
                         ),
                       ),
-                      backgroundColor: colorScheme.background,
+                      backgroundColor: colorScheme.surface,
                       elevation: 0,
                       flexibleSpace: ClipRRect(
                         child: BackdropFilter(
@@ -193,7 +193,7 @@ class ConnectScreen extends StatelessWidget {
       body:  Container(
                       decoration:  BoxDecoration(
                         //gradient: LinearGradient(
-                          color: colorScheme.background,
+                          color: colorScheme.surface,
                             
                           
                          // stops: const [0.3, 0.7, 0.9],
@@ -214,12 +214,12 @@ class ConnectScreen extends StatelessWidget {
                               child: Hero(
                                 tag: 'role-badge',
                                 child: Material(
-                                  color: colorScheme.background,
+                                  color: colorScheme.surface,
                                   child: Container(
                                     height: 140,
                                     padding: const EdgeInsets.all(20),
                                     decoration: BoxDecoration(                    
-                                      color: colorScheme.background,
+                                      color: colorScheme.surface,
                                       /*gradient: LinearGradient(
                                         colors: [
                                           Colors.white.withOpacity(0.1),
@@ -232,7 +232,7 @@ class ConnectScreen extends StatelessWidget {
                                       //border: Border.all(color: Colors.white24),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: colorScheme.onBackground.withOpacity(0.2),
+                                          color: colorScheme.onSurface.withOpacity(0.2),
                                           blurRadius: 8,
                                           //offset: const Offset(0, 8),
                                         )
@@ -280,7 +280,7 @@ class ConnectScreen extends StatelessWidget {
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,
-                                                  color:colorScheme.onBackground,
+                                                  color:colorScheme.onSurface,
                                                 ),
                                               ),
                                               const SizedBox(height: 5),
@@ -312,7 +312,7 @@ class ConnectScreen extends StatelessWidget {
                                         IconButton(
                                           icon:Icon(
                                             Icons.edit_rounded,
-                                            color: colorScheme.onBackground,
+                                            color: colorScheme.onSurface,
                                           ),
                                           onPressed: () {},
                                         ),
@@ -335,7 +335,7 @@ class ConnectScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color:colorScheme.onBackground,
+                                  color:colorScheme.onSurface,
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -354,7 +354,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: 'Games',
                                   description: 'Play brain games',
-                                  textColor: colorScheme.background,
+                                  textColor: colorScheme.surface,
                                   icon: Icons.sports_esports_rounded,
                                   /*gradientStart: const Color(0xFF4776E6),
                                   gradientEnd: const Color(0xFF8E54E9),*/
@@ -366,7 +366,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: 'Medical Info',
                                   description: 'Track your health',
-                                  textColor: colorScheme.onBackground,
+                                  textColor: colorScheme.onSurface,
                                   icon: Icons.medical_services_rounded,
                                   color: colorScheme.primary,
                                   route: '/medicineInfo',
@@ -376,7 +376,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: 'Memory Aid',
                                   description: 'Remember important things',
-                                  textColor: colorScheme.onBackground,
+                                  textColor: colorScheme.onSurface,
                                   icon: Icons.psychology_rounded,
                                   color: colorScheme.primary,
                                   route: '/memoryAid',
@@ -386,7 +386,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: 'Community',
                                   description: 'Connect with others',
-                                  textColor: colorScheme.background,
+                                  textColor: colorScheme.surface,
                                   icon: Icons.alarm,
                                   color: colorScheme.tertiary,
                                   route: '/medicine',
@@ -410,7 +410,7 @@ class ConnectScreen extends StatelessWidget {
                         Navigator.pushNamed(context, '/message');
                       },
                       
-                      backgroundColor: colorScheme.background,
+                      backgroundColor: colorScheme.surface,
                       foregroundColor: colorScheme.tertiary,
                       elevation: 8,
                       shape: RoundedRectangleBorder(
@@ -497,7 +497,7 @@ class ConnectScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
                   spreadRadius: 2,
                   blurRadius: 8,
                   //offset: const Offset(0, 8),

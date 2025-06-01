@@ -19,11 +19,9 @@ final ThemeData appLightTheme = ThemeData(
     primary: kOlivine,
     secondary: kCeladon,
     tertiary: kPalatinate,
-    background: kWhite,
     surface: kLightGreen2,
     onPrimary: kBlack,
     onSecondary: kBlack,
-    onBackground: kBlack,
     onSurface: kPalatinate,
   ),
   appBarTheme: AppBarTheme(
@@ -83,11 +81,9 @@ final ThemeData appDarkTheme = ThemeData(
     primary: kPalatinate,
     secondary: kLightGreen1,
     tertiary: kLightGreen2,
-    background: kBlack,
     surface: kOlivine,
     onPrimary: kWhite,
     onSecondary: kBlack,
-    onBackground: kWhite,
     onSurface: kCeladon,
   ),
   appBarTheme: AppBarTheme(
