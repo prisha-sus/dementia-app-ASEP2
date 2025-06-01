@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import 'package:google_fonts/google_fonts.dart';
 // New color palette
 const Color kBlack = Color(0xFF000000);
 const Color kWhite = Color(0xFFFFFFFF);
