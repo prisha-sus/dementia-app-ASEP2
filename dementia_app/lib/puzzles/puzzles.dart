@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:ui';
@@ -364,31 +365,44 @@ class _GamesScreenState extends State<GamesScreen>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+  
     return Scaffold(
-      backgroundColor: const Color(0xFF0F2027),
+      backgroundColor: colorScheme.background,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.black.withOpacity(0.5),
+        backgroundColor: colorScheme.background,
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(color: Colors.transparent),
           ),
         ),
-        title: const Text(
+        title:  Text(
           'Memory Games',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: colorScheme.onBackground,
             letterSpacing: 0.8,
+            fontFamily: GoogleFonts.nunito().fontFamily,
           ),
         ),
         centerTitle: true,
         actions: [
-          PopupMenuButton<GameType>(
-            icon: const Icon(Icons.games, color: Colors.white),
+          Theme(
+      data: Theme.of(context).copyWith(
+        popupMenuTheme: PopupMenuThemeData(
+          color: colorScheme.background, 
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+          child: PopupMenuButton<GameType>(
+            icon:  Icon(Icons.games, color:colorScheme.onBackground),
             onSelected: (GameType type) {
               setState(() {
                 currentGame = type;
@@ -400,29 +414,35 @@ class _GamesScreenState extends State<GamesScreen>
               });
             },
             itemBuilder: (BuildContext context) => [
-              const PopupMenuItem(
+               PopupMenuItem(
                 value: GameType.speechGame,
-                child: Text('Speech Game'),
+                child: Text('Speech Game', 
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onBackground, fontFamily: GoogleFonts.nunito().fontFamily) ,
+                ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: GameType.sequenceGame,
-                child: Text('Sequence Memory'),
+                child: Text('Sequence Memory',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onBackground,fontFamily: GoogleFonts.nunito().fontFamily),),
               ),
-              const PopupMenuItem(
+               PopupMenuItem(
                 value: GameType.patternGame,
-                child: Text('Pattern Memory'),
+                child: Text('Pattern Memory',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onBackground, fontFamily: GoogleFonts.nunito().fontFamily),),
               ),
             ],
           ),
+        ),
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
+        decoration: BoxDecoration(
+          color: colorScheme.background,
+          /*gradient: LinearGradient(
             colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-          ),
+          ),*/
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -443,19 +463,23 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Widget _buildGameSelector() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
-      padding: const EdgeInsets.all(16),
+      height: 150,
+      //padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        color: colorScheme.background.withOpacity(0.8),
+        /*gradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.1),
-            Colors.white.withOpacity(0.05),
+            colorScheme.primary.withOpacity(0.1),
+            colorScheme.primary.withOpacity(0.05),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-        ),
+        ),*/
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white24),
+        //border: Border.all(color: colorScheme.primary),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -472,7 +496,10 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Widget _buildGameButton(
+
       String title, GameType type, IconData icon, int score) {
+        final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     bool isActive = currentGame == type;
     return GestureDetector(
       onTap: () {
@@ -486,25 +513,27 @@ class _GamesScreenState extends State<GamesScreen>
         });
       },
       child: Container(
+        height: 140,
+        width: 100,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isActive ? Colors.blue.withOpacity(0.3) : Colors.transparent,
+          color: isActive ? colorScheme.primary.withOpacity(0.1) : colorScheme.tertiary.withOpacity(0.1),
           borderRadius: BorderRadius.circular(15),
           border: Border.all(
-            color: isActive ? Colors.blue : Colors.white24,
+            color: isActive ? colorScheme.primary : colorScheme.tertiary,
             width: isActive ? 2 : 1,
           ),
         ),
         child: Column(
           children: [
             Icon(icon,
-                color: isActive ? Colors.blue : Colors.white70, size: 32),
+                color: isActive ?  colorScheme.primary : colorScheme.tertiary, size: 32),
             const SizedBox(height: 8),
             Text(
               title,
               style: TextStyle(
-                color: isActive ? Colors.white : Colors.white70,
-                fontSize: 12,
+                color: isActive ? colorScheme.primary : colorScheme.tertiary ,
+                fontSize: 14,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
               ),
               textAlign: TextAlign.center,
@@ -512,9 +541,9 @@ class _GamesScreenState extends State<GamesScreen>
             const SizedBox(height: 4),
             Text(
               'Score: $score',
-              style: const TextStyle(
-                color: Colors.greenAccent,
-                fontSize: 10,
+              style: TextStyle(
+                color: isActive?  colorScheme.primary: colorScheme.tertiary,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -536,6 +565,8 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Widget _buildSpeechGame() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -554,9 +585,9 @@ class _GamesScreenState extends State<GamesScreen>
         children: [
           Text(
             speechText,
-            style: const TextStyle(
+            style:  TextStyle(
               fontSize: 24,
-              color: Colors.white,
+              color: colorScheme.onBackground ,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -566,16 +597,16 @@ class _GamesScreenState extends State<GamesScreen>
             listeningStatus,
             style: TextStyle(
               fontSize: 16,
-              color: isListening ? Colors.greenAccent : Colors.white70,
+              color: isListening ? colorScheme.secondary : colorScheme.tertiary,
               fontStyle: FontStyle.italic,
             ),
           ),
           const SizedBox(height: 20),
           Text(
             'Score: $speechScore',
-            style: const TextStyle(
+            style:  TextStyle(
               fontSize: 18,
-              color: Colors.greenAccent,
+              color: colorScheme.primary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -585,11 +616,11 @@ class _GamesScreenState extends State<GamesScreen>
             children: [
               if (isListening)
                 AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
+                  duration:  Duration(milliseconds: 300),
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.3),
+                    color: colorScheme.primary.withOpacity(0.3),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -598,15 +629,15 @@ class _GamesScreenState extends State<GamesScreen>
                 style: ElevatedButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  backgroundColor: isListening ? Colors.red : Colors.blue,
+                  backgroundColor: isListening ?  colorScheme.primary : colorScheme.tertiary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                icon: Icon(isListening ? Icons.mic_off : Icons.mic, size: 28),
+                icon: Icon(isListening ? Icons.mic_off : Icons.mic, size: 28, color: isListening? colorScheme.onPrimary:colorScheme.background),
                 label: Text(
                   isListening ? 'Stop Listening' : 'Start Speaking',
-                  style: const TextStyle(fontSize: 16),
+                  style:  TextStyle(fontSize: 16, color: isListening? colorScheme.onPrimary:colorScheme.background , fontWeight: FontWeight.bold, fontFamily: GoogleFonts.nunito().fontFamily,)
                 ),
               ),
             ],
@@ -615,7 +646,7 @@ class _GamesScreenState extends State<GamesScreen>
           ElevatedButton(
             onPressed: generateNewQuestion,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
+              backgroundColor: colorScheme.secondary,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
@@ -629,6 +660,8 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Widget _buildSequenceGame() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -647,18 +680,18 @@ class _GamesScreenState extends State<GamesScreen>
         children: [
           Text(
             'Sequence Memory Game',
-            style: const TextStyle(
+            style:  TextStyle(
               fontSize: 22,
-              color: Colors.white,
+              color: colorScheme.onBackground,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 10),
           Text(
             'Level: $currentLevel | Score: $memoryScore',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              color: Colors.greenAccent,
+              color: colorScheme.primary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -669,9 +702,9 @@ class _GamesScreenState extends State<GamesScreen>
                 : userTurn
                     ? 'Repeat the sequence!'
                     : 'Get ready...',
-            style: const TextStyle(
+            style:  TextStyle(
               fontSize: 18,
-              color: Colors.white70,
+              color: colorScheme.onBackground,
             ),
           ),
           const SizedBox(height: 30),
@@ -727,8 +760,8 @@ class _GamesScreenState extends State<GamesScreen>
                         child: Center(
                           child: Text(
                             '${index + 1}',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: colorScheme.onBackground,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
@@ -748,13 +781,13 @@ class _GamesScreenState extends State<GamesScreen>
               generateSequence();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
+              backgroundColor: colorScheme.tertiary,
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: const Text('Restart Level'),
+            child:  Text('Restart Level', style: TextStyle(fontSize: 16, color: colorScheme.background)),
           ),
         ],
       ),
@@ -762,6 +795,8 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Widget _buildPatternGame() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -780,18 +815,18 @@ class _GamesScreenState extends State<GamesScreen>
         children: [
           Text(
             'Pattern Memory Game',
-            style: const TextStyle(
+            style:  TextStyle(
               fontSize: 22,
-              color: Colors.white,
+              color: colorScheme.onBackground,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 10),
           Text(
             'Grid: ${patternSize}x$patternSize | Score: $patternScore',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              color: Colors.greenAccent,
+              color: colorScheme.primary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -802,9 +837,9 @@ class _GamesScreenState extends State<GamesScreen>
                 : userPatternTurn
                     ? 'Recreate the pattern!'
                     : 'Get ready...',
-            style: const TextStyle(
+            style:  TextStyle(
               fontSize: 18,
-              color: Colors.white70,
+              color: colorScheme.onBackground,
             ),
           ),
           const SizedBox(height: 30),
@@ -830,7 +865,7 @@ class _GamesScreenState extends State<GamesScreen>
                   onTap: () => onPatternTilePressed(row, col),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: shouldShow ? Colors.blue : Colors.grey[800],
+                      color: shouldShow ? colorScheme.tertiary : Colors.grey[800],
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.white24),
                     ),
@@ -845,14 +880,14 @@ class _GamesScreenState extends State<GamesScreen>
               ElevatedButton(
                 onPressed: userPatternTurn ? checkPattern : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: colorScheme.secondary,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text('Check Pattern'),
+                child:  Text('Check Pattern', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -860,14 +895,14 @@ class _GamesScreenState extends State<GamesScreen>
                   generatePattern();
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
+                  backgroundColor: colorScheme.tertiary,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text('New Pattern'),
+                child: Text('New Pattern', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.background)),
               ),
             ],
           ),

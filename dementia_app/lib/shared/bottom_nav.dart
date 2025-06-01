@@ -15,8 +15,8 @@ class BottomNavBar extends StatelessWidget {
       unselectedItemColor: colorScheme.onSurface,
       items: [
         BottomNavigationBarItem(
-            icon: Icon(FontAwesomeIcons.kitMedical, size: 20),
-            label: 'Dispenser'),
+            icon: Icon(FontAwesomeIcons.house, size: 20),
+            label: 'Home'),
         BottomNavigationBarItem(
             icon: Icon(FontAwesomeIcons.microphone, size: 20), 
             label: 'Voice'),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -40,10 +41,12 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Medication Reminders'),
-        backgroundColor: const Color(0xFF2C5364),
+        title:  Text('Medication Reminders', style: TextStyle(color: colorScheme.onPrimary, fontFamily: GoogleFonts.nunito().fontFamily, fontWeight: FontWeight.bold) ,),
+        backgroundColor: colorScheme.background,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -52,18 +55,18 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.medication_outlined,
-                          size: 80, color: Colors.grey),
+                       Icon(Icons.medication_outlined,
+                          size: 80, color: colorScheme.surface),
                       const SizedBox(height: 16),
-                      const Text(
+                       Text(
                         'No medication reminders',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onPrimary),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
+                       Text(
                         'Tap the + button to add a reminder',
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: colorScheme.onPrimary.withOpacity(0.4)),
                       ),
                     ],
                   ),
@@ -77,22 +80,25 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddEditReminderDialog(),
-        backgroundColor: const Color(0xFF2C5364),
+        backgroundColor: colorScheme.surface,
         child: const Icon(Icons.add),
       ),
     );
   }
 
   Widget _buildReminderCard(MedicationReminder reminder) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final timeFormat = DateFormat('h:mm a');
     String scheduleText = reminder.isRecurring
         ? 'Every ${_getDaysText(reminder.daysToRepeat)} at ${timeFormat.format(reminder.timeToTake)}'
-        : 'One time at ${timeFormat.format(reminder.timeToTake)} on ${DateFormat('MMM d, yyyy').format(reminder.timeToTake)}';
+        : 'One time at ${timeFormat.format(reminder.timeToTake)} on ${DateFormat('MMM d, yyyy',).format(reminder.timeToTake)}';
 
     return Card(
+      color: colorScheme.secondary,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),),
       child: InkWell(
         onTap: () => _showAddEditReminderDialog(reminder: reminder),
         borderRadius: BorderRadius.circular(12),
@@ -103,34 +109,35 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.medication, color: Color(0xFF2C5364)),
+                   Icon(Icons.medication, color: colorScheme.background, size: 28),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       reminder.medicineName,
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    icon:  Icon(Icons.delete_outline, color: colorScheme.tertiary, size: 28),
                     onPressed: () => _confirmDelete(reminder),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Text(
                 'Dosage: ${reminder.dosage}',
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 18,fontWeight: FontWeight.w700 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Text(
                 scheduleText,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.tertiary,
                 ),
               ),
             ],
@@ -163,7 +170,10 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   }
 
   Future<void> _confirmDelete(MedicationReminder reminder) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return showDialog(
+      //color: colorScheme.background,
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Reminder'),
@@ -172,7 +182,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('CANCEL'),
+            child:  Text('CANCEL', style: TextStyle(color: colorScheme.primary)),
           ),
           TextButton(
             onPressed: () async {
@@ -180,7 +190,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
               await _reminderService.deleteMedicationReminder(reminder.id);
               _loadReminders();
             },
-            child: const Text('DELETE', style: TextStyle(color: Colors.red)),
+            child:  Text('DELETE', style: TextStyle(color: colorScheme.tertiary)),
           ),
         ],
       ),
@@ -189,12 +199,15 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
 
   Future<void> _showAddEditReminderDialog(
       {MedicationReminder? reminder}) async {
+        final colorScheme = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
     final TextEditingController medicineNameController = TextEditingController(
       text: reminder?.medicineName ?? '',
     );
     final TextEditingController dosageController = TextEditingController(
       text: reminder?.dosage ?? '',
     );
+    
 
     TimeOfDay selectedTime = reminder != null
         ? TimeOfDay.fromDateTime(reminder.timeToTake)
@@ -216,11 +229,15 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
     }
 
     return showDialog(
+      
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
+              backgroundColor: reminder == null
+      ? colorScheme.background  
+      : colorScheme.background,
               title: Text(reminder == null
                   ? 'Add Medication Reminder'
                   : 'Edit Medication Reminder'),
@@ -231,31 +248,77 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                   children: [
                     TextField(
                       controller: medicineNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Medication Name',
-                        prefixIcon: Icon(Icons.medication),
-                      ),
-                    ),
+                      decoration: InputDecoration(
+    labelText: 'Medication Name',
+    prefixIcon: Icon(Icons.medication, color: colorScheme.tertiary),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: colorScheme.tertiary, width: 1),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: colorScheme.tertiary.withOpacity(0.5), width: 1),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    labelStyle: TextStyle(
+      color: FocusScope.of(context).hasFocus
+          ? colorScheme.tertiary
+          : colorScheme.tertiary.withOpacity(0.5),
+    ),
+  ),
+),
                     const SizedBox(height: 16),
                     TextField(
                       controller: dosageController,
-                      decoration: const InputDecoration(
-                        labelText: 'Dosage',
-                        prefixIcon: Icon(Icons.straighten),
+                      decoration: InputDecoration(
+    labelText: 'Dosage',
+    prefixIcon: Icon(Icons.medication, color: colorScheme.tertiary),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: colorScheme.tertiary, width: 1),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: colorScheme.tertiary.withOpacity(0.5), width: 1),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    labelStyle: TextStyle(
+      color: FocusScope.of(context).hasFocus
+          ? colorScheme.tertiary
+          : colorScheme.tertiary.withOpacity(0.5),
+    ),
                       ),
                     ),
                     const SizedBox(height: 24),
                     Row(
                       children: [
-                        const Icon(Icons.access_time, color: Colors.grey),
+                         Icon(Icons.access_time, color: colorScheme.tertiary),
                         const SizedBox(width: 8),
-                        const Text('Time:', style: TextStyle(fontSize: 16)),
+                         Text('Time:', style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
                         const Spacer(),
                         TextButton(
                           onPressed: () async {
                             final TimeOfDay? pickedTime = await showTimePicker(
                               context: context,
                               initialTime: selectedTime,
+                              builder: (context, child) {
+        final colorScheme = Theme.of(context).colorScheme;
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: colorScheme.primary, // header, selected time, OK button
+              onPrimary: colorScheme.onPrimary, // text on header/OK
+              surface: colorScheme.background, // dialog background
+              onSurface: colorScheme.onBackground, // text color
+            ),
+            dialogBackgroundColor: colorScheme.background,
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: colorScheme.tertiary, // OK button color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
                             );
                             if (pickedTime != null) {
                               setStateDialog(() {
@@ -265,14 +328,18 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                           },
                           child: Text(
                             selectedTime.format(context),
-                            style: const TextStyle(fontSize: 16),
+                            style: TextStyle(fontSize: 16, color: colorScheme.tertiary),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
-                      title: const Text('Recurring Reminder'),
+                      title: Text('Recurring Reminder', style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
+                      activeColor: colorScheme.primary, // Thumb color when ON
+  activeTrackColor: colorScheme.primary.withOpacity(0.5), // Track color when ON
+  inactiveThumbColor: colorScheme.tertiary, // Thumb color when OFF (distinct but solid)
+  inactiveTrackColor: colorScheme.tertiary.withOpacity(0.4), // Track color when OFF (muted version)// <-- Track color when OFF (optional)
                       value: isRecurring,
                       onChanged: (value) {
                         setStateDialog(() {
@@ -283,9 +350,9 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                     if (!isRecurring)
                       Row(
                         children: [
-                          const Icon(Icons.calendar_today, color: Colors.grey),
+                           Icon(Icons.calendar_today, color:colorScheme.tertiary),
                           const SizedBox(width: 8),
-                          const Text('Date:', style: TextStyle(fontSize: 16)),
+                           Text('Date:', style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
                           const Spacer(),
                           TextButton(
                             onPressed: () async {
@@ -295,7 +362,22 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                                 firstDate: DateTime.now(),
                                 lastDate: DateTime.now()
                                     .add(const Duration(days: 365)),
-                              );
+                               builder: (context, child) {
+      final colorScheme = Theme.of(context).colorScheme;
+      return Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: ColorScheme.light(
+            primary: colorScheme.primary, // header, selected day
+            onPrimary: colorScheme.onPrimary, // text on header
+            surface: colorScheme.background, // dialog background
+            onSurface: colorScheme.onBackground, // text color
+          ),
+          dialogBackgroundColor: colorScheme.background,
+        ),
+        child: child!,
+      );
+    },
+  );
                               if (pickedDate != null) {
                                 setStateDialog(() {
                                   selectedDate = pickedDate;
@@ -304,14 +386,14 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                             },
                             child: Text(
                               DateFormat('MMM d, yyyy').format(selectedDate),
-                              style: const TextStyle(fontSize: 16),
+                              style:  TextStyle(fontSize: 16, color: colorScheme.tertiary),
                             ),
                           ),
                         ],
                       ),
                     if (isRecurring) ...[
                       const SizedBox(height: 16),
-                      const Text('Repeat on days:'),
+                       Text('Repeat on days:', style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
@@ -326,19 +408,19 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                             'Sun'
                           ];
                           return ChoiceChip(
-                            label: Text(weekdayNames[index]),
+                            label: Text(weekdayNames[index], style: TextStyle(fontSize: 14)),
                             selected: daysSelected[index],
                             onSelected: (selected) {
                               setStateDialog(() {
                                 daysSelected[index] = selected;
                               });
                             },
-                            selectedColor: Theme.of(context).primaryColor,
-                            backgroundColor: Colors.grey[200],
+                            selectedColor: colorScheme.primary,
+                            backgroundColor: colorScheme.background,
                             labelStyle: TextStyle(
                               color: daysSelected[index]
-                                  ? Colors.white
-                                  : Colors.black,
+                                  ? colorScheme.onPrimary
+                                  : colorScheme.onBackground,
                             ),
                           );
                         }),
@@ -350,7 +432,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('CANCEL'),
+                  child:  Text('CANCEL', style: TextStyle(color: colorScheme.tertiary)),
                 ),
                 TextButton(
                   onPressed: () async {
@@ -419,7 +501,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
 
                     _loadReminders();
                   },
-                  child: Text(reminder == null ? 'ADD' : 'UPDATE'),
+                  child: Text(reminder == null ? 'ADD' : 'UPDATE', style: TextStyle(color: colorScheme.primary),)
                 ),
               ],
             );
