@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'dart:developer' as developer;
 import 'dart:math';
 import 'dart:async';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class GamesScreen extends StatefulWidget {
   const GamesScreen({super.key});
@@ -108,7 +109,7 @@ class _GamesScreenState extends State<GamesScreen>
             listeningStatus = "Listening...";
           });
           developer.log('Speech recognition started');
-
+final local = Localizations .of(context, AppLocalizations);
           try {
             await speech.listen(
               onResult: (result) {
@@ -120,7 +121,7 @@ class _GamesScreenState extends State<GamesScreen>
                     if (correctAnswers.any((answer) => recognizedWords
                         .toLowerCase()
                         .contains(answer.toLowerCase()))) {
-                      speechText = "Correct! You said: $recognizedWords";
+                      speechText = "${local.correctAnswer} $recognizedWords";
                       speechScore++;
                       developer.log('Correct answer detected');
                       // Generate new question
@@ -128,7 +129,7 @@ class _GamesScreenState extends State<GamesScreen>
                         generateNewQuestion();
                       });
                     } else {
-                      speechText = "Try again! You said: $recognizedWords";
+                      speechText = "${local.tryAgain} $recognizedWords";
                       developer.log('Incorrect answer detected');
                     }
                   });
@@ -175,12 +176,13 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Future<void> stopListening() async {
+    final local = Localizations.of(context, AppLocalizations);
     try {
       await speech.stop();
       if (mounted) {
         setState(() {
           isListening = false;
-          listeningStatus = "Tap the microphone to start";
+          listeningStatus = local.tapMicToStart;
         });
       }
       developer.log('Speech recognition stopped');
@@ -210,10 +212,10 @@ class _GamesScreenState extends State<GamesScreen>
       'G': ['Giraffe', 'Goat', 'Gorilla', 'Goose'],
       'H': ['Horse', 'Hippo', 'Hamster', 'Hawk'],
     };
-
+final local = Localizations.of(context, AppLocalizations);
     String randomLetter = letters[Random().nextInt(letters.length)];
     setState(() {
-      speechText = "Name an animal that starts with the letter $randomLetter";
+      speechText = "${local.nameAnimalPrompt} $randomLetter";
       correctAnswers = animalsByLetter[randomLetter] ?? [];
     });
   }
@@ -367,6 +369,7 @@ class _GamesScreenState extends State<GamesScreen>
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final local = Localizations.of(context, AppLocalizations);
   
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -381,7 +384,7 @@ class _GamesScreenState extends State<GamesScreen>
           ),
         ),
         title:  Text(
-          'Memory Games',
+          local.memoryGames,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
@@ -416,18 +419,18 @@ class _GamesScreenState extends State<GamesScreen>
             itemBuilder: (BuildContext context) => [
                PopupMenuItem(
                 value: GameType.speechGame,
-                child: Text('Speech Game', 
+                child: Text(local.speechGame, 
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onBackground, fontFamily: GoogleFonts.nunito().fontFamily) ,
                 ),
               ),
               PopupMenuItem(
                 value: GameType.sequenceGame,
-                child: Text('Sequence Memory',
+                child: Text(local.sequenceMemory,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onBackground,fontFamily: GoogleFonts.nunito().fontFamily),),
               ),
                PopupMenuItem(
                 value: GameType.patternGame,
-                child: Text('Pattern Memory',
+                child: Text(local.patternMemory,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onBackground, fontFamily: GoogleFonts.nunito().fontFamily),),
               ),
             ],
@@ -463,6 +466,7 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Widget _buildGameSelector() {
+    final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Container(
@@ -485,10 +489,10 @@ class _GamesScreenState extends State<GamesScreen>
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildGameButton(
-              'Speech\nGame', GameType.speechGame, Icons.mic, speechScore),
-          _buildGameButton('Sequence\nMemory', GameType.sequenceGame,
+              local.speechGameTitle, GameType.speechGame, Icons.mic, speechScore),
+          _buildGameButton(local.sequenceMemoryTitle, GameType.sequenceGame,
               Icons.psychology, memoryScore),
-          _buildGameButton('Pattern\nMemory', GameType.patternGame,
+          _buildGameButton(local.patternMemoryTitle, GameType.patternGame,
               Icons.grid_3x3, patternScore),
         ],
       ),
@@ -499,6 +503,7 @@ class _GamesScreenState extends State<GamesScreen>
 
       String title, GameType type, IconData icon, int score) {
         final colorScheme = Theme.of(context).colorScheme;
+    final local = Localizations.of(context, AppLocalizations);
     final textTheme = Theme.of(context).textTheme;
     bool isActive = currentGame == type;
     return GestureDetector(
@@ -540,7 +545,7 @@ class _GamesScreenState extends State<GamesScreen>
             ),
             const SizedBox(height: 4),
             Text(
-              'Score: $score',
+              '${local.score} $score',
               style: TextStyle(
                 color: isActive?  colorScheme.primary: colorScheme.tertiary,
                 fontSize: 12,
@@ -565,6 +570,7 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Widget _buildSpeechGame() {
+    final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Container(
@@ -603,7 +609,7 @@ class _GamesScreenState extends State<GamesScreen>
           ),
           const SizedBox(height: 20),
           Text(
-            'Score: $speechScore',
+            '${local.score} $speechScore',
             style:  TextStyle(
               fontSize: 18,
               color: colorScheme.primary,
@@ -636,7 +642,7 @@ class _GamesScreenState extends State<GamesScreen>
                 ),
                 icon: Icon(isListening ? Icons.mic_off : Icons.mic, size: 28, color: isListening? colorScheme.onPrimary:colorScheme.background),
                 label: Text(
-                  isListening ? 'Stop Listening' : 'Start Speaking',
+                  isListening ? local.stopListening : local.startListening,
                   style:  TextStyle(fontSize: 16, color: isListening? colorScheme.onPrimary:colorScheme.background , fontWeight: FontWeight.bold, fontFamily: GoogleFonts.nunito().fontFamily,)
                 ),
               ),
@@ -652,7 +658,7 @@ class _GamesScreenState extends State<GamesScreen>
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: const Text('New Question'),
+            child:  Text(local.newQuestion),
           ),
         ],
       ),
@@ -660,6 +666,7 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Widget _buildSequenceGame() {
+    final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Container(
@@ -679,7 +686,7 @@ class _GamesScreenState extends State<GamesScreen>
       child: Column(
         children: [
           Text(
-            'Sequence Memory Game',
+           local.sequenceMemoryGame,
             style:  TextStyle(
               fontSize: 22,
               color: colorScheme.onBackground,
@@ -688,7 +695,7 @@ class _GamesScreenState extends State<GamesScreen>
           ),
           const SizedBox(height: 10),
           Text(
-            'Level: $currentLevel | Score: $memoryScore',
+            '${local.level} $currentLevel |${local.score} $memoryScore',
             style: TextStyle(
               fontSize: 16,
               color: colorScheme.primary,
@@ -698,10 +705,10 @@ class _GamesScreenState extends State<GamesScreen>
           const SizedBox(height: 20),
           Text(
             showingSequence
-                ? 'Watch the sequence...'
+                ? local.watchSequence
                 : userTurn
-                    ? 'Repeat the sequence!'
-                    : 'Get ready...',
+                    ? local.repeatSequence
+                    : local.getReady,
             style:  TextStyle(
               fontSize: 18,
               color: colorScheme.onBackground,
@@ -787,7 +794,7 @@ class _GamesScreenState extends State<GamesScreen>
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child:  Text('Restart Level', style: TextStyle(fontSize: 16, color: colorScheme.background)),
+            child:  Text(local.restartLevel, style: TextStyle(fontSize: 16, color: colorScheme.background)),
           ),
         ],
       ),
@@ -795,6 +802,7 @@ class _GamesScreenState extends State<GamesScreen>
   }
 
   Widget _buildPatternGame() {
+    final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Container(
@@ -814,7 +822,7 @@ class _GamesScreenState extends State<GamesScreen>
       child: Column(
         children: [
           Text(
-            'Pattern Memory Game',
+            local.patternMemoryGame,
             style:  TextStyle(
               fontSize: 22,
               color: colorScheme.onBackground,
@@ -823,7 +831,7 @@ class _GamesScreenState extends State<GamesScreen>
           ),
           const SizedBox(height: 10),
           Text(
-            'Grid: ${patternSize}x$patternSize | Score: $patternScore',
+            '${local.grid} ${patternSize}x$patternSize | ${local.score} $patternScore',
             style: TextStyle(
               fontSize: 16,
               color: colorScheme.primary,
@@ -833,10 +841,10 @@ class _GamesScreenState extends State<GamesScreen>
           const SizedBox(height: 20),
           Text(
             showingPattern
-                ? 'Memorize the pattern...'
+                ? local.memorizePattern
                 : userPatternTurn
-                    ? 'Recreate the pattern!'
-                    : 'Get ready...',
+                    ? local.recreatePattern
+                    : local.getReady,
             style:  TextStyle(
               fontSize: 18,
               color: colorScheme.onBackground,
@@ -887,7 +895,7 @@ class _GamesScreenState extends State<GamesScreen>
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child:  Text('Check Pattern', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child:  Text(local.checkPattern, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -902,7 +910,7 @@ class _GamesScreenState extends State<GamesScreen>
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Text('New Pattern', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.background)),
+                child: Text(local.newPattern, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.background)),
               ),
             ],
           ),

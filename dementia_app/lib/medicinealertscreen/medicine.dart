@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 // Import your service file
 import 'package:mytestapp/services/medicinealert.dart';
@@ -41,11 +43,12 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Medication Reminders', style: TextStyle(color: colorScheme.onPrimary, fontFamily: GoogleFonts.nunito().fontFamily, fontWeight: FontWeight.bold) ,),
+        title:  Text(local.medicationReminders, style: TextStyle(color: colorScheme.onPrimary, fontFamily: GoogleFonts.nunito().fontFamily, fontWeight: FontWeight.bold) ,),
         backgroundColor: colorScheme.background,
       ),
       body: _isLoading
@@ -59,13 +62,13 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                           size: 80, color: colorScheme.surface),
                       const SizedBox(height: 16),
                        Text(
-                        'No medication reminders',
+                        local.noMedicationReminders,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold, color: colorScheme.onPrimary),
                       ),
                       const SizedBox(height: 8),
                        Text(
-                        'Tap the + button to add a reminder',
+                        local.tapToAddReminder,
                         style: TextStyle(color: colorScheme.onPrimary.withOpacity(0.4)),
                       ),
                     ],
@@ -89,10 +92,11 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   Widget _buildReminderCard(MedicationReminder reminder) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final local = Localizations.of(context, AppLocalizations);
     final timeFormat = DateFormat('h:mm a');
     String scheduleText = reminder.isRecurring
-        ? 'Every ${_getDaysText(reminder.daysToRepeat)} at ${timeFormat.format(reminder.timeToTake)}'
-        : 'One time at ${timeFormat.format(reminder.timeToTake)} on ${DateFormat('MMM d, yyyy',).format(reminder.timeToTake)}';
+        ? '${local.every} ${_getDaysText(reminder.daysToRepeat)} ${local.at} ${timeFormat.format(reminder.timeToTake)}'
+        : '${local.oneTimeAt} ${timeFormat.format(reminder.timeToTake)} ${local.on} ${DateFormat('MMM d, yyyy',).format(reminder.timeToTake)}';
 
     return Card(
       color: colorScheme.secondary,
@@ -128,7 +132,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                'Dosage: ${reminder.dosage}',
+                '${local.dosage} ${reminder.dosage}',
                 style: const TextStyle(fontSize: 18,fontWeight: FontWeight.w700 ),
               ),
               const SizedBox(height: 6),
@@ -172,17 +176,18 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   Future<void> _confirmDelete(MedicationReminder reminder) async {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final local = Localizations.of(context, AppLocalizations);
     return showDialog(
       //color: colorScheme.background,
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Reminder'),
+        title: Text(local.deleteReminderTitle),
         content: Text(
-            'Are you sure you want to delete the reminder for ${reminder.medicineName}?'),
+            '${local.deleteReminderContent} ${reminder.medicineName}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child:  Text('CANCEL', style: TextStyle(color: colorScheme.primary)),
+            child:  Text(local.cancel, style: TextStyle(color: colorScheme.primary)),
           ),
           TextButton(
             onPressed: () async {
@@ -190,7 +195,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
               await _reminderService.deleteMedicationReminder(reminder.id);
               _loadReminders();
             },
-            child:  Text('DELETE', style: TextStyle(color: colorScheme.tertiary)),
+            child:  Text(local.delete, style: TextStyle(color: colorScheme.tertiary)),
           ),
         ],
       ),
@@ -201,6 +206,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
       {MedicationReminder? reminder}) async {
         final colorScheme = Theme.of(context).colorScheme;
         final textTheme = Theme.of(context).textTheme;
+    final local = Localizations.of(context, AppLocalizations);
     final TextEditingController medicineNameController = TextEditingController(
       text: reminder?.medicineName ?? '',
     );
@@ -239,8 +245,8 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
       ? colorScheme.background  
       : colorScheme.background,
               title: Text(reminder == null
-                  ? 'Add Medication Reminder'
-                  : 'Edit Medication Reminder'),
+                  ? local.addMedicationReminder
+                  : local.editMedicationReminder),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -249,7 +255,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                     TextField(
                       controller: medicineNameController,
                       decoration: InputDecoration(
-    labelText: 'Medication Name',
+    labelText: local.medicationName,
     prefixIcon: Icon(Icons.medication, color: colorScheme.tertiary),
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(color: colorScheme.tertiary, width: 1),
@@ -270,7 +276,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                     TextField(
                       controller: dosageController,
                       decoration: InputDecoration(
-    labelText: 'Dosage',
+    labelText: local.dosage,
     prefixIcon: Icon(Icons.medication, color: colorScheme.tertiary),
     focusedBorder: OutlineInputBorder(
       borderSide: BorderSide(color: colorScheme.tertiary, width: 1),
@@ -292,7 +298,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                       children: [
                          Icon(Icons.access_time, color: colorScheme.tertiary),
                         const SizedBox(width: 8),
-                         Text('Time:', style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
+                         Text(local.time, style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
                         const Spacer(),
                         TextButton(
                           onPressed: () async {
@@ -335,7 +341,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
-                      title: Text('Recurring Reminder', style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
+                      title: Text(local.recurringReminder, style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
                       activeColor: colorScheme.primary, // Thumb color when ON
   activeTrackColor: colorScheme.primary.withOpacity(0.5), // Track color when ON
   inactiveThumbColor: colorScheme.tertiary, // Thumb color when OFF (distinct but solid)
@@ -352,7 +358,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                         children: [
                            Icon(Icons.calendar_today, color:colorScheme.tertiary),
                           const SizedBox(width: 8),
-                           Text('Date:', style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
+                           Text(local.date, style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
                           const Spacer(),
                           TextButton(
                             onPressed: () async {
@@ -393,7 +399,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                       ),
                     if (isRecurring) ...[
                       const SizedBox(height: 16),
-                       Text('Repeat on days:', style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
+                       Text(local.repeatOnDays, style: TextStyle(fontSize: 16, color: colorScheme.tertiary)),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
@@ -432,22 +438,22 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child:  Text('CANCEL', style: TextStyle(color: colorScheme.tertiary)),
+                  child:  Text(local.cancel, style: TextStyle(color: colorScheme.tertiary)),
                 ),
                 TextButton(
                   onPressed: () async {
                     if (medicineNameController.text.trim().isEmpty ||
                         dosageController.text.trim().isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please fill all fields')),
+                         SnackBar(content: Text(local.pleaseFillAllFields)),
                       );
                       return;
                     }
 
                     if (isRecurring && !daysSelected.contains(true)) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Please select at least one day')),
+                         SnackBar(
+                            content: Text(local.pleaseSelectAtLeastOneDay)),
                       );
                       return;
                     }
@@ -501,7 +507,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
 
                     _loadReminders();
                   },
-                  child: Text(reminder == null ? 'ADD' : 'UPDATE', style: TextStyle(color: colorScheme.primary),)
+                  child: Text(reminder == null ? local.add : local.update, style: TextStyle(color: colorScheme.primary),)
                 ),
               ],
             );
