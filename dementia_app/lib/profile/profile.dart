@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytestapp/services/auth.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -117,11 +119,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget buildLogList() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final local = Localizations.of(context, AppLocalizations)!;
     if (role == 'caregiver' && linkedPatientId == null) {
-      return const Center(
+      return  Center(
         child: Text(
-          'No patient connected',
-          style: TextStyle(color: Colors.white),
+          local.noPatientConnected,
+          style: TextStyle(color: colorScheme.onPrimary),
         ),
       );
     }
@@ -136,8 +140,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .snapshots(includeMetadataChanges: true),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.white),
+          return  Center(
+            child: CircularProgressIndicator(color: colorScheme.onPrimary),
           );
         }
 
@@ -145,16 +149,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return Center(
             child: Text(
               'Error: ${snapshot.error}',
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: colorScheme.onPrimary),
             ),
           );
         }
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return Center(
-            child: const Text(
-              'No logs available.',
-              style: TextStyle(color: Colors.white),
+            child: Text(
+              local.noLogsAvailable,
+              style: TextStyle(color: colorScheme.onPrimary),
             ),
           );
         }
@@ -166,13 +170,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.history_toggle_off, size: 48, color: Colors.white),
+                Icon(Icons.history_toggle_off, size: 48, color: colorScheme.onPrimary),
                 const SizedBox(height: 16),
-                const Text(
-                  "No activities logged yet",
+                 Text(
+                  local.noActivitiesLoggedYet,
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -190,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: colorScheme.background,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Colors.white24),
               ),
@@ -199,17 +203,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 title: Text(
                   log['message'] ?? 'No details available',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                     height: 1.4,
                   ),
                 ),
                 trailing: Text(
                   formatTimestamp(log['timestamp']),
-                  style: const TextStyle(
+                  style:  TextStyle(
                     fontSize: 12,
-                    color: Colors.white70,
+                    color: colorScheme.onPrimary,
                   ),
                 ),
               ),
@@ -222,23 +226,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Add this new widget for the activity summary
   Widget _buildActivitySummary() {
+    final local = Localizations.of(context, AppLocalizations)!;
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Expanded(
           child: _buildSummaryCard(
-            "Games Played",
+            local.gamesPlayed,
             "12",
             Icons.sports_esports_rounded,
-            const Color(0xFF4776E6),
+            colorScheme.primary,
+            colorScheme.onPrimary,
+            colorScheme.onPrimary
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _buildSummaryCard(
-            "Memory Notes",
+            local.memoryNotes,
             "8",
             Icons.note_alt_rounded,
-            const Color(0xFFFF512F),
+            colorScheme.tertiary,
+            colorScheme.background,
+            colorScheme.background,
           ),
         ),
       ],
@@ -246,7 +256,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildSummaryCard(
-      String title, String value, IconData icon, Color color) {
+      String title, String value, IconData icon, Color color, Color textColor, Color iconColor) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final local = Localizations.of(context, AppLocalizations)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -267,22 +279,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.white, size: 24),
+          Icon(icon, size: 24, color: iconColor),
           const SizedBox(height: 12),
           Text(
             value,
-            style: const TextStyle(
+            style:  TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: textColor,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             title,
             style: TextStyle(
-              fontSize: 14,
-              color: Colors.white.withOpacity(0.9),
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: textColor.withOpacity(0.8),
             ),
           ),
         ],
@@ -294,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       generatedOTP = generateOTP();
     });
-
+final local = Localizations.of(context, AppLocalizations)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user != null && role == 'patient') {
       try {
@@ -315,8 +328,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(response.statusCode == 200
-                ? 'OTP sent to caregiver!'
-                : 'Failed to send OTP to caregiver'),
+                ? local.otpSentToCaregiver
+                : local.failedToSendOTP),
             backgroundColor:
                 response.statusCode == 200 ? Colors.green : Colors.red,
             behavior: SnackBarBehavior.floating,
@@ -343,6 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> verifyCode() async {
     final user = FirebaseAuth.instance.currentUser;
     final otpEntered = _otpController.text.trim();
+    final local = Localizations.of(context, AppLocalizations)!;
 
     if (user != null && role == 'caregiver' && otpEntered.isNotEmpty) {
       try {
@@ -376,7 +390,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Connected to $linkedPatientName successfully!'),
+              content: Text('${local.connectedTo} $linkedPatientName ${local.successfully}'),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ),
@@ -385,8 +399,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _otpController.clear();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid code. Please try again.'),
+             SnackBar(
+              content: Text(local.invalidCode),
               backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
             ),
@@ -395,7 +409,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('${local.error} $e'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -406,46 +420,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations)!;
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: const Color(0xFF0F2027),
+      backgroundColor: colorScheme.background,
       extendBodyBehindAppBar: true, // Added this
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.black.withOpacity(0.5),
+        backgroundColor: colorScheme.background,
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(color: Colors.transparent),
+            child: Container(color: colorScheme.background),
           ),
         ),
-        title: const Text(
-          'My Profile',
+        title:  Text(
+          local.myProfile,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
-            color: Colors.white,
+            color: colorScheme.onPrimary,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout_rounded, color: Colors.white),
+            icon:  Icon(Icons.logout_rounded, color: colorScheme.onPrimary),
             onPressed: () async {
               await AuthService().signOut();
               Navigator.of(context)
                   .pushNamedAndRemoveUntil('/', (route) => false);
             },
-            tooltip: 'Logout',
+            tooltip: local.logout,
           ),
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
+        decoration:  BoxDecoration(
+          color: colorScheme.background,
+          /*gradient: LinearGradient(
             colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-          ),
+          ),*/
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -457,21 +474,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.white.withOpacity(0.1),
-                        Colors.white.withOpacity(0.05),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    color: colorScheme.background,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: colorScheme.onPrimary.withOpacity(0.2),
                         blurRadius: 15,
-                        offset: const Offset(0, 8),
+                        offset: const Offset(1, 6),
                       ),
                     ],
                   ),
@@ -482,10 +492,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 70,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
+                          border: Border.all(color: colorScheme.background, width: 2),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: colorScheme.onPrimary.withOpacity(0.2),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),
@@ -509,18 +519,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Text(
                               userName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: colorScheme.onPrimary,
                               ),
                             ),
                             SizedBox(height: 4),
                             Text(
-                              role == 'patient' ? 'Patient' : 'Caregiver',
+                              role == 'patient' ? local.patient : local.caregiver,
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.white.withOpacity(0.9),
+                                color: colorScheme.onPrimary.withOpacity(0.8),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -529,7 +539,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               FirebaseAuth.instance.currentUser?.email ?? "",
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.8),
+                                color: colorScheme.onPrimary.withOpacity(0.6),
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -546,19 +556,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      color: colorScheme.background,
+                      /*gradient: LinearGradient(
                         colors: [
                           Colors.white.withOpacity(0.1),
                           Colors.white.withOpacity(0.05),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                      ),
+                      ),*/
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white24),
+                      //border: Border.all(color: colorScheme.onPrimary.withOpacity(0.2)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: colorScheme.onPrimary.withOpacity(0.2),
                           blurRadius: 15,
                           offset: const Offset(0, 8),
                         ),
@@ -568,20 +579,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Connect with a Caregiver",
+                          local.connectWithCaregiver,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                             letterSpacing: 0.5,
                           ),
                         ),
                         SizedBox(height: 12),
                         Text(
-                          "Share a one-time code with your caregiver to establish a secure connection.",
+                          local.shareCodeWithCaregiver,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white70,
+                            color: colorScheme.onPrimary.withOpacity(0.8),
                           ),
                         ),
                         SizedBox(height: 20),
@@ -589,8 +600,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onPressed: sendCode,
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.onPrimary,
                             padding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 20),
                             shape: RoundedRectangleBorder(
@@ -606,10 +617,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SizedBox(width: 8),
                               Flexible(
                                 child: Text(
-                                  "Generate Connection Code",
+                                  local.generateCodeConnection,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    color: colorScheme.onPrimary,
                                   ),
                                   textAlign: TextAlign.center,
                                   overflow: TextOverflow.visible,
@@ -624,13 +636,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Container(
                             padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.blue[50],
+                              color: colorScheme.tertiary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.blue[200]!),
+                              border: Border.all(color: colorScheme.tertiary.withOpacity(0.2)!),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.info_outline, color: Colors.blue),
+                                Icon(Icons.info_outline, color:colorScheme.tertiary, size: 32),
                                 SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
@@ -638,10 +650,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Your code is:",
+                                        local.yourCodeIs,
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: Colors.blue[800],
+                                          color: colorScheme.tertiary,
                                         ),
                                       ),
                                       SizedBox(height: 4),
@@ -650,16 +662,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.blue[800],
+                                          color: colorScheme.tertiary,
                                           letterSpacing: 2,
                                         ),
                                       ),
                                       SizedBox(height: 4),
                                       Text(
-                                        "Share this code with your caregiver",
+                                        local.shareThisCodeWithCaregiver,
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: Colors.blue[800],
+                                          color: colorScheme.onPrimary,
                                         ),
                                       ),
                                     ],
@@ -676,19 +688,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      color: colorScheme.background,
+                      /*gradient: LinearGradient(
                         colors: [
                           Colors.white.withOpacity(0.1),
                           Colors.white.withOpacity(0.05),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                      ),
+                      ),*/
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white24),
+                      //border: Border.all(color: colorScheme.onPrimary.withOpacity(0.2)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: colorScheme.onPrimary.withOpacity(0.2),
                           blurRadius: 15,
                           offset: const Offset(0, 8),
                         ),
@@ -698,32 +711,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Connect with a Patient",
+                          local.connectWithPatient,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                             letterSpacing: 0.5,
                           ),
                         ),
                         SizedBox(height: 12),
                         Text(
-                          "Enter the one-time code provided by your patient to establish a secure connection.",
+                          local.enterCodeFromPatient,
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.white70,
+                            color: colorScheme.onPrimary.withOpacity(0.8),
                           ),
                         ),
                         SizedBox(height: 20),
                         TextField(
                           controller: _otpController,
                           decoration: InputDecoration(
-                            hintText: 'Enter patient code',
-                            hintStyle: TextStyle(color: Colors.grey[600]),
+                            hintText: local.enterPatientCode,
+                            hintStyle: TextStyle(color: colorScheme.onPrimary.withOpacity(0.6)),
                             prefixIcon: Icon(Icons.vpn_key_outlined,
-                                color: Theme.of(context).primaryColor),
+                                color: colorScheme.primary),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: colorScheme.background,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -731,17 +744,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
+                                color: colorScheme.primary,
                                 width: 2,
                               ),
                             ),
                             contentPadding:
                                 const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          style: const TextStyle(
+                          style:  TextStyle(
                             fontSize: 18,
                             letterSpacing: 1.5,
-                            color: Colors.black87,
+                            color: colorScheme.onPrimary,
                             fontWeight: FontWeight.w600,
                           ),
                           textAlign: TextAlign.center,
@@ -752,8 +765,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onPressed: verifyCode,
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.background,
                             padding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 20),
                             shape: RoundedRectangleBorder(
@@ -767,7 +780,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Icon(Icons.check_circle_outline),
                               SizedBox(width: 8),
                               Text(
-                                "Verify Code",
+                                local.verifyCode,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -785,33 +798,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      color: colorScheme.background,
+                      /*gradient: LinearGradient(
                         colors: [
                           Colors.white.withOpacity(0.1),
                           Colors.white.withOpacity(0.05),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                      ),
+                      ),*/
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white24),
+                      //border: Border.all(color: colorScheme.onPrimary.withOpacity(0.2)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: colorScheme.onPrimary.withOpacity(0.2),
                           blurRadius: 15,
-                          offset: const Offset(0, 8),
+                          offset: const Offset(1, 6),
                         ),
                       ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Patient Activity",
+                         Text(
+                          local.patientActivity,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                             letterSpacing: 0.5,
                           ),
                         ),

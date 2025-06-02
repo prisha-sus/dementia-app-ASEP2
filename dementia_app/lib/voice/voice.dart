@@ -6,6 +6,9 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/timezone.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class VoiceScreen extends StatefulWidget {
   const VoiceScreen({super.key});
@@ -132,9 +135,10 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
 
   Future<void> _requestMicrophonePermission() async {
     final status = await Permission.microphone.request();
+    final local = Localizations.of(context, AppLocalizations);
     if (status != PermissionStatus.granted) {
-      setState(() => _statusMessage = 'Microphone permission required');
-      throw Exception('Microphone permission denied');
+      setState(() => _statusMessage = local.microphonePermissionRequired);
+      throw Exception(local.microphonePermissionDenied);
     }
   }
 
@@ -202,6 +206,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
 
   void _startListening() {
     if (_speechAvailable && !_isListening && mounted) {
+      final local = Localizations.of(context, AppLocalizations);
       _speech.listen(
         onResult: _onSpeechResult,
         listenOptions: stt.SpeechListenOptions(
@@ -216,17 +221,18 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
       );
       setState(() {
         _isListening = true;
-        _statusMessage = 'Listening...';
+        _statusMessage = local.listening;
       });
     }
   }
 
   void _stopListening() {
     if (_isListening) {
+      final local = Localizations.of(context, AppLocalizations);
       _speech.stop();
       setState(() {
         _isListening = false;
-        _statusMessage = 'Stopped listening';
+        _statusMessage = local.stoppedListening;
       });
     }
   }
@@ -306,8 +312,9 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
         await _speakResponse(defaultResponse, detected);
       }
     } catch (e) {
+      final local = Localizations.of(context, AppLocalizations);
       print('Error processing text: $e');
-      setState(() => _response = 'Sorry, I had trouble understanding. Please try again.');
+      setState(() => _response = local.sorryTroubleUnderstanding);
     }
   }
 
@@ -386,10 +393,13 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final local = Localizations.of(context, AppLocalizations);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Voice Assistant"),
-        backgroundColor: Colors.blue.shade700,
+        title: Text(local.voiceAssitant),
+        backgroundColor: colorScheme.primary,
         elevation: 0,
         actions: [
           IconButton(
@@ -403,7 +413,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue.shade700, Colors.blue.shade300],
+            colors: [colorScheme.primary,colorScheme.secondary.withOpacity(0.8)],
           ),
         ),
         child: SafeArea(
@@ -415,11 +425,11 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                 padding: EdgeInsets.all(16),
                 margin: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: colorScheme.background,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black26,
+                      color: colorScheme.onPrimary.withOpacity(0.2),
                       blurRadius: 4,
                       offset: Offset(0, 2),
                     ),
@@ -432,7 +442,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                       children: [
                         Icon(
                           _isListening ? Icons.mic : Icons.mic_off,
-                          color: _isListening ? Colors.red : Colors.grey,
+                          color: _isListening ? colorScheme.tertiary : colorScheme.onPrimary.withOpacity(0.6),
                           size: 32,
                         ),
                         SizedBox(width: 8),
@@ -441,7 +451,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: colorScheme.onPrimary,
                           ),
                         ),
                       ],
@@ -449,10 +459,10 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                     if (_detectedLanguage.isNotEmpty) ...[
                       SizedBox(height: 8),
                       Text(
-                        'Language: ${_getLanguageName(_detectedLanguage)}',
+                        '${local.language} ${_getLanguageName(_detectedLanguage)}',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black54,
+                          color: colorScheme.onPrimary.withOpacity(0.8),
                         ),
                       ),
                     ],
@@ -467,18 +477,18 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                   padding: EdgeInsets.all(16),
                   margin: EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: colorScheme.background,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'You said:',
+                        local.youSaid,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
+                          color: colorScheme.tertiary,
                         ),
                       ),
                       SizedBox(height: 4),
@@ -486,7 +496,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                         _recognizedText,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.black87,
+                          color: colorScheme.onPrimary,
                         ),
                       ),
                     ],
@@ -500,19 +510,19 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                   padding: EdgeInsets.all(16),
                   margin: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade50,
+                    color: colorScheme.background,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.green.shade200),
+                    border: Border.all(color: colorScheme.surface.withOpacity(0.5)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Response:',
+                        local.response,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: Colors.green.shade700,
+                          color: colorScheme.tertiary,
                         ),
                       ),
                       SizedBox(height: 4),
@@ -520,7 +530,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                         _response,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.black87,
+                          color: colorScheme.onPrimary,
                           height: 1.4,
                         ),
                       ),
@@ -533,7 +543,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                 child: Container(
                   margin: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: colorScheme.background,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -542,11 +552,11 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                       Padding(
                         padding: EdgeInsets.all(16),
                         child: Text(
-                          'Conversation History',
+                          local.conversationHistory,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: colorScheme.onPrimary,
                           ),
                         ),
                       ),
@@ -561,14 +571,14 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                               margin: EdgeInsets.only(bottom: 8),
                               padding: EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: isUser ? Colors.blue.shade50 : Colors.green.shade50,
+                                color: isUser ? colorScheme.tertiary.withOpacity(0.2): colorScheme.surface.withOpacity(0.5),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 message,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.black87,
+                                  color: colorScheme.onPrimary,
                                 ),
                               ),
                             );
@@ -589,10 +599,10 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                     ElevatedButton.icon(
                       onPressed: _isListening ? _stopListening : _startListening,
                       icon: Icon(_isListening ? Icons.stop : Icons.mic),
-                      label: Text(_isListening ? 'Stop' : 'Start'),
+                      label: Text(_isListening ? local.stop : local.start),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _isListening ? Colors.red : Colors.green,
-                        foregroundColor: Colors.white,
+                        backgroundColor: _isListening ? colorScheme.tertiary: colorScheme.surface,
+                        foregroundColor: _isListening ? colorScheme.background : colorScheme.onPrimary,
                         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       ),
                     ),
@@ -605,10 +615,10 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                         });
                       },
                       icon: Icon(Icons.clear),
-                      label: Text('Clear'),
+                      label: Text(local.clear),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                        foregroundColor: Colors.white,
+                        backgroundColor: colorScheme.background,
+                        foregroundColor: colorScheme.tertiary,
                         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       ),
                     ),

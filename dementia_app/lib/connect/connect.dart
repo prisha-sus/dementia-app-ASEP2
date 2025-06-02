@@ -6,6 +6,11 @@ import 'package:mytestapp/services/auth.dart';
 import 'package:mytestapp/main.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:timezone/timezone.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
+
+
 
 class ConnectScreen extends StatelessWidget {
   const ConnectScreen({super.key});
@@ -27,14 +32,15 @@ class ConnectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations);
     return StreamBuilder<User?>(
       stream: AuthService().userStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return const Center(
-              child: Text("Error occurred while fetching user data."));
+          return Center(
+              child: Text(local.errorFetchingUserData));
         } else if (snapshot.hasData) {
           final user = snapshot.data;
           if (user != null && user.uid.isNotEmpty) {
@@ -44,10 +50,10 @@ class ConnectScreen extends StatelessWidget {
                 if (roleSnapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (roleSnapshot.hasError) {
-                  return const Center(child: Text("Failed to load role"));
+                  return  Center(child: Text(local.failedToLoadRole));
                 } else {
                   String role = roleSnapshot.data ?? 'No Role';
-                  String displayName = user.displayName ?? 'Unknown User';
+                  String displayName = user.displayName ?? local.unknownUser;
                   String? photoURL = user.photoURL;
 
                   final theme = Theme.of(context);
@@ -116,25 +122,25 @@ class ConnectScreen extends StatelessWidget {
         const SizedBox(height: 20),
         _buildDrawerItem(
           icon: Icons.dashboard_rounded,
-          title: 'Dashboard',
+          title: local.dashboard,
           onTap: () => Navigator.of(context).pop(),
         ),
         const SizedBox(height: 20),
         _buildDrawerItem(
           icon: Icons.trending_up_rounded,
-          title: 'Analytics',
+          title: local.analytics,
           onTap: () {},
         ),
         const SizedBox(height: 20),
         _buildDrawerItem(
           icon: Icons.notifications_rounded,
-          title: 'Notifications',
+          title: local.notifications,
           onTap: () {},
         ),
         const SizedBox(height: 20),
         _buildDrawerItem(
           icon: Icons.settings_rounded,
-          title: 'Settings',
+          title: local.settings,
           onTap: () {},
         ),
         const SizedBox(height: 100),
@@ -146,13 +152,13 @@ class ConnectScreen extends StatelessWidget {
         ),
         _buildDrawerItem(
           icon: Icons.help_outline_rounded,
-          title: 'Help & Support',
+          title: local.helpSupport,
           onTap: () {},
         ),
         const SizedBox(height: 20),
         _buildDrawerItem(
           icon: Icons.logout_rounded,
-          title: 'Logout',
+          title: local.logout,
           onTap: () async {
             await FirebaseAuth.instance.signOut();
             Navigator.pushReplacementNamed(context, '/');
@@ -164,8 +170,8 @@ class ConnectScreen extends StatelessWidget {
 ),
 
                     appBar: AppBar(
-                      title: const Text(
-                        "Welcome",
+                      title:  Text(
+                        local.welcome,
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -211,7 +217,51 @@ class ConnectScreen extends StatelessWidget {
                           padding: const EdgeInsets.only(
                               top: 10, left: 20, right: 20, bottom: 20),
                           physics: const BouncingScrollPhysics(),
-                          children: [
+                            children: [
+                            Container(
+                              decoration: BoxDecoration(
+                              color: colorScheme.background, // Change this to your desired background color
+                              borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              child: DropdownButton<Locale>(
+                              value: Localizations.localeOf(context),
+                              dropdownColor: colorScheme.background, // Dropdown menu background
+                              onChanged: (Locale? newLocale) {
+                                if (newLocale != null) {
+                                App.setLocale(context, newLocale);
+                                }
+                              },
+                              underline: SizedBox(), // Removes the default underline
+                              items:  [
+                                DropdownMenuItem(
+                                value: Locale('en'),
+                                child: Text(
+                                  'English',
+                                  style: TextStyle(
+                                  color: colorScheme.onBackground,
+                                  ),
+                                ),
+            
+                                ),
+                                DropdownMenuItem(
+                                value: Locale('hi'),
+                                child: Text('हिंदी',
+                                style: TextStyle(
+                                  color: colorScheme.onBackground,
+                                  ),),
+                                ),
+                                DropdownMenuItem(
+                                value: Locale('mr'),
+                                child: Text('मराठी',
+                                style: TextStyle(
+                                  color: colorScheme.onBackground,
+                                  ),),
+                                ),
+                              ],
+                              ),
+                            ),
+
                             // User Profile Card
                             Padding(
                               padding: const EdgeInsets.only(bottom: 20),
@@ -335,7 +385,7 @@ class ConnectScreen extends StatelessWidget {
                              Padding(
                               padding: EdgeInsets.only(left: 5, bottom: 15),
                               child: Text(
-                                "Quick Access",
+                                local.quickAccess,
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -356,9 +406,9 @@ class ConnectScreen extends StatelessWidget {
                               children: [
                                 _buildFeatureButton(
                                   context,
-                                  label: 'Games',
-                                  description: 'Play brain games',
-                                  textColor: colorScheme.surface,
+                                  label: local.games,
+                                  description: local.gamesDescription,
+                                  textColor: colorScheme.background,
                                   icon: Icons.sports_esports_rounded,
                                   /*gradientStart: const Color(0xFF4776E6),
                                   gradientEnd: const Color(0xFF8E54E9),*/
@@ -368,8 +418,8 @@ class ConnectScreen extends StatelessWidget {
                                 ),
                                 _buildFeatureButton(
                                   context,
-                                  label: 'Medicine Reminders',
-                                  description: '',// 'Remember your medicines!',
+                                  label: local.medicineReminders,
+                                  description: local.medicineRemindersDescription,// 'Remember your medicines!',
                                   textColor: colorScheme.onBackground,
                                   icon: Icons.medical_services_rounded,
                                   color: colorScheme.primary,
@@ -378,9 +428,9 @@ class ConnectScreen extends StatelessWidget {
                                 ),
                                 _buildFeatureButton(
                                   context,
-                                  label: 'Memory Aid',
-                                  description: 'Remember important things',
-                                  textColor: colorScheme.onSurface,
+                                  label: local.memoryAid,
+                                  description: local.memoryAidDescription,// 'Use memory aids to help you remember things',
+                                  textColor: colorScheme.onBackground,
                                   icon: Icons.psychology_rounded,
                                   color: colorScheme.primary,
                                   route: '/memoryAid',
@@ -388,8 +438,8 @@ class ConnectScreen extends StatelessWidget {
                                 ),
                                 _buildFeatureButton(
                                   context,
-                                  label: 'Chatbot',
-                                  description: 'Chat with your friendly bot',
+                                  label: local.chatbot,
+                                  description: local.chatbotDescription,// 'Chat with our AI assistant for support',
                                   textColor: colorScheme.background,
                                   icon: Icons.volunteer_activism_rounded,
                                   color: colorScheme.tertiary,
@@ -435,10 +485,10 @@ class ConnectScreen extends StatelessWidget {
               },
             );
           } else {
-            return const Center(child: Text("User data is missing."));
+            return  Center(child: Text(local.userDataMissing));
           }
         } else {
-          return const Center(child: Text("No user found. Please login."));
+          return  Center(child: Text(local.noUserFound));
         }
       },
     );

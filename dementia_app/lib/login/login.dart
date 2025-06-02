@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mytestapp/services/auth.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -10,6 +12,7 @@ class LoginScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
+    final local = Localizations.of(context, AppLocalizations);
     return Scaffold(
         body: Container(
            color: theme.scaffoldBackgroundColor,
@@ -30,7 +33,7 @@ children: [
         SizedBox(
           width: 260, // Set your desired width here
           child: LoginButton(
-            text: "Continue as Guest",
+            text: local.continueAsGuest,
             icon: FontAwesomeIcons.userNinja,
             color: colorScheme.tertiary,
             textColor: colorScheme.surface,
@@ -47,7 +50,7 @@ children: [
       SizedBox(
         width: 260,
         child: LoginButton(
-          text: "Sign in with Google",
+          text: local.signInWithGoogle,
           icon: FontAwesomeIcons.google,
           color: colorScheme.primary,
           textColor: colorScheme.onPrimary,
@@ -63,7 +66,7 @@ children: [
       SizedBox(
         width: 260,
         child: LoginButton(
-          text: "Sign in with Apple",
+          text: local.signInWithApple,
           icon: FontAwesomeIcons.apple,
           color: colorScheme.secondary,
           textColor: colorScheme.onSecondary,

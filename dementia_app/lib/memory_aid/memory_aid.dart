@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 // Add your ImgBB API key here - you'll need to register at https://api.imgbb.com/
 const String IMGBB_API_KEY = 'ae07899cbeb3f0f95743db787f6b613e';
@@ -21,8 +23,9 @@ void main() async {
 class FamilyTreeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations);
     return MaterialApp(
-      title: 'Family Tree',
+      title: local.familyTree,
       theme: ThemeData(
         primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -159,6 +162,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
   }
 
   Future<void> _addFamilyMember() async {
+    final local = Localizations.of(context, AppLocalizations);
     final pickedImage = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
@@ -174,7 +178,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Add Family Member"),
+        title: Text(local.addFamilyMember),
         content: StatefulBuilder(
           builder: (context, setStateDialog) {
             return SingleChildScrollView(
@@ -187,73 +191,25 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
                   ),
                   SizedBox(height: 16),
                   TextField(
-                    decoration: InputDecoration(
-                      labelText: "Name",
-                      border: OutlineInputBorder(),
-                    ),
+                    decoration: InputDecoration(labelText: local.name),
                     onChanged: (value) => name = value,
                   ),
                   SizedBox(height: 12),
                   TextField(
-                    decoration: InputDecoration(
-                      labelText: "Relation",
-                      border: OutlineInputBorder(),
-                    ),
+                    decoration: InputDecoration(labelText: local.relation),
                     onChanged: (value) => relation = value,
                   ),
                   SizedBox(height: 16),
                   if (members.isNotEmpty) ...[
-                    Text("Select Parent (Optional)", 
-                         style: TextStyle(fontWeight: FontWeight.bold)),
-                    SizedBox(height: 8),
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          hint: Padding(
-                            padding: EdgeInsets.all(12),
-                            child: Text("Select Parent"),
-                          ),
-                          value: parentId,
-                          isExpanded: true,
-                          items: [
-                            DropdownMenuItem<String>(
-                              value: null,
-                              child: Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Text("No Parent (Root Level)"),
-                              ),
-                            ),
-                            ...members.map((member) {
-                              return DropdownMenuItem<String>(
-                                value: member.id,
-                                child: Padding(
-                                  padding: EdgeInsets.all(12),
-                                  child: Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 15,
-                                        backgroundImage: NetworkImage(member.imageUrl),
-                                      ),
-                                      SizedBox(width: 8),
-                                      Expanded(
-                                        child: Text('${member.name} (${member.relation})'),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }),
-                          ],
-                          onChanged: (value) {
-                            setStateDialog(() {
-                              parentId = value;
-                            });
-                          },
+                    Text(local.selectParentOptional),
+                    DropdownButton<String>(
+                      hint: Text(local.selectParent),
+                      value: parentId,
+                      isExpanded: true,
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: null,
+                          child: Text(local.noParent),
                         ),
                       ),
                     ),
@@ -266,7 +222,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text("Cancel"),
+            child: Text(local.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -275,11 +231,11 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
                 await _saveNewMember(name, relation, imageFile, parentId);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Please fill in all fields")),
+                  SnackBar(content: Text(local.pleaseFillInAllFields)),
                 );
               }
             },
-            child: Text("Add"),
+            child: Text(local.add),
           ),
         ],
       ),
@@ -351,6 +307,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
 
       // Generate a unique ID for the new family member
       final memberId = Uuid().v4();
+      final local = Localizations.of(context, AppLocalizations);
 
       print('Uploading image to ImgBB...');
       final imageUrl = await _uploadImageToImgBB(imageFile);
@@ -381,12 +338,13 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Family member added successfully')),
+        SnackBar(content: Text(local.familyMemberAdded)),
       );
     } catch (e, st) {
+      final local = Localizations.of(context, AppLocalizations);
       // Show error message and print stacktrace
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add family member: $e')),
+        SnackBar(content: Text('${local.failedToAddFamilyMember} $e')),
       );
       print('Error adding family member: $e');
       print('Stack trace: $st');
@@ -605,9 +563,10 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Family Tree'),
+        title: Text(local.familyTree),
         actions: [
           IconButton(
             icon: Icon(_showListView ? Icons.account_tree : Icons.list),
@@ -629,9 +588,171 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : _showListView
-              ? _buildListView()
-              : _buildTreeView(),
+          : members.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.family_restroom, size: 80, color: Colors.grey),
+                      SizedBox(height: 16),
+                      Text(
+                        local.noFamilyMembersYet,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                )
+              : FamilyTreeView(members: members),
+    );
+  }
+}
+
+class FamilyTreeView extends StatefulWidget {
+  final List<FamilyMember> members;
+  
+  const FamilyTreeView({super.key, required this.members});
+
+  @override
+  _FamilyTreeViewState createState() => _FamilyTreeViewState();
+}
+
+class _FamilyTreeViewState extends State<FamilyTreeView> {
+  late Graph graph;
+  late Algorithm algorithm;
+  final TransformationController _transformationController = TransformationController();
+  
+  @override
+  void initState() {
+    super.initState();
+    graph = Graph()..isTree = true;
+    
+    var builder = BuchheimWalkerConfiguration()
+      ..siblingSeparation = (100)
+      ..levelSeparation = (150)
+      ..subtreeSeparation = (150)
+      ..orientation = BuchheimWalkerConfiguration.ORIENTATION_TOP_BOTTOM;
+      
+    algorithm = BuchheimWalkerAlgorithm(
+      builder, 
+      TreeEdgeRenderer(builder)
+    );
+    
+    _buildGraph();
+  }
+  
+  void _buildGraph() {
+    // First, find root nodes (members without parents or with non-existent parent IDs)
+    final rootMembers = widget.members.where((member) {
+      if (member.parentId == null || member.parentId!.isEmpty) return true;
+      return !widget.members.any((m) => m.id == member.parentId);
+    }).toList();
+    
+    // If no root members, use first member as root
+    if (rootMembers.isEmpty && widget.members.isNotEmpty) {
+      rootMembers.add(widget.members.first);
+    }
+    
+    // Add root nodes to graph
+    for (final rootMember in rootMembers) {
+      final rootNode = Node.Id(rootMember.id);
+      graph.addNode(rootNode);
+      
+      // Add children recursively
+      _addChildrenToGraph(rootMember);
+    }
+  }
+  
+  void _addChildrenToGraph(FamilyMember parent) {
+    final parentNode = Node.Id(parent.id);
+    
+    // Find all children of this parent
+    final children = widget.members.where((member) => 
+      member.parentId != null && member.parentId == parent.id
+    ).toList();
+    
+    // Add children and edges to graph
+    for (final child in children) {
+      final childNode = Node.Id(child.id);
+      graph.addNode(childNode);
+      graph.addEdge(parentNode, childNode);
+      
+      // Recursively add this child's children
+      _addChildrenToGraph(child);
+    }
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return InteractiveViewer(
+      transformationController: _transformationController,
+      boundaryMargin: EdgeInsets.all(double.infinity),
+      minScale: 0.1,
+      maxScale: 2.5,
+      child: GraphView(
+        graph: graph,
+        algorithm: algorithm,
+        paint: Paint()
+          ..color = Colors.teal
+          ..strokeWidth = 2
+          ..style = PaintingStyle.stroke,
+        builder: (Node node) {
+          // Find the family member that corresponds to this node
+          final id = node.key!.value as String;
+          final member = widget.members.firstWhere((m) => m.id == id);
+          
+          return _buildFamilyMemberNode(member);
+        },
+      ),
+    );
+  }
+  
+  Widget _buildFamilyMemberNode(FamilyMember member) {
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      width: 150,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            backgroundImage: NetworkImage(member.imageUrl),
+            radius: 40,
+            onBackgroundImageError: (exception, stackTrace) {
+              print('Error loading image: $exception');
+            },
+          ),
+          SizedBox(height: 8),
+          Text(
+            member.name,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(height: 4),
+          Text(
+            member.relation,
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -8,6 +8,9 @@ import 'package:mytestapp/services/medicinealert.dart';
 import 'package:mytestapp/theme.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
+
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -354,11 +357,38 @@ void showNotification({required String title, required String body}) async {
   print("📲 Notification shown: $title - $body");
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
+
+  static void setLocale(BuildContext context, Locale newLocale) {
+    final _AppState? state = context.findAncestorStateOfType<_AppState>();
+    state?.setLocale(newLocale);
+  }
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  Locale? _locale;
+
+  void setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      locale: _locale,
       initialRoute: '/',
       routes: appRoutes,
       theme: appLightTheme,
@@ -368,6 +398,7 @@ class App extends StatelessWidget {
   }
 }
 
+
 class ErrorApp extends StatelessWidget {
   final String errorMessage;
   
@@ -375,6 +406,7 @@ class ErrorApp extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations);
     return MaterialApp(
       home: Scaffold(
         body: Center(
@@ -386,7 +418,7 @@ class ErrorApp extends StatelessWidget {
                 const Icon(Icons.error_outline, color: Colors.red, size: 64),
                 const SizedBox(height: 16),
                 Text(
-                  'Error',
+                  local.error,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 8),

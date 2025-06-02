@@ -3,12 +3,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class RoleScreen extends StatelessWidget {
   const RoleScreen({super.key});
 
   void setRole(String role, BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
+    final local = Localizations.of(context, AppLocalizations);
     if (user != null) {
       try {
         // Generate a public-facing ID
@@ -27,7 +29,7 @@ class RoleScreen extends StatelessWidget {
         Navigator.pushNamed(context, '/connect');
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text('${local.error} $e')),
         );
       }
     }
@@ -47,12 +49,13 @@ class RoleScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final local = Localizations.of(context, AppLocalizations);
 
    // ...existing code...
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Select Your Role',
+          local.selectYourRole,
           style: TextStyle(
             color: colorScheme.tertiary,
             fontWeight: FontWeight.bold,
@@ -91,7 +94,7 @@ class RoleScreen extends StatelessWidget {
                         size: 22,
                       ),
                       label: Text(
-                        "I'm a Patient",
+                        local.imAPatient,
                         style: textTheme.bodyLarge?.copyWith(
                           color: colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
@@ -120,7 +123,7 @@ class RoleScreen extends StatelessWidget {
                         size: 22,
                       ),
                       label: Text(
-                        "I'm a Caregiver",
+                        local.imACaregiver,
                         style: textTheme.bodyLarge?.copyWith(
                           color: colorScheme.surface,
                           fontWeight: FontWeight.bold,
