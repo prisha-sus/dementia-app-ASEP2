@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 // Add your ImgBB API key here - you'll need to register at https://api.imgbb.com/
 const String IMGBB_API_KEY = 'ae07899cbeb3f0f95743db787f6b613e';
@@ -21,8 +23,9 @@ void main() async {
 class FamilyTreeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations);
     return MaterialApp(
-      title: 'Family Tree',
+      title: local.familyTree,
       theme: ThemeData(
         primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -117,6 +120,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
   }
 
   Future<void> _addFamilyMember() async {
+    final local = Localizations.of(context, AppLocalizations);
     final pickedImage = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
@@ -133,7 +137,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Add Family Member"),
+        title: Text(local.addFamilyMember),
         content: StatefulBuilder(
           builder: (context, setStateDialog) {
             return SingleChildScrollView(
@@ -146,25 +150,25 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
                   ),
                   SizedBox(height: 16),
                   TextField(
-                    decoration: InputDecoration(labelText: "Name"),
+                    decoration: InputDecoration(labelText: local.name),
                     onChanged: (value) => name = value,
                   ),
                   SizedBox(height: 8),
                   TextField(
-                    decoration: InputDecoration(labelText: "Relation"),
+                    decoration: InputDecoration(labelText: local.relation),
                     onChanged: (value) => relation = value,
                   ),
                   SizedBox(height: 16),
                   if (members.isNotEmpty) ...[
-                    Text("Select Parent (Optional)"),
+                    Text(local.selectParentOptional),
                     DropdownButton<String>(
-                      hint: Text("Select Parent"),
+                      hint: Text(local.selectParent),
                       value: parentId,
                       isExpanded: true,
                       items: [
                         DropdownMenuItem<String>(
                           value: null,
-                          child: Text("No Parent"),
+                          child: Text(local.noParent),
                         ),
                         ...members.map((member) {
                           return DropdownMenuItem<String>(
@@ -188,7 +192,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text("Cancel"),
+            child: Text(local.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -197,11 +201,11 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
                 await _saveNewMember(name, relation, imageFile, parentId);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Please fill in all fields")),
+                  SnackBar(content: Text(local.pleaseFillInAllFields)),
                 );
               }
             },
-            child: Text("Add"),
+            child: Text(local.add),
           ),
         ],
       ),
@@ -302,6 +306,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
 
       // Generate a unique ID for the new family member
       final memberId = Uuid().v4();
+      final local = Localizations.of(context, AppLocalizations);
 
       // Debug prints
       print('userId: $userId');
@@ -338,12 +343,13 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Family member added successfully')),
+        SnackBar(content: Text(local.familyMemberAdded)),
       );
     } catch (e, st) {
+      final local = Localizations.of(context, AppLocalizations);
       // Show error message and print stacktrace
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add family member: $e')),
+        SnackBar(content: Text('${local.failedToAddFamilyMember} $e')),
       );
       print('Error adding family member: $e');
       print('Stack trace: $st');
@@ -356,9 +362,10 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Family Tree'),
+        title: Text(local.familyTree),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
@@ -376,7 +383,7 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
                       Icon(Icons.family_restroom, size: 80, color: Colors.grey),
                       SizedBox(height: 16),
                       Text(
-                        "No family members yet. Tap + to add.",
+                        local.noFamilyMembersYet,
                         style: TextStyle(fontSize: 16),
                       ),
                     ],

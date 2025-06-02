@@ -6,6 +6,9 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/timezone.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class VoiceScreen extends StatefulWidget {
   const VoiceScreen({super.key});
@@ -132,9 +135,10 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
 
   Future<void> _requestMicrophonePermission() async {
     final status = await Permission.microphone.request();
+    final local = Localizations.of(context, AppLocalizations);
     if (status != PermissionStatus.granted) {
-      setState(() => _statusMessage = 'Microphone permission required');
-      throw Exception('Microphone permission denied');
+      setState(() => _statusMessage = local.microphonePermissionRequired);
+      throw Exception(local.microphonePermissionDenied);
     }
   }
 
@@ -202,6 +206,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
 
   void _startListening() {
     if (_speechAvailable && !_isListening && mounted) {
+      final local = Localizations.of(context, AppLocalizations);
       _speech.listen(
         onResult: _onSpeechResult,
         listenOptions: stt.SpeechListenOptions(
@@ -216,17 +221,18 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
       );
       setState(() {
         _isListening = true;
-        _statusMessage = 'Listening...';
+        _statusMessage = local.listening;
       });
     }
   }
 
   void _stopListening() {
     if (_isListening) {
+      final local = Localizations.of(context, AppLocalizations);
       _speech.stop();
       setState(() {
         _isListening = false;
-        _statusMessage = 'Stopped listening';
+        _statusMessage = local.stoppedListening;
       });
     }
   }
@@ -306,8 +312,9 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
         await _speakResponse(defaultResponse, detected);
       }
     } catch (e) {
+      final local = Localizations.of(context, AppLocalizations);
       print('Error processing text: $e');
-      setState(() => _response = 'Sorry, I had trouble understanding. Please try again.');
+      setState(() => _response = local.sorryTroubleUnderstanding);
     }
   }
 
@@ -384,9 +391,10 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final local = Localizations.of(context, AppLocalizations);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Voice Assistant"),
+        title: Text(local.voiceAssitant),
         backgroundColor: colorScheme.primary,
         elevation: 0,
         actions: [
@@ -447,7 +455,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                     if (_detectedLanguage.isNotEmpty) ...[
                       SizedBox(height: 8),
                       Text(
-                        'Language: ${_getLanguageName(_detectedLanguage)}',
+                        '${local.language} ${_getLanguageName(_detectedLanguage)}',
                         style: TextStyle(
                           fontSize: 14,
                           color: colorScheme.onPrimary.withOpacity(0.8),
@@ -472,7 +480,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'You said:',
+                        local.youSaid,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -506,7 +514,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Response:',
+                        local.response,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -540,7 +548,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                       Padding(
                         padding: EdgeInsets.all(16),
                         child: Text(
-                          'Conversation History',
+                          local.conversationHistory,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -587,7 +595,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                     ElevatedButton.icon(
                       onPressed: _isListening ? _stopListening : _startListening,
                       icon: Icon(_isListening ? Icons.stop : Icons.mic),
-                      label: Text(_isListening ? 'Stop' : 'Start'),
+                      label: Text(_isListening ? local.stop : local.start),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _isListening ? colorScheme.tertiary: colorScheme.surface,
                         foregroundColor: _isListening ? colorScheme.background : colorScheme.onPrimary,
@@ -603,7 +611,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                         });
                       },
                       icon: Icon(Icons.clear),
-                      label: Text('Clear'),
+                      label: Text(local.clear),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.background,
                         foregroundColor: colorScheme.tertiary,

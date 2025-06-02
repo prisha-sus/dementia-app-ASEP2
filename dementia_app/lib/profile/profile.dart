@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytestapp/services/auth.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -118,10 +120,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget buildLogList() {
     final colorScheme = Theme.of(context).colorScheme;
+    final local = Localizations.of(context, AppLocalizations)!;
     if (role == 'caregiver' && linkedPatientId == null) {
       return  Center(
         child: Text(
-          'No patient connected',
+          local.noPatientConnected,
           style: TextStyle(color: colorScheme.onPrimary),
         ),
       );
@@ -154,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return Center(
             child: Text(
-              'No logs available.',
+              local.noLogsAvailable,
               style: TextStyle(color: colorScheme.onPrimary),
             ),
           );
@@ -170,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Icon(Icons.history_toggle_off, size: 48, color: colorScheme.onPrimary),
                 const SizedBox(height: 16),
                  Text(
-                  "No activities logged yet",
+                  local.noActivitiesLoggedYet,
                   style: TextStyle(
                     fontSize: 16,
                     color: colorScheme.onPrimary,
@@ -223,12 +226,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Add this new widget for the activity summary
   Widget _buildActivitySummary() {
+    final local = Localizations.of(context, AppLocalizations)!;
     final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Expanded(
           child: _buildSummaryCard(
-            "Games Played",
+            local.gamesPlayed,
             "12",
             Icons.sports_esports_rounded,
             colorScheme.primary,
@@ -239,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: _buildSummaryCard(
-            "Memory Notes",
+            local.memoryNotes,
             "8",
             Icons.note_alt_rounded,
             colorScheme.tertiary,
@@ -254,6 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildSummaryCard(
       String title, String value, IconData icon, Color color, Color textColor, Color iconColor) {
     final colorScheme = Theme.of(context).colorScheme;
+    final local = Localizations.of(context, AppLocalizations)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -302,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       generatedOTP = generateOTP();
     });
-
+final local = Localizations.of(context, AppLocalizations)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user != null && role == 'patient') {
       try {
@@ -323,8 +328,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(response.statusCode == 200
-                ? 'OTP sent to caregiver!'
-                : 'Failed to send OTP to caregiver'),
+                ? local.otpSentToCaregiver
+                : local.failedToSendOTP),
             backgroundColor:
                 response.statusCode == 200 ? Colors.green : Colors.red,
             behavior: SnackBarBehavior.floating,
@@ -351,6 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> verifyCode() async {
     final user = FirebaseAuth.instance.currentUser;
     final otpEntered = _otpController.text.trim();
+    final local = Localizations.of(context, AppLocalizations)!;
 
     if (user != null && role == 'caregiver' && otpEntered.isNotEmpty) {
       try {
@@ -384,7 +390,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Connected to $linkedPatientName successfully!'),
+              content: Text('${local.connectedTo} $linkedPatientName ${local.successfully}'),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ),
@@ -393,8 +399,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _otpController.clear();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid code. Please try again.'),
+             SnackBar(
+              content: Text(local.invalidCode),
               backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
             ),
@@ -403,7 +409,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: Text('${local.error} $e'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -414,6 +420,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations)!;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -428,7 +435,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         title:  Text(
-          'My Profile',
+          local.myProfile,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
@@ -444,7 +451,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Navigator.of(context)
                   .pushNamedAndRemoveUntil('/', (route) => false);
             },
-            tooltip: 'Logout',
+            tooltip: local.logout,
           ),
         ],
       ),
@@ -520,7 +527,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              role == 'patient' ? 'Patient' : 'Caregiver',
+                              role == 'patient' ? local.patient : local.caregiver,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: colorScheme.onPrimary.withOpacity(0.8),
@@ -572,7 +579,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Connect with a Caregiver",
+                          local.connectWithCaregiver,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -582,7 +589,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(height: 12),
                         Text(
-                          "Share a one-time code with your caregiver to establish a secure connection.",
+                          local.shareCodeWithCaregiver,
                           style: TextStyle(
                             fontSize: 14,
                             color: colorScheme.onPrimary.withOpacity(0.8),
@@ -610,7 +617,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SizedBox(width: 8),
                               Flexible(
                                 child: Text(
-                                  "Generate Connection Code",
+                                  local.generateCodeConnection,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -643,7 +650,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Your code is:",
+                                        local.yourCodeIs,
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: colorScheme.tertiary,
@@ -661,7 +668,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                       SizedBox(height: 4),
                                       Text(
-                                        "Share this code with your caregiver",
+                                        local.shareThisCodeWithCaregiver,
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: colorScheme.onPrimary,
@@ -704,7 +711,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Connect with a Patient",
+                          local.connectWithPatient,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -714,7 +721,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(height: 12),
                         Text(
-                          "Enter the one-time code provided by your patient to establish a secure connection.",
+                          local.enterCodeFromPatient,
                           style: TextStyle(
                             fontSize: 14,
                             color: colorScheme.onPrimary.withOpacity(0.8),
@@ -724,7 +731,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         TextField(
                           controller: _otpController,
                           decoration: InputDecoration(
-                            hintText: 'Enter patient code',
+                            hintText: local.enterPatientCode,
                             hintStyle: TextStyle(color: colorScheme.onPrimary.withOpacity(0.6)),
                             prefixIcon: Icon(Icons.vpn_key_outlined,
                                 color: colorScheme.primary),
@@ -773,7 +780,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Icon(Icons.check_circle_outline),
                               SizedBox(width: 8),
                               Text(
-                                "Verify Code",
+                                local.verifyCode,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -814,7 +821,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                          Text(
-                          "Patient Activity",
+                          local.patientActivity,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

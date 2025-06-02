@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({super.key});
@@ -44,6 +46,7 @@ class _MessageScreenState extends State<MessageScreen> {
 
   // Fetch user role from Firestore
   Future<void> _fetchUserRole() async {
+    final local = Localizations.of(context, AppLocalizations);
     String userId = _auth.currentUser?.uid ?? '';
     if (userId.isNotEmpty) {
       try {
@@ -54,7 +57,7 @@ class _MessageScreenState extends State<MessageScreen> {
           if (userRole != null) {
             setState(() {
               _userType = userRole;
-              _roleGreeting = 'Hey $userRole, how can I help you today?';
+              _roleGreeting = '${local.hey} $userRole, ${local.howCanIHelp}';
             });
             print("User role: $_userType");
           } else {
@@ -324,10 +327,11 @@ class _MessageScreenState extends State<MessageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Healthcare ChatBot'),
+        title: Text(local.healthcareChatBot),
         backgroundColor: colorScheme.primary,
         actions: [
           // Show API status indicator
@@ -346,7 +350,7 @@ class _MessageScreenState extends State<MessageScreen> {
                   ),
                   SizedBox(width: 8),
                   Text(
-                    _useLocalFallback ? "Offline" : "Online",
+                    _useLocalFallback ? local.offline : local.online,
                     style: TextStyle(fontSize: 12),
                   ),
                 ],
@@ -373,7 +377,7 @@ class _MessageScreenState extends State<MessageScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  Text("Gemini AI is typing",
+                  Text(local.geminiTyping,
                       style: TextStyle(fontStyle: FontStyle.italic)),
                   SizedBox(width: 8),
                   SizedBox(
@@ -530,11 +534,11 @@ class _MessageScreenState extends State<MessageScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final date = DateTime(dateTime.year, dateTime.month, dateTime.day);
-
+final local = Localizations.of(context, AppLocalizations);
     if (date == today) {
-      return 'Today at ${_formatTimeOfDay(dateTime)}';
+      return '${local.todayAt} ${_formatTimeOfDay(dateTime)}';
     } else {
-      return '${dateTime.month}/${dateTime.day} at ${_formatTimeOfDay(dateTime)}';
+      return '${dateTime.month}/${dateTime.day} ${local.at} ${_formatTimeOfDay(dateTime)}';
     }
   }
 
