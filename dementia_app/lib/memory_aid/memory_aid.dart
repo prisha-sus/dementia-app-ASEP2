@@ -8,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 // Add your ImgBB API key here - you'll need to register at https://api.imgbb.com/
@@ -161,86 +160,98 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
     }
   }
 
-  Future<void> _addFamilyMember() async {
-    final local = Localizations.of(context, AppLocalizations);
-    final pickedImage = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
+Future<void> _addFamilyMember() async {
+  final local = Localizations.of(context, AppLocalizations);
+  final pickedImage = await ImagePicker().pickImage(
+    source: ImageSource.gallery,
+    imageQuality: 80,
+  );
 
-    if (pickedImage == null) return;
+  if (pickedImage == null) return;
 
-    final imageFile = File(pickedImage.path);
-    String name = '';
-    String relation = '';
-    String? parentId = _selectedParentId;
+  final imageFile = File(pickedImage.path);
+  String name = '';
+  String relation = '';
+  String? parentId = _selectedParentId;
 
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(local.addFamilyMember),
-        content: StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircleAvatar(
-                    backgroundImage: FileImage(imageFile),
-                    radius: 50,
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    decoration: InputDecoration(labelText: local.name),
-                    onChanged: (value) => name = value,
-                  ),
-                  SizedBox(height: 12),
-                  TextField(
-                    decoration: InputDecoration(labelText: local.relation),
-                    onChanged: (value) => relation = value,
-                  ),
-                  SizedBox(height: 16),
-                  if (members.isNotEmpty) ...[
-                    Text(local.selectParentOptional),
-                    DropdownButton<String>(
-                      hint: Text(local.selectParent),
-                      value: parentId,
-                      isExpanded: true,
-                      items: [
-                        DropdownMenuItem<String>(
-                          value: null,
-                          child: Text(local.noParent),
-                        ),
+  await showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(local.addFamilyMember),
+      content: StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  backgroundImage: FileImage(imageFile),
+                  radius: 50,
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(labelText: local.name),
+                  onChanged: (value) => name = value,
+                ),
+                SizedBox(height: 12),
+                TextField(
+                  decoration: InputDecoration(labelText: local.relation),
+                  onChanged: (value) => relation = value,
+                ),
+                SizedBox(height: 16),
+                if (members.isNotEmpty) ...[
+                  Text(local.selectParentOptional),
+                  DropdownButton<String>(
+                    hint: Text(local.selectParent),
+                    value: parentId,
+                    isExpanded: true,
+                    onChanged: (value) {
+                      setStateDialog(() {
+                        parentId = value;
+                      });
+                    },
+                    items: [
+                      DropdownMenuItem<String>(
+                        value: null,
+                        child: Text(local.noParent),
                       ),
-                    ),
-                  ],
+                      ...members.map((member) {
+                        return DropdownMenuItem<String>(
+                          value: member.id, // Make sure `id` is a field in your member model
+                          child: Text(member.name),
+                        );
+                      }).toList(),
+                    ],
+                  ),
                 ],
-              ),
-            );
-          }
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(local.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (name.isNotEmpty && relation.isNotEmpty) {
-                Navigator.of(context).pop();
-                await _saveNewMember(name, relation, imageFile, parentId);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(local.pleaseFillInAllFields)),
-                );
-              }
-            },
-            child: Text(local.add),
-          ),
-        ],
+              ],
+            ),
+          );
+        },
       ),
-    );
-  }
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(local.cancel),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            if (name.isNotEmpty && relation.isNotEmpty) {
+              Navigator.of(context).pop();
+              await _saveNewMember(name, relation, imageFile, parentId);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(local.pleaseFillInAllFields)),
+              );
+            }
+          },
+          child: Text(local.add),
+        ),
+      ],
+    ),
+  );
+}
+
 
   // Upload image to ImgBB API and return the URL
   Future<String> _uploadImageToImgBB(File imageFile) async {

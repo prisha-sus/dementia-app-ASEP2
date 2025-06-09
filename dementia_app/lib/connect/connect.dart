@@ -6,8 +6,6 @@ import 'package:mytestapp/services/auth.dart';
 import 'package:mytestapp/main.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:timezone/timezone.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 
@@ -129,7 +127,7 @@ class ConnectScreen extends StatelessWidget {
         _buildDrawerItem(
           icon: Icons.trending_up_rounded,
           title: local.analytics,
-          onTap: () {},
+          onTap: () {Navigator.pushNamed(context, '/analytics');},
         ),
         const SizedBox(height: 20),
         _buildDrawerItem(
@@ -220,13 +218,13 @@ class ConnectScreen extends StatelessWidget {
                             children: [
                             Container(
                               decoration: BoxDecoration(
-                              color: colorScheme.background, // Change this to your desired background color
+                              color: colorScheme.surface, // Change this to your desired background color
                               borderRadius: BorderRadius.circular(8),
                               ),
                               padding: const EdgeInsets.symmetric(horizontal: 12),
                               child: DropdownButton<Locale>(
                               value: Localizations.localeOf(context),
-                              dropdownColor: colorScheme.background, // Dropdown menu background
+                              dropdownColor: colorScheme.surface, // Dropdown menu background
                               onChanged: (Locale? newLocale) {
                                 if (newLocale != null) {
                                 App.setLocale(context, newLocale);
@@ -239,7 +237,7 @@ class ConnectScreen extends StatelessWidget {
                                 child: Text(
                                   'English',
                                   style: TextStyle(
-                                  color: colorScheme.onBackground,
+                                  color: colorScheme.onSurface,
                                   ),
                                 ),
             
@@ -248,14 +246,14 @@ class ConnectScreen extends StatelessWidget {
                                 value: Locale('hi'),
                                 child: Text('हिंदी',
                                 style: TextStyle(
-                                  color: colorScheme.onBackground,
+                                  color: colorScheme.onSurface,
                                   ),),
                                 ),
                                 DropdownMenuItem(
                                 value: Locale('mr'),
                                 child: Text('मराठी',
                                 style: TextStyle(
-                                  color: colorScheme.onBackground,
+                                  color: colorScheme.onSurface,
                                   ),),
                                 ),
                               ],
@@ -408,7 +406,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: local.games,
                                   description: local.gamesDescription,
-                                  textColor: colorScheme.background,
+                                  textColor: colorScheme.surface,
                                   icon: Icons.sports_esports_rounded,
                                   /*gradientStart: const Color(0xFF4776E6),
                                   gradientEnd: const Color(0xFF8E54E9),*/
@@ -420,7 +418,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: local.medicineReminders,
                                   description: local.medicineRemindersDescription,// 'Remember your medicines!',
-                                  textColor: colorScheme.onBackground,
+                                  textColor: colorScheme.onSurface,
                                   icon: Icons.medical_services_rounded,
                                   color: colorScheme.primary,
                                   route: '/medicine',
@@ -430,7 +428,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: local.memoryAid,
                                   description: local.memoryAidDescription,// 'Use memory aids to help you remember things',
-                                  textColor: colorScheme.onBackground,
+                                  textColor: colorScheme.onSurface,
                                   icon: Icons.psychology_rounded,
                                   color: colorScheme.primary,
                                   route: '/memoryAid',
@@ -440,7 +438,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: local.chatbot,
                                   description: local.chatbotDescription,// 'Chat with our AI assistant for support',
-                                  textColor: colorScheme.background,
+                                  textColor: colorScheme.surface,
                                   icon: Icons.volunteer_activism_rounded,
                                   color: colorScheme.tertiary,
                                   route: '/message',

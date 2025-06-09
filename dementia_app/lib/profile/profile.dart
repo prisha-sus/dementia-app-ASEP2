@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytestapp/services/auth.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -194,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: colorScheme.background,
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Colors.white24),
               ),
@@ -247,8 +246,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             "8",
             Icons.note_alt_rounded,
             colorScheme.tertiary,
-            colorScheme.background,
-            colorScheme.background,
+            colorScheme.surface,
+            colorScheme.surface,
           ),
         ),
       ],
@@ -423,15 +422,15 @@ final local = Localizations.of(context, AppLocalizations)!;
     final local = Localizations.of(context, AppLocalizations)!;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       extendBodyBehindAppBar: true, // Added this
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(color: colorScheme.background),
+            child: Container(color: colorScheme.surface),
           ),
         ),
         title:  Text(
@@ -457,7 +456,7 @@ final local = Localizations.of(context, AppLocalizations)!;
       ),
       body: Container(
         decoration:  BoxDecoration(
-          color: colorScheme.background,
+          color: colorScheme.surface,
           /*gradient: LinearGradient(
             colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
             begin: Alignment.topLeft,
@@ -474,7 +473,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: colorScheme.background,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white24),
                     boxShadow: [
@@ -492,7 +491,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                         height: 70,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: colorScheme.background, width: 2),
+                          border: Border.all(color: colorScheme.surface, width: 2),
                           boxShadow: [
                             BoxShadow(
                               color: colorScheme.onPrimary.withOpacity(0.2),
@@ -556,7 +555,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                   Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: colorScheme.background,
+                      color: colorScheme.surface,
                       /*gradient: LinearGradient(
                         colors: [
                           Colors.white.withOpacity(0.1),
@@ -638,7 +637,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                             decoration: BoxDecoration(
                               color: colorScheme.tertiary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: colorScheme.tertiary.withOpacity(0.2)!),
+                              border: Border.all(color: colorScheme.tertiary.withOpacity(0.2)),
                             ),
                             child: Row(
                               children: [
@@ -688,7 +687,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                   Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: colorScheme.background,
+                      color: colorScheme.surface,
                       /*gradient: LinearGradient(
                         colors: [
                           Colors.white.withOpacity(0.1),
@@ -736,7 +735,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                             prefixIcon: Icon(Icons.vpn_key_outlined,
                                 color: colorScheme.primary),
                             filled: true,
-                            fillColor: colorScheme.background,
+                            fillColor: colorScheme.surface,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -766,7 +765,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
                             backgroundColor: colorScheme.primary,
-                            foregroundColor: colorScheme.background,
+                            foregroundColor: colorScheme.surface,
                             padding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 20),
                             shape: RoundedRectangleBorder(
@@ -798,7 +797,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: colorScheme.background,
+                      color: colorScheme.surface,
                       /*gradient: LinearGradient(
                         colors: [
                           Colors.white.withOpacity(0.1),

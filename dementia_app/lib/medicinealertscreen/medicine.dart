@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 // Import your service file
 import 'package:mytestapp/services/medicinealert.dart';
@@ -22,10 +23,14 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   List<MedicationReminder> _reminders = [];
   bool _isLoading = true;
 
+  // Replace with your actual IP address
+  static const String _backendUrl = 'http://192.168.191.125:5000';
+
   @override
   void initState() {
     super.initState();
     _loadReminders();
+    _startReminderCheck(); // Start checking for reminders
   }
 
   Future<void> _loadReminders() async {
@@ -41,6 +46,99 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
     });
   }
 
+  // Function to trigger dispense via HTTP POST
+  Future<void> triggerDispense(MedicationReminder reminder) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_backendUrl/dispense'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'medication_name': reminder.medicineName,
+          'dosage': reminder.dosage,
+          'timestamp': DateTime.now().toIso8601String(),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Dispense triggered successfully for ${reminder.medicineName}');
+        // Show success notification to user
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Dispensing ${reminder.medicineName} - ${reminder.dosage}'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        print('Failed to trigger dispense: ${response.statusCode}');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to dispense medication'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error triggering dispense: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error connecting to dispenser'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  // Function to check if any reminder should be triggered
+  void _startReminderCheck() {
+    // Check every minute for reminders
+    Stream.periodic(const Duration(minutes: 1)).listen((_) {
+      _checkReminders();
+    });
+  }
+
+  void _checkReminders() {
+    final now = DateTime.now();
+    final currentTime = TimeOfDay.fromDateTime(now);
+    final currentWeekday = now.weekday; // 1 = Monday, 7 = Sunday
+
+    for (final reminder in _reminders) {
+      final reminderTime = TimeOfDay.fromDateTime(reminder.timeToTake);
+      
+      // Check if current time matches reminder time (within 1 minute)
+      if (_timesMatch(currentTime, reminderTime)) {
+        if (reminder.isRecurring) {
+          // Check if today is one of the recurring days
+          if (reminder.daysToRepeat.contains(currentWeekday)) {
+            triggerDispense(reminder);
+          }
+        } else {
+          // Check if today is the scheduled date
+          if (_isSameDate(now, reminder.timeToTake)) {
+            triggerDispense(reminder);
+          }
+        }
+      }
+    }
+  }
+
+  bool _timesMatch(TimeOfDay time1, TimeOfDay time2) {
+    return time1.hour == time2.hour && time1.minute == time2.minute;
+  }
+
+  bool _isSameDate(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
   @override
   Widget build(BuildContext context) {
     final local = Localizations.of(context, AppLocalizations);
@@ -49,7 +147,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
     return Scaffold(
       appBar: AppBar(
         title:  Text(local.medicationReminders, style: TextStyle(color: colorScheme.onPrimary, fontFamily: GoogleFonts.nunito().fontFamily, fontWeight: FontWeight.bold) ,),
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -113,7 +211,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
             children: [
               Row(
                 children: [
-                   Icon(Icons.medication, color: colorScheme.background, size: 28),
+                   Icon(Icons.medication, color: colorScheme.surface, size: 28),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -123,6 +221,12 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+                  // Add manual dispense button
+                  IconButton(
+                    icon: Icon(Icons.play_arrow, color: colorScheme.primary, size: 28),
+                    onPressed: () => triggerDispense(reminder),
+                    tooltip: 'Dispense Now',
                   ),
                   IconButton(
                     icon:  Icon(Icons.delete_outline, color: colorScheme.tertiary, size: 28),
@@ -242,8 +346,8 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
           builder: (context, setStateDialog) {
             return AlertDialog(
               backgroundColor: reminder == null
-      ? colorScheme.background  
-      : colorScheme.background,
+      ? colorScheme.surface  
+      : colorScheme.surface,
               title: Text(reminder == null
                   ? local.addMedicationReminder
                   : local.editMedicationReminder),
@@ -312,15 +416,14 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
             colorScheme: ColorScheme.light(
               primary: colorScheme.primary, // header, selected time, OK button
               onPrimary: colorScheme.onPrimary, // text on header/OK
-              surface: colorScheme.background, // dialog background
-              onSurface: colorScheme.onBackground, // text color
+              surface: colorScheme.surface, // dialog background
+              onSurface: colorScheme.onSurface, // text color
             ),
-            dialogBackgroundColor: colorScheme.background,
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 foregroundColor: colorScheme.tertiary, // OK button color
               ),
-            ),
+            ), dialogTheme: DialogThemeData(backgroundColor: colorScheme.surface),
           ),
           child: child!,
         );
@@ -375,10 +478,9 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
           colorScheme: ColorScheme.light(
             primary: colorScheme.primary, // header, selected day
             onPrimary: colorScheme.onPrimary, // text on header
-            surface: colorScheme.background, // dialog background
-            onSurface: colorScheme.onBackground, // text color
-          ),
-          dialogBackgroundColor: colorScheme.background,
+            surface: colorScheme.surface, // dialog background
+            onSurface: colorScheme.onSurface, // text color
+          ), dialogTheme: DialogThemeData(backgroundColor: colorScheme.surface),
         ),
         child: child!,
       );
@@ -422,11 +524,11 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                               });
                             },
                             selectedColor: colorScheme.primary,
-                            backgroundColor: colorScheme.background,
+                            backgroundColor: colorScheme.surface,
                             labelStyle: TextStyle(
                               color: daysSelected[index]
                                   ? colorScheme.onPrimary
-                                  : colorScheme.onBackground,
+                                  : colorScheme.onSurface,
                             ),
                           );
                         }),

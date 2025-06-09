@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class MessageScreen extends StatefulWidget {
@@ -24,7 +23,7 @@ class _MessageScreenState extends State<MessageScreen> {
 
   // Gemini API configuration
   final String _geminiApiKey =
-      'AIzaSyCSRNwI1fvSi5nDPMwpo26G-XsqhNmyl_s'; // Replace with your API key
+      'AIzaSyC2PtlaqIDkFQxn52A9Xlk4u4MK8YvO5aw'; // Replace with your API key
   final String _geminiApiUrl =
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent";
 
@@ -504,7 +503,7 @@ class _MessageScreenState extends State<MessageScreen> {
               borderSide: BorderSide(color: colorScheme.tertiary, width: 2.0), // Border when focused
             ),
                       filled: true,
-                      fillColor: colorScheme.background,
+                      fillColor: colorScheme.surface,
                     ),
                     onSubmitted: (_) => sendMessage(),
                   ),
@@ -516,7 +515,7 @@ class _MessageScreenState extends State<MessageScreen> {
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    icon: Icon(Icons.send, color: colorScheme.background),
+                    icon: Icon(Icons.send, color: colorScheme.surface),
                     onPressed: _isTyping ? null : sendMessage,
                   ),
                 ),

@@ -6,8 +6,6 @@ import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:timezone/timezone.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class VoiceScreen extends StatefulWidget {
@@ -425,7 +423,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                 padding: EdgeInsets.all(16),
                 margin: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: colorScheme.background,
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -477,7 +475,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                   padding: EdgeInsets.all(16),
                   margin: EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: colorScheme.background,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -510,7 +508,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                   padding: EdgeInsets.all(16),
                   margin: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colorScheme.background,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: colorScheme.surface.withOpacity(0.5)),
                   ),
@@ -543,7 +541,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                 child: Container(
                   margin: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colorScheme.background,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -602,7 +600,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                       label: Text(_isListening ? local.stop : local.start),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _isListening ? colorScheme.tertiary: colorScheme.surface,
-                        foregroundColor: _isListening ? colorScheme.background : colorScheme.onPrimary,
+                        foregroundColor: _isListening ? colorScheme.surface : colorScheme.onPrimary,
                         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       ),
                     ),
@@ -617,7 +615,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                       icon: Icon(Icons.clear),
                       label: Text(local.clear),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.background,
+                        backgroundColor: colorScheme.surface,
                         foregroundColor: colorScheme.tertiary,
                         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       ),

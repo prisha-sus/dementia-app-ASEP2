@@ -372,11 +372,11 @@ final local = Localizations.of(context, AppLocalizations);
     final local = Localizations.of(context, AppLocalizations);
   
     return Scaffold(
-      backgroundColor: colorScheme.background,
+      backgroundColor: colorScheme.surface,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: colorScheme.background,
+        backgroundColor: colorScheme.surface,
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -388,7 +388,7 @@ final local = Localizations.of(context, AppLocalizations);
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
-            color: colorScheme.onBackground,
+            color: colorScheme.onSurface,
             letterSpacing: 0.8,
             fontFamily: GoogleFonts.nunito().fontFamily,
           ),
@@ -398,14 +398,14 @@ final local = Localizations.of(context, AppLocalizations);
           Theme(
       data: Theme.of(context).copyWith(
         popupMenuTheme: PopupMenuThemeData(
-          color: colorScheme.background, 
+          color: colorScheme.surface, 
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),
           child: PopupMenuButton<GameType>(
-            icon:  Icon(Icons.games, color:colorScheme.onBackground),
+            icon:  Icon(Icons.games, color:colorScheme.onSurface),
             onSelected: (GameType type) {
               setState(() {
                 currentGame = type;
@@ -420,18 +420,18 @@ final local = Localizations.of(context, AppLocalizations);
                PopupMenuItem(
                 value: GameType.speechGame,
                 child: Text(local.speechGame, 
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onBackground, fontFamily: GoogleFonts.nunito().fontFamily) ,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onSurface, fontFamily: GoogleFonts.nunito().fontFamily) ,
                 ),
               ),
               PopupMenuItem(
                 value: GameType.sequenceGame,
                 child: Text(local.sequenceMemory,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onBackground,fontFamily: GoogleFonts.nunito().fontFamily),),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onSurface,fontFamily: GoogleFonts.nunito().fontFamily),),
               ),
                PopupMenuItem(
                 value: GameType.patternGame,
                 child: Text(local.patternMemory,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onBackground, fontFamily: GoogleFonts.nunito().fontFamily),),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onSurface, fontFamily: GoogleFonts.nunito().fontFamily),),
               ),
             ],
           ),
@@ -440,7 +440,7 @@ final local = Localizations.of(context, AppLocalizations);
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: colorScheme.background,
+          color: colorScheme.surface,
           /*gradient: LinearGradient(
             colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
             begin: Alignment.topLeft,
@@ -473,7 +473,7 @@ final local = Localizations.of(context, AppLocalizations);
       height: 150,
       //padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: colorScheme.background.withOpacity(0.8),
+        color: colorScheme.surface.withOpacity(0.8),
         /*gradient: LinearGradient(
           colors: [
             colorScheme.primary.withOpacity(0.1),
@@ -593,7 +593,7 @@ final local = Localizations.of(context, AppLocalizations);
             speechText,
             style:  TextStyle(
               fontSize: 24,
-              color: colorScheme.onBackground ,
+              color: colorScheme.onSurface ,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -640,10 +640,10 @@ final local = Localizations.of(context, AppLocalizations);
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                icon: Icon(isListening ? Icons.mic_off : Icons.mic, size: 28, color: isListening? colorScheme.onPrimary:colorScheme.background),
+                icon: Icon(isListening ? Icons.mic_off : Icons.mic, size: 28, color: isListening? colorScheme.onPrimary:colorScheme.surface),
                 label: Text(
                   isListening ? local.stopListening : local.startListening,
-                  style:  TextStyle(fontSize: 16, color: isListening? colorScheme.onPrimary:colorScheme.background , fontWeight: FontWeight.bold, fontFamily: GoogleFonts.nunito().fontFamily,)
+                  style:  TextStyle(fontSize: 16, color: isListening? colorScheme.onPrimary:colorScheme.surface , fontWeight: FontWeight.bold, fontFamily: GoogleFonts.nunito().fontFamily,)
                 ),
               ),
             ],
@@ -689,7 +689,7 @@ final local = Localizations.of(context, AppLocalizations);
            local.sequenceMemoryGame,
             style:  TextStyle(
               fontSize: 22,
-              color: colorScheme.onBackground,
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -711,7 +711,7 @@ final local = Localizations.of(context, AppLocalizations);
                     : local.getReady,
             style:  TextStyle(
               fontSize: 18,
-              color: colorScheme.onBackground,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 30),
@@ -768,7 +768,7 @@ final local = Localizations.of(context, AppLocalizations);
                           child: Text(
                             '${index + 1}',
                             style: TextStyle(
-                              color: colorScheme.onBackground,
+                              color: colorScheme.onSurface,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
@@ -794,7 +794,7 @@ final local = Localizations.of(context, AppLocalizations);
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child:  Text(local.restartLevel, style: TextStyle(fontSize: 16, color: colorScheme.background)),
+            child:  Text(local.restartLevel, style: TextStyle(fontSize: 16, color: colorScheme.surface)),
           ),
         ],
       ),
@@ -825,7 +825,7 @@ final local = Localizations.of(context, AppLocalizations);
             local.patternMemoryGame,
             style:  TextStyle(
               fontSize: 22,
-              color: colorScheme.onBackground,
+              color: colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -847,7 +847,7 @@ final local = Localizations.of(context, AppLocalizations);
                     : local.getReady,
             style:  TextStyle(
               fontSize: 18,
-              color: colorScheme.onBackground,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 30),
@@ -910,7 +910,7 @@ final local = Localizations.of(context, AppLocalizations);
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Text(local.newPattern, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.background)),
+                child: Text(local.newPattern, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.surface)),
               ),
             ],
           ),
