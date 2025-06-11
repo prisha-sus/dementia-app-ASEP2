@@ -368,15 +368,16 @@ final local = Localizations.of(context, AppLocalizations);
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     final textTheme = Theme.of(context).textTheme;
     final local = Localizations.of(context, AppLocalizations);
   
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: colorScheme.surface,
+        backgroundColor: theme.scaffoldBackgroundColor,
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -388,7 +389,7 @@ final local = Localizations.of(context, AppLocalizations);
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
-            color: colorScheme.onSurface,
+            color: colorScheme.onPrimary,
             letterSpacing: 0.8,
             fontFamily: GoogleFonts.nunito().fontFamily,
           ),
@@ -398,14 +399,14 @@ final local = Localizations.of(context, AppLocalizations);
           Theme(
       data: Theme.of(context).copyWith(
         popupMenuTheme: PopupMenuThemeData(
-          color: colorScheme.surface, 
+          color: theme.scaffoldBackgroundColor, 
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
       ),
           child: PopupMenuButton<GameType>(
-            icon:  Icon(Icons.games, color:colorScheme.onSurface),
+            icon:  Icon(Icons.games, color:colorScheme.onPrimary),
             onSelected: (GameType type) {
               setState(() {
                 currentGame = type;
@@ -420,18 +421,18 @@ final local = Localizations.of(context, AppLocalizations);
                PopupMenuItem(
                 value: GameType.speechGame,
                 child: Text(local.speechGame, 
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onSurface, fontFamily: GoogleFonts.nunito().fontFamily) ,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onPrimary, fontFamily: GoogleFonts.nunito().fontFamily) ,
                 ),
               ),
               PopupMenuItem(
                 value: GameType.sequenceGame,
                 child: Text(local.sequenceMemory,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onSurface,fontFamily: GoogleFonts.nunito().fontFamily),),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onPrimary,fontFamily: GoogleFonts.nunito().fontFamily),),
               ),
                PopupMenuItem(
                 value: GameType.patternGame,
                 child: Text(local.patternMemory,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onSurface, fontFamily: GoogleFonts.nunito().fontFamily),),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.onPrimary, fontFamily: GoogleFonts.nunito().fontFamily),),
               ),
             ],
           ),
@@ -440,7 +441,7 @@ final local = Localizations.of(context, AppLocalizations);
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: colorScheme.surface,
+          color: theme.scaffoldBackgroundColor,
           /*gradient: LinearGradient(
             colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
             begin: Alignment.topLeft,
@@ -468,12 +469,13 @@ final local = Localizations.of(context, AppLocalizations);
   Widget _buildGameSelector() {
     final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Container(
       height: 150,
       //padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: colorScheme.surface.withOpacity(0.8),
+        color: theme.scaffoldBackgroundColor.withOpacity(0.8),
         /*gradient: LinearGradient(
           colors: [
             colorScheme.primary.withOpacity(0.1),
@@ -489,10 +491,10 @@ final local = Localizations.of(context, AppLocalizations);
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildGameButton(
-              local.speechGameTitle, GameType.speechGame, Icons.mic, speechScore),
-          _buildGameButton(local.sequenceMemoryTitle, GameType.sequenceGame,
+              local.speechGame, GameType.speechGame, Icons.mic, speechScore),
+          _buildGameButton(local.sequenceMemory, GameType.sequenceGame,
               Icons.psychology, memoryScore),
-          _buildGameButton(local.patternMemoryTitle, GameType.patternGame,
+          _buildGameButton(local.patternMemory, GameType.patternGame,
               Icons.grid_3x3, patternScore),
         ],
       ),
@@ -572,6 +574,7 @@ final local = Localizations.of(context, AppLocalizations);
   Widget _buildSpeechGame() {
     final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(20),
@@ -593,7 +596,7 @@ final local = Localizations.of(context, AppLocalizations);
             speechText,
             style:  TextStyle(
               fontSize: 24,
-              color: colorScheme.onSurface ,
+              color: colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -640,10 +643,10 @@ final local = Localizations.of(context, AppLocalizations);
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                icon: Icon(isListening ? Icons.mic_off : Icons.mic, size: 28, color: isListening? colorScheme.onPrimary:colorScheme.surface),
+                icon: Icon(isListening ? Icons.mic_off : Icons.mic, size: 28, color: isListening? colorScheme.onPrimary:theme.scaffoldBackgroundColor),
                 label: Text(
-                  isListening ? local.stopListening : local.startListening,
-                  style:  TextStyle(fontSize: 16, color: isListening? colorScheme.onPrimary:colorScheme.surface , fontWeight: FontWeight.bold, fontFamily: GoogleFonts.nunito().fontFamily,)
+                  isListening ? local.stopListening : local.startSpeaking,
+                  style:  TextStyle(fontSize: 16, color: isListening? colorScheme.onPrimary:theme.scaffoldBackgroundColor , fontWeight: FontWeight.bold, fontFamily: GoogleFonts.nunito().fontFamily,)
                 ),
               ),
             ],
@@ -668,6 +671,7 @@ final local = Localizations.of(context, AppLocalizations);
   Widget _buildSequenceGame() {
     final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(20),
@@ -686,16 +690,16 @@ final local = Localizations.of(context, AppLocalizations);
       child: Column(
         children: [
           Text(
-           local.sequenceMemoryGame,
+           local.sequenceMemory,
             style:  TextStyle(
               fontSize: 22,
-              color: colorScheme.onSurface,
+              color: colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 10),
           Text(
-            '${local.level} $currentLevel |${local.score} $memoryScore',
+            '${local.levelScore} $currentLevel |${local.score} $memoryScore',
             style: TextStyle(
               fontSize: 16,
               color: colorScheme.primary,
@@ -711,7 +715,7 @@ final local = Localizations.of(context, AppLocalizations);
                     : local.getReady,
             style:  TextStyle(
               fontSize: 18,
-              color: colorScheme.onSurface,
+              color: colorScheme.onPrimary,
             ),
           ),
           const SizedBox(height: 30),
@@ -768,7 +772,7 @@ final local = Localizations.of(context, AppLocalizations);
                           child: Text(
                             '${index + 1}',
                             style: TextStyle(
-                              color: colorScheme.onSurface,
+                              color: colorScheme.onPrimary,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                             ),
@@ -794,7 +798,7 @@ final local = Localizations.of(context, AppLocalizations);
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child:  Text(local.restartLevel, style: TextStyle(fontSize: 16, color: colorScheme.surface)),
+            child:  Text(local.restartLevel, style: TextStyle(fontSize: 16, color: theme.scaffoldBackgroundColor)),
           ),
         ],
       ),
@@ -804,6 +808,7 @@ final local = Localizations.of(context, AppLocalizations);
   Widget _buildPatternGame() {
     final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(20),
@@ -825,7 +830,7 @@ final local = Localizations.of(context, AppLocalizations);
             local.patternMemoryGame,
             style:  TextStyle(
               fontSize: 22,
-              color: colorScheme.onSurface,
+              color: colorScheme.onPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -847,7 +852,7 @@ final local = Localizations.of(context, AppLocalizations);
                     : local.getReady,
             style:  TextStyle(
               fontSize: 18,
-              color: colorScheme.onSurface,
+              color: colorScheme.onPrimary,
             ),
           ),
           const SizedBox(height: 30),
@@ -873,7 +878,7 @@ final local = Localizations.of(context, AppLocalizations);
                   onTap: () => onPatternTilePressed(row, col),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: shouldShow ? colorScheme.tertiary : Colors.grey[800],
+                      color: shouldShow ? colorScheme.tertiary : Colors.grey[600],
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.white24),
                     ),
@@ -910,7 +915,7 @@ final local = Localizations.of(context, AppLocalizations);
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Text(local.newPattern, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colorScheme.surface)),
+                child: Text(local.newPattern, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.scaffoldBackgroundColor)),
               ),
             ],
           ),

@@ -68,7 +68,7 @@ class RoleScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: theme.scaffoldBackgroundColor,
         foregroundColor: theme.appBarTheme.foregroundColor,
         elevation: 0, // Remove AppBar shadow for a clean divider
       ),
@@ -119,13 +119,13 @@ class RoleScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       icon: FaIcon(
                         FontAwesomeIcons.userDoctor,
-                        color: colorScheme.surface,
+                        color: theme.scaffoldBackgroundColor,
                         size: 22,
                       ),
                       label: Text(
                         local.imACaregiver,
                         style: textTheme.bodyLarge?.copyWith(
-                          color: colorScheme.surface,
+                          color: theme.scaffoldBackgroundColor,
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
                         ),

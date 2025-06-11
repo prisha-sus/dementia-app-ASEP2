@@ -12,9 +12,9 @@ class BottomNavBar extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final local = Localizations.of(context, AppLocalizations);
     return BottomNavigationBar(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       selectedItemColor: colorScheme.tertiary,
-      unselectedItemColor: colorScheme.onSurface,
+      unselectedItemColor: colorScheme.onPrimary,
       items: [
         BottomNavigationBarItem(
             icon: Icon(FontAwesomeIcons.house, size: 20),
