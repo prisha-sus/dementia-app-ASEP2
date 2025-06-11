@@ -56,7 +56,7 @@ class ConnectScreen extends StatelessWidget {
 
                   final theme = Theme.of(context);
                   final textTheme = theme.textTheme;
-                  final textColor = theme.colorScheme.onSurface;
+                  final textColor = theme.colorScheme.onPrimary;
                   final colorScheme = theme.colorScheme;
 
                   return Scaffold(
@@ -176,7 +176,7 @@ class ConnectScreen extends StatelessWidget {
                           letterSpacing: 0.8,
                         ),
                       ),
-                      backgroundColor: colorScheme.surface,
+                      backgroundColor: theme.scaffoldBackgroundColor,
                       elevation: 0,
                       flexibleSpace: ClipRRect(
                         child: BackdropFilter(
@@ -201,7 +201,7 @@ class ConnectScreen extends StatelessWidget {
       body:  Container(
                       decoration:  BoxDecoration(
                         //gradient: LinearGradient(
-                          color: colorScheme.surface,
+                          color: theme.scaffoldBackgroundColor,
                             
                           
                          // stops: const [0.3, 0.7, 0.9],
@@ -218,13 +218,13 @@ class ConnectScreen extends StatelessWidget {
                             children: [
                             Container(
                               decoration: BoxDecoration(
-                              color: colorScheme.surface, // Change this to your desired background color
+                              color: theme.scaffoldBackgroundColor, // Change this to your desired background color
                               borderRadius: BorderRadius.circular(8),
                               ),
                               padding: const EdgeInsets.symmetric(horizontal: 12),
                               child: DropdownButton<Locale>(
                               value: Localizations.localeOf(context),
-                              dropdownColor: colorScheme.surface, // Dropdown menu background
+                              dropdownColor: theme.scaffoldBackgroundColor, // Dropdown menu background
                               onChanged: (Locale? newLocale) {
                                 if (newLocale != null) {
                                 App.setLocale(context, newLocale);
@@ -237,7 +237,7 @@ class ConnectScreen extends StatelessWidget {
                                 child: Text(
                                   'English',
                                   style: TextStyle(
-                                  color: colorScheme.onSurface,
+                                  color: colorScheme.onPrimary,
                                   ),
                                 ),
             
@@ -246,14 +246,14 @@ class ConnectScreen extends StatelessWidget {
                                 value: Locale('hi'),
                                 child: Text('हिंदी',
                                 style: TextStyle(
-                                  color: colorScheme.onSurface,
+                                  color: colorScheme.onPrimary,
                                   ),),
                                 ),
                                 DropdownMenuItem(
                                 value: Locale('mr'),
                                 child: Text('मराठी',
                                 style: TextStyle(
-                                  color: colorScheme.onSurface,
+                                  color: colorScheme.onPrimary,
                                   ),),
                                 ),
                               ],
@@ -266,12 +266,12 @@ class ConnectScreen extends StatelessWidget {
                               child: Hero(
                                 tag: 'role-badge',
                                 child: Material(
-                                  color: colorScheme.surface,
+                                  color: theme.scaffoldBackgroundColor,
                                   child: Container(
                                     height: 140,
                                     padding: const EdgeInsets.all(20),
                                     decoration: BoxDecoration(                    
-                                      color: colorScheme.surface,
+                                      color: theme.scaffoldBackgroundColor,
                                       /*gradient: LinearGradient(
                                         colors: [
                                           Colors.white.withOpacity(0.1),
@@ -284,7 +284,7 @@ class ConnectScreen extends StatelessWidget {
                                       //border: Border.all(color: Colors.white24),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: colorScheme.onSurface.withOpacity(0.2),
+                                          color: colorScheme.onPrimary.withOpacity(0.2),
                                           blurRadius: 8,
                                           //offset: const Offset(0, 8),
                                         )
@@ -332,7 +332,7 @@ class ConnectScreen extends StatelessWidget {
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,
-                                                  color:colorScheme.onSurface,
+                                                  color:colorScheme.onPrimary,
                                                 ),
                                               ),
                                               const SizedBox(height: 5),
@@ -364,7 +364,7 @@ class ConnectScreen extends StatelessWidget {
                                         IconButton(
                                           icon:Icon(
                                             Icons.edit_rounded,
-                                            color: colorScheme.onSurface,
+                                            color: colorScheme.onPrimary,
                                           ),
                                           onPressed: () {},
                                         ),
@@ -387,7 +387,7 @@ class ConnectScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color:colorScheme.onSurface,
+                                  color:colorScheme.onPrimary,
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -406,7 +406,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: local.games,
                                   description: local.gamesDescription,
-                                  textColor: colorScheme.surface,
+                                  textColor: theme.scaffoldBackgroundColor,
                                   icon: Icons.sports_esports_rounded,
                                   /*gradientStart: const Color(0xFF4776E6),
                                   gradientEnd: const Color(0xFF8E54E9),*/
@@ -418,7 +418,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: local.medicineReminders,
                                   description: local.medicineRemindersDescription,// 'Remember your medicines!',
-                                  textColor: colorScheme.onSurface,
+                                  textColor: colorScheme.onPrimary,
                                   icon: Icons.medical_services_rounded,
                                   color: colorScheme.primary,
                                   route: '/medicine',
@@ -428,7 +428,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: local.memoryAid,
                                   description: local.memoryAidDescription,// 'Use memory aids to help you remember things',
-                                  textColor: colorScheme.onSurface,
+                                  textColor: colorScheme.onPrimary,
                                   icon: Icons.psychology_rounded,
                                   color: colorScheme.primary,
                                   route: '/memoryAid',
@@ -438,7 +438,7 @@ class ConnectScreen extends StatelessWidget {
                                   context,
                                   label: local.chatbot,
                                   description: local.chatbotDescription,// 'Chat with our AI assistant for support',
-                                  textColor: colorScheme.surface,
+                                  textColor: theme.scaffoldBackgroundColor,
                                   icon: Icons.volunteer_activism_rounded,
                                   color: colorScheme.tertiary,
                                   route: '/message',
@@ -552,7 +552,7 @@ class ConnectScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.3),
                   spreadRadius: 2,
                   blurRadius: 8,
                   //offset: const Offset(0, 8),

@@ -143,6 +143,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   Widget build(BuildContext context) {
     final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
@@ -190,6 +191,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   Widget _buildReminderCard(MedicationReminder reminder) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
     final local = Localizations.of(context, AppLocalizations);
     final timeFormat = DateFormat('h:mm a');
     String scheduleText = reminder.isRecurring
@@ -211,7 +213,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
             children: [
               Row(
                 children: [
-                   Icon(Icons.medication, color: colorScheme.surface, size: 28),
+                   Icon(Icons.medication, color: theme.scaffoldBackgroundColor, size: 28),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -228,8 +230,8 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                     onPressed: () => triggerDispense(reminder),
                     tooltip: 'Dispense Now',
                   ),
-                  IconButton(
-                    icon:  Icon(Icons.delete_outline, color: colorScheme.tertiary, size: 28),
+                    IconButton(
+                    icon: Icon(Icons.delete_outline, color: colorScheme.tertiary, size: 28),
                     onPressed: () => _confirmDelete(reminder),
                   ),
                 ],
@@ -282,9 +284,10 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
     final textTheme = Theme.of(context).textTheme;
     final local = Localizations.of(context, AppLocalizations);
     return showDialog(
-      //color: colorScheme.background,
+      //color: theme.scaffoldBackgroundColor,
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(local.deleteReminderTitle),
         content: Text(
             '${local.deleteReminderContent} ${reminder.medicineName}?'),
@@ -309,6 +312,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   Future<void> _showAddEditReminderDialog(
       {MedicationReminder? reminder}) async {
         final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
         final textTheme = Theme.of(context).textTheme;
     final local = Localizations.of(context, AppLocalizations);
     final TextEditingController medicineNameController = TextEditingController(
@@ -346,8 +350,8 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
           builder: (context, setStateDialog) {
             return AlertDialog(
               backgroundColor: reminder == null
-      ? colorScheme.surface  
-      : colorScheme.surface,
+      ? theme.scaffoldBackgroundColor  
+      : theme.scaffoldBackgroundColor,
               title: Text(reminder == null
                   ? local.addMedicationReminder
                   : local.editMedicationReminder),
@@ -416,14 +420,14 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
             colorScheme: ColorScheme.light(
               primary: colorScheme.primary, // header, selected time, OK button
               onPrimary: colorScheme.onPrimary, // text on header/OK
-              surface: colorScheme.surface, // dialog background
-              onSurface: colorScheme.onSurface, // text color
+              //: theme.scaffoldBackgroundColor, // dialog background
+              //onSurface: colorScheme.onSurface, // text color
             ),
             textButtonTheme: TextButtonThemeData(
               style: TextButton.styleFrom(
                 foregroundColor: colorScheme.tertiary, // OK button color
               ),
-            ), dialogTheme: DialogThemeData(backgroundColor: colorScheme.surface),
+            ), dialogTheme: DialogThemeData(backgroundColor: theme.scaffoldBackgroundColor),
           ),
           child: child!,
         );
@@ -478,9 +482,9 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
           colorScheme: ColorScheme.light(
             primary: colorScheme.primary, // header, selected day
             onPrimary: colorScheme.onPrimary, // text on header
-            surface: colorScheme.surface, // dialog background
-            onSurface: colorScheme.onSurface, // text color
-          ), dialogTheme: DialogThemeData(backgroundColor: colorScheme.surface),
+            //surface: colorScheme.surface, // dialog background
+            //onSurface: colorScheme.onSurface, // text color
+          ), dialogTheme: DialogThemeData(backgroundColor: theme.scaffoldBackgroundColor),
         ),
         child: child!,
       );
@@ -524,7 +528,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
                               });
                             },
                             selectedColor: colorScheme.primary,
-                            backgroundColor: colorScheme.surface,
+                            backgroundColor: theme.scaffoldBackgroundColor,
                             labelStyle: TextStyle(
                               color: daysSelected[index]
                                   ? colorScheme.onPrimary

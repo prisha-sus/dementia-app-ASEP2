@@ -9,6 +9,7 @@ import 'package:graphview/GraphView.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mytestapp/main.dart';
 
 // Add your ImgBB API key here - you'll need to register at https://api.imgbb.com/
 const String IMGBB_API_KEY = 'ae07899cbeb3f0f95743db787f6b613e';
@@ -574,7 +575,10 @@ Future<void> _addFamilyMember() async {
 
   @override
   Widget build(BuildContext context) {
-    final local = Localizations.of(context, AppLocalizations);
+    final local = AppLocalizations.of(context);
+     if (local == null) {
+    return const Center(child: CircularProgressIndicator());
+  }
     return Scaffold(
       appBar: AppBar(
         title: Text(local.familyTree),
