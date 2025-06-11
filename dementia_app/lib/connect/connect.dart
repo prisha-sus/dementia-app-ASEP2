@@ -60,6 +60,8 @@ class ConnectScreen extends StatelessWidget {
                   String? photoURL = user.photoURL;
 
                   final theme = Theme.of(context);
+                  final textTheme = theme.textTheme;
+                  final textColor = theme.colorScheme.onPrimary;
                   final colorScheme = theme.colorScheme;
 
                   return Scaffold(
@@ -189,7 +191,7 @@ class ConnectScreen extends StatelessWidget {
                           letterSpacing: 0.8,
                         ),
                       ),
-                      backgroundColor: colorScheme.surface.withOpacity(0.9),
+                      backgroundColor: theme.scaffoldBackgroundColor,
                       elevation: 0,
                       flexibleSpace: ClipRRect(
                         child: BackdropFilter(
@@ -210,9 +212,17 @@ class ConnectScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    body: Container(
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface,
+                    
+      body:  Container(
+                      decoration:  BoxDecoration(
+                        //gradient: LinearGradient(
+                          color: theme.scaffoldBackgroundColor,
+                            
+                          
+                         // stops: const [0.3, 0.7, 0.9],
+                          //begin: Alignment.topCenter,
+                          //end: Alignment.bottomRight,
+                        //),
                       ),
                       child: SafeArea(
                         top: true,
@@ -223,58 +233,76 @@ class ConnectScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Language Selector
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surface,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: colorScheme.outline.withOpacity(0.3),
-                                  ),
-                                ),
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
-                                child: DropdownButton<Locale>(
-                                  value: Localizations.localeOf(context),
-                                  dropdownColor: colorScheme.surface,
-                                  onChanged: (Locale? newLocale) {
-                                    if (newLocale != null) {
-                                      App.setLocale(context, newLocale);
-                                    }
-                                  },
-                                  underline: const SizedBox(),
-                                  isExpanded: true,
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: Locale('en'),
-                                      child: Text('English'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: Locale('hi'),
-                                      child: Text('हिंदी'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: Locale('mr'),
-                                      child: Text('मराठी'),
-                                    ),
-                                  ],
-                                ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: theme.scaffoldBackgroundColor,
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              const SizedBox(height: 20),
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              child: DropdownButton<Locale>(
+                                value: Localizations.localeOf(context),
+                                dropdownColor: theme.scaffoldBackgroundColor,
+                                onChanged: (Locale? newLocale) {
+                                  if (newLocale != null) {
+                                    App.setLocale(context, newLocale);
+                                  }
+                                },
+                                underline: const SizedBox(),
+                                items: [
+                                  DropdownMenuItem(
+                                    value: const Locale('en'),
+                                    child: Text(
+                                      'English',
+                                      style: TextStyle(
+                                        color: colorScheme.onPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: const Locale('hi'),
+                                    child: Text(
+                                      'हिंदी',
+                                      style: TextStyle(
+                                        color: colorScheme.onPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: const Locale('mr'),
+                                    child: Text(
+                                      'मराठी',
+                                      style: TextStyle(
+                                        color: colorScheme.onPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 20),
 
                               // User Profile Card
                               Hero(
                                 tag: 'role-badge',
                                 child: Material(
-                                  color: Colors.transparent,
+                                  color: theme.scaffoldBackgroundColor,
                                   child: Container(
                                     width: double.infinity,
                                     padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.surface,
+                                    decoration: BoxDecoration(                    
+                                      color: theme.scaffoldBackgroundColor,
+                                      /*gradient: LinearGradient(
+                                        colors: [
+                                          Colors.white.withOpacity(0.1),
+                                          Colors.white.withOpacity(0.05),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),*/
                                       borderRadius: BorderRadius.circular(20),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: colorScheme.shadow.withOpacity(0.1),
+                                          color: colorScheme.onPrimary.withOpacity(0.2),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         )
@@ -315,7 +343,7 @@ class ConnectScreen extends StatelessWidget {
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,
-                                                  color: colorScheme.onSurface,
+                                                  color:colorScheme.onPrimary,
                                                 ),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -342,7 +370,7 @@ class ConnectScreen extends StatelessWidget {
                                         IconButton(
                                           icon: Icon(
                                             Icons.edit_rounded,
-                                            color: colorScheme.onSurface,
+                                            color: colorScheme.onPrimary,
                                           ),
                                           onPressed: () {},
                                         ),
@@ -353,79 +381,81 @@ class ConnectScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 30),
 
-                              // Section Title
-                              Padding(
-                                padding: const EdgeInsets.only(left: 5, bottom: 15),
-                                child: Text(
-                                  local?.quickAccess ?? 'Quick Access',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: colorScheme.onSurface,
-                                    letterSpacing: 0.5,
+                            // Section Title
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 5, bottom: 15),
+                                  child: Text(
+                                    local!.quickAccess,
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: colorScheme.onPrimary,
+                                      letterSpacing: 0.5,
+                                    ),
                                   ),
                                 ),
-                              ),
-
-                              // Navigation Buttons Grid
-                              GridView.count(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.85,
-                                crossAxisSpacing: 15,
-                                mainAxisSpacing: 15,
-                                children: [
-                                  _buildFeatureButton(
-                                    context,
-                                    label: local?.games ?? 'Games',
-                                    description: local?.gamesDescription ?? 'Play games',
-                                    textColor: colorScheme.onPrimary,
-                                    icon: Icons.sports_esports_rounded,
-                                    color: colorScheme.primary,
-                                    route: '/puzzles',
-                                    tag: 'btn1',
-                                  ),
-                                  _buildFeatureButton(
-                                    context,
-                                    label: local?.medicineReminders ?? 'Medicine',
-                                    description: local?.medicineRemindersDescription ?? 
-                                        'Remember your medicines!',
-                                    textColor: colorScheme.onSecondary,
-                                    icon: Icons.medical_services_rounded,
-                                    color: colorScheme.secondary,
-                                    route: '/medicine',
-                                    tag: 'btn2',
-                                  ),
-                                  _buildFeatureButton(
-                                    context,
-                                    label: local?.memoryAid ?? 'Memory Aid',
-                                    description: local?.memoryAidDescription ?? 
-                                        'Memory assistance tools',
-                                    textColor: colorScheme.onTertiary,
-                                    icon: Icons.psychology_rounded,
-                                    color: colorScheme.tertiary,
-                                    route: '/memoryAid',
-                                    tag: 'btn3',
-                                  ),
-                                  _buildFeatureButton(
-                                    context,
-                                    label: local?.chatbot ?? 'Chatbot',
-                                    description: local?.chatbotDescription ?? 
-                                        'Chat with AI assistant',
-                                    textColor: colorScheme.onError,
-                                    icon: Icons.volunteer_activism_rounded,
-                                    color: colorScheme.error,
-                                    route: '/message',
-                                    tag: 'btn4',
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 100), // Space for bottom nav
-                            ],
-                          ),
+                                GridView.count(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 0.85,
+                                  crossAxisSpacing: 15,
+                                  mainAxisSpacing: 15,
+                                  children: [
+                                    _buildFeatureButton(
+                                      context,
+                                      label: local.games,
+                                      description: local.gamesDescription,
+                                      textColor: theme.scaffoldBackgroundColor,
+                                      icon: Icons.sports_esports_rounded,
+                                      /*gradientStart: const Color(0xFF4776E6),
+                                      gradientEnd: const Color(0xFF8E54E9),*/
+                                      color: colorScheme.tertiary,
+                                      route: '/puzzles',
+                                      tag: 'btn1',
+                                    ),
+                                    _buildFeatureButton(
+                                      context,
+                                      label: local.medicineReminders,
+                                      description: local.medicineRemindersDescription,// 'Remember your medicines!',
+                                      textColor: colorScheme.onPrimary,
+                                      icon: Icons.medical_services_rounded,
+                                      color: colorScheme.primary,
+                                      route: '/medicine',
+                                      tag: 'btn2',
+                                    ),
+                                    _buildFeatureButton(
+                                      context,
+                                      label: local.memoryAid,
+                                      description: local.memoryAidDescription,// 'Use memory aids to help you remember things',
+                                      textColor: colorScheme.onPrimary,
+                                      icon: Icons.psychology_rounded,
+                                      color: colorScheme.primary,
+                                      route: '/memoryAid',
+                                      tag: 'btn3',
+                                    ),
+                                    _buildFeatureButton(
+                                      context,
+                                      label: local.chatbot,
+                                      description: local.chatbotDescription,// 'Chat with our AI assistant for support',
+                                      textColor: theme.scaffoldBackgroundColor,
+                                      icon: Icons.volunteer_activism_rounded,
+                                      color: colorScheme.tertiary,
+                                      route: '/message',
+                                      tag: 'btn4',
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
+                    ),
                     ),
                     bottomNavigationBar: const BottomNavBar(),
                   );
@@ -499,8 +529,8 @@ class ConnectScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.3),
-                  spreadRadius: 1,
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.3),
+                  spreadRadius: 2,
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),

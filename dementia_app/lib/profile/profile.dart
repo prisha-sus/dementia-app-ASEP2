@@ -119,6 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget buildLogList() {
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     final local = Localizations.of(context, AppLocalizations)!;
     if (role == 'caregiver' && linkedPatientId == null) {
       return  Center(
@@ -193,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: colorScheme.surface,
+                color: theme.scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(color: Colors.white24),
               ),
@@ -227,6 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildActivitySummary() {
     final local = Localizations.of(context, AppLocalizations)!;
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     return Row(
       children: [
         Expanded(
@@ -246,8 +248,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             "8",
             Icons.note_alt_rounded,
             colorScheme.tertiary,
-            colorScheme.surface,
-            colorScheme.surface,
+            theme.scaffoldBackgroundColor,
+            theme.scaffoldBackgroundColor,
           ),
         ),
       ],
@@ -389,7 +391,7 @@ final local = Localizations.of(context, AppLocalizations)!;
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${local.connectedTo} $linkedPatientName ${local.successfully}'),
+              content: Text('${local.connectedToPatientSuccess} $linkedPatientName ${local.successfully}'),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ),
@@ -421,16 +423,17 @@ final local = Localizations.of(context, AppLocalizations)!;
   Widget build(BuildContext context) {
     final local = Localizations.of(context, AppLocalizations)!;
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBodyBehindAppBar: true, // Added this
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: colorScheme.surface,
+        backgroundColor: theme.scaffoldBackgroundColor,
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(color: colorScheme.surface),
+            child: Container(color: theme.scaffoldBackgroundColor),
           ),
         ),
         title:  Text(
@@ -456,7 +459,7 @@ final local = Localizations.of(context, AppLocalizations)!;
       ),
       body: Container(
         decoration:  BoxDecoration(
-          color: colorScheme.surface,
+          color: theme.scaffoldBackgroundColor,
           /*gradient: LinearGradient(
             colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
             begin: Alignment.topLeft,
@@ -473,7 +476,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: colorScheme.surface,
+                    color: theme.scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white24),
                     boxShadow: [
@@ -491,7 +494,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                         height: 70,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: colorScheme.surface, width: 2),
+                          border: Border.all(color: theme.scaffoldBackgroundColor, width: 2),
                           boxShadow: [
                             BoxShadow(
                               color: colorScheme.onPrimary.withOpacity(0.2),
@@ -555,7 +558,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                   Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: colorScheme.surface,
+                      color: theme.scaffoldBackgroundColor,
                       /*gradient: LinearGradient(
                         colors: [
                           Colors.white.withOpacity(0.1),
@@ -616,7 +619,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                               SizedBox(width: 8),
                               Flexible(
                                 child: Text(
-                                  local.generateCodeConnection,
+                                  local.generateConnectionCode,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -687,7 +690,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                   Container(
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: colorScheme.surface,
+                      color: theme.scaffoldBackgroundColor,
                       /*gradient: LinearGradient(
                         colors: [
                           Colors.white.withOpacity(0.1),
@@ -735,7 +738,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                             prefixIcon: Icon(Icons.vpn_key_outlined,
                                 color: colorScheme.primary),
                             filled: true,
-                            fillColor: colorScheme.surface,
+                            fillColor: theme.scaffoldBackgroundColor,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -765,7 +768,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                           style: ElevatedButton.styleFrom(
                             elevation: 0,
                             backgroundColor: colorScheme.primary,
-                            foregroundColor: colorScheme.surface,
+                            foregroundColor: theme.scaffoldBackgroundColor,
                             padding: EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 20),
                             shape: RoundedRectangleBorder(
@@ -797,7 +800,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: colorScheme.surface,
+                      color: theme.scaffoldBackgroundColor,
                       /*gradient: LinearGradient(
                         colors: [
                           Colors.white.withOpacity(0.1),

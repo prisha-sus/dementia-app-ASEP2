@@ -45,7 +45,7 @@ class _MessageScreenState extends State<MessageScreen> {
 
   // Fetch user role from Firestore
   Future<void> _fetchUserRole() async {
-    final local = Localizations.of(context, AppLocalizations);
+    
     String userId = _auth.currentUser?.uid ?? '';
     if (userId.isNotEmpty) {
       try {
@@ -55,6 +55,7 @@ class _MessageScreenState extends State<MessageScreen> {
           var userRole = userDoc['role'];
           if (userRole != null) {
             setState(() {
+              final local = Localizations.of(context, AppLocalizations);
               _userType = userRole;
               _roleGreeting = '${local.hey} $userRole, ${local.howCanIHelp}';
             });
@@ -328,10 +329,11 @@ class _MessageScreenState extends State<MessageScreen> {
   Widget build(BuildContext context) {
     final local = Localizations.of(context, AppLocalizations);
     final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(local.healthcareChatBot),
-        backgroundColor: colorScheme.primary,
+        backgroundColor: theme.scaffoldBackgroundColor,
         actions: [
           // Show API status indicator
           Padding(
@@ -503,7 +505,7 @@ class _MessageScreenState extends State<MessageScreen> {
               borderSide: BorderSide(color: colorScheme.tertiary, width: 2.0), // Border when focused
             ),
                       filled: true,
-                      fillColor: colorScheme.surface,
+                      fillColor: theme.scaffoldBackgroundColor,
                     ),
                     onSubmitted: (_) => sendMessage(),
                   ),
@@ -515,7 +517,7 @@ class _MessageScreenState extends State<MessageScreen> {
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    icon: Icon(Icons.send, color: colorScheme.surface),
+                    icon: Icon(Icons.send, color: theme.scaffoldBackgroundColor),
                     onPressed: _isTyping ? null : sendMessage,
                   ),
                 ),

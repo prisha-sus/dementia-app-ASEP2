@@ -574,7 +574,10 @@ Future<void> _addFamilyMember() async {
 
   @override
   Widget build(BuildContext context) {
-    final local = Localizations.of(context, AppLocalizations);
+    final local = AppLocalizations.of(context);
+     if (local == null) {
+    return const Center(child: CircularProgressIndicator());
+  }
     return Scaffold(
       appBar: AppBar(
         title: Text(local.familyTree),

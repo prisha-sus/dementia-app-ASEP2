@@ -136,7 +136,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
     final local = Localizations.of(context, AppLocalizations);
     if (status != PermissionStatus.granted) {
       setState(() => _statusMessage = local.microphonePermissionRequired);
-      throw Exception(local.microphonePermissionDenied);
+      throw Exception(local.speechRecognitionNotAvailable);
     }
   }
 
@@ -393,10 +393,11 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
     final local = Localizations.of(context, AppLocalizations);
     return Scaffold(
       appBar: AppBar(
-        title: Text(local.voiceAssitant),
+        title: Text(local.voiceAssistant),
         backgroundColor: colorScheme.primary,
         elevation: 0,
         actions: [
@@ -423,7 +424,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                 padding: EdgeInsets.all(16),
                 margin: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: colorScheme.surface,
+                  color: theme.scaffoldBackgroundColor,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -475,7 +476,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                   padding: EdgeInsets.all(16),
                   margin: EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: colorScheme.surface,
+                    color: theme.scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -508,9 +509,9 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                   padding: EdgeInsets.all(16),
                   margin: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colorScheme.surface,
+                    color: theme.scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: colorScheme.surface.withOpacity(0.5)),
+                    border: Border.all(color: theme.scaffoldBackgroundColor.withOpacity(0.5)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -541,7 +542,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                 child: Container(
                   margin: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colorScheme.surface,
+                    color: theme.scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -569,7 +570,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                               margin: EdgeInsets.only(bottom: 8),
                               padding: EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: isUser ? colorScheme.tertiary.withOpacity(0.2): colorScheme.surface.withOpacity(0.5),
+                                color: isUser ? colorScheme.tertiary.withOpacity(0.2): theme.scaffoldBackgroundColor.withOpacity(0.5),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -599,8 +600,8 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                       icon: Icon(_isListening ? Icons.stop : Icons.mic),
                       label: Text(_isListening ? local.stop : local.start),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _isListening ? colorScheme.tertiary: colorScheme.surface,
-                        foregroundColor: _isListening ? colorScheme.surface : colorScheme.onPrimary,
+                        backgroundColor: _isListening ? colorScheme.tertiary: theme.scaffoldBackgroundColor,
+                        foregroundColor: _isListening ? theme.scaffoldBackgroundColor : colorScheme.onPrimary,
                         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       ),
                     ),
@@ -615,7 +616,7 @@ class _VoiceScreenState extends State<VoiceScreen> with WidgetsBindingObserver {
                       icon: Icon(Icons.clear),
                       label: Text(local.clear),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.surface,
+                        backgroundColor: theme.scaffoldBackgroundColor,
                         foregroundColor: colorScheme.tertiary,
                         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       ),
