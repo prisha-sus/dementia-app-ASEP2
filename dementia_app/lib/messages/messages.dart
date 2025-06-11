@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 class MessageScreen extends StatefulWidget {
@@ -22,8 +23,7 @@ class _MessageScreenState extends State<MessageScreen> {
   bool _isTyping = false; // Track if the AI is "typing"
 
   // Gemini API configuration
-  final String _geminiApiKey =
-      'AIzaSyC2PtlaqIDkFQxn52A9Xlk4u4MK8YvO5aw'; // Replace with your API key
+ final String _geminiApiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
   final String _geminiApiUrl =
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent";
 

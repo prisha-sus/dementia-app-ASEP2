@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -71,8 +72,10 @@ void main() async {
   try {
     // Initialize Firebase
     await Firebase.initializeApp();
+
     isFirebaseInitialized = true;
     print('✅ Firebase initialized');
+    await dotenv.load(fileName: ".env");
 
     // Initialize local notifications
     await _initializeLocalNotifications();

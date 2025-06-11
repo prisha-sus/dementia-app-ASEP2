@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LocationData {
   final double latitude;
@@ -29,7 +30,7 @@ class LocationData {
 }
 
 class MapService {
-  static const String _baseUrl = 'http://192.168.191.125:5001'; // Replace with your Flask server URL
+  static final String _baseUrl = dotenv.env['MAP_SERVICE_URL'] ?? 'http://localhost:5001'; // Replace with your Flask server URL
   static const String _locationEndpoint = '/get_location';
   static const Duration _fetchInterval = Duration(minutes: 5);
 

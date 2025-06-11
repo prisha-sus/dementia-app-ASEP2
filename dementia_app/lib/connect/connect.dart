@@ -8,8 +8,6 @@ import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
-
-
 class ConnectScreen extends StatelessWidget {
   const ConnectScreen({super.key});
 
@@ -30,15 +28,18 @@ class ConnectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final local = Localizations.of(context, AppLocalizations);
+    final local = AppLocalizations.of(context);
     return StreamBuilder<User?>(
       stream: AuthService().userStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         } else if (snapshot.hasError) {
-          return Center(
-              child: Text(local.errorFetchingUserData));
+          return Scaffold(
+            body: Center(child: Text('Error fetching user data')),
+          );
         } else if (snapshot.hasData) {
           final user = snapshot.data;
           if (user != null && user.uid.isNotEmpty) {
@@ -46,137 +47,149 @@ class ConnectScreen extends StatelessWidget {
               future: getUserRole(user.uid),
               builder: (context, roleSnapshot) {
                 if (roleSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
                 } else if (roleSnapshot.hasError) {
-                  return  Center(child: Text(local.failedToLoadRole));
+                  return Scaffold(
+                    body: Center(child: Text('Failed to load role')),
+                  );
                 } else {
                   String role = roleSnapshot.data ?? 'No Role';
-                  String displayName = user.displayName ?? local.unknownUser;
+                  String displayName = user.displayName ?? 'Unknown User';
                   String? photoURL = user.photoURL;
 
                   final theme = Theme.of(context);
-                  final textTheme = theme.textTheme;
-                  final textColor = theme.colorScheme.onSurface;
                   final colorScheme = theme.colorScheme;
 
                   return Scaffold(
+                    backgroundColor: colorScheme.surface,
                     extendBodyBehindAppBar: true,
                     drawer: Drawer(
-  elevation: 16.0,
-  child: Container(
-    color: colorScheme.secondary,
-    child: ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        Container(
-          padding: const EdgeInsets.fromLTRB(16, 40, 16, 16), // Avoid overflow
-          color: colorScheme.primary,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 4),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.primary.withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 8,
+                      elevation: 16.0,
+                      child: Container(
+                        color: colorScheme.surface,
+                        child: ListView(
+                          padding: EdgeInsets.zero,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
+                              color: colorScheme.primary,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            color: colorScheme.onPrimary, width: 4),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.3),
+                                            spreadRadius: 2,
+                                            blurRadius: 8,
+                                          ),
+                                        ],
+                                      ),
+                                      child: CircleAvatar(
+                                        backgroundImage: photoURL != null
+                                            ? NetworkImage(photoURL)
+                                            : const AssetImage('assets/default.png')
+                                                as ImageProvider,
+                                        backgroundColor: colorScheme.onPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    displayName,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: colorScheme.onPrimary,
+                                    ),
+                                  ),
+                                  Text(
+                                    user.email ?? '',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: colorScheme.onPrimary.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            _buildDrawerItem(
+                              icon: Icons.dashboard_rounded,
+                              title: local?.dashboard ?? 'Dashboard',
+                              onTap: () => Navigator.of(context).pop(),
+                              colorScheme: colorScheme,
+                            ),
+                            const SizedBox(height: 20),
+                            _buildDrawerItem(
+                              icon: Icons.trending_up_rounded,
+                              title: local?.analytics ?? 'Analytics',
+                              onTap: () {
+                                Navigator.pushNamed(context, '/analytics');
+                              },
+                              colorScheme: colorScheme,
+                            ),
+                            const SizedBox(height: 20),
+                            _buildDrawerItem(
+                              icon: Icons.notifications_rounded,
+                              title: local?.notifications ?? 'Notifications',
+                              onTap: () {},
+                              colorScheme: colorScheme,
+                            ),
+                            const SizedBox(height: 20),
+                            _buildDrawerItem(
+                              icon: Icons.settings_rounded,
+                              title: local?.settings ?? 'Settings',
+                              onTap: () {},
+                              colorScheme: colorScheme,
+                            ),
+                            const SizedBox(height: 50),
+                            Divider(
+                              color: colorScheme.onSurface.withOpacity(0.3),
+                              thickness: 1,
+                              indent: 20,
+                              endIndent: 20,
+                            ),
+                            const SizedBox(height: 20),
+                            _buildDrawerItem(
+                              icon: Icons.help_outline_rounded,
+                              title: local?.helpSupport ?? 'Help & Support',
+                              onTap: () {},
+                              colorScheme: colorScheme,
+                            ),
+                            const SizedBox(height: 20),
+                            _buildDrawerItem(
+                              icon: Icons.logout_rounded,
+                              title: local?.logout ?? 'Logout',
+                              onTap: () async {
+                                await FirebaseAuth.instance.signOut();
+                                Navigator.pushReplacementNamed(context, '/');
+                              },
+                              colorScheme: colorScheme,
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                  child: CircleAvatar(
-                    backgroundImage: photoURL != null
-                        ? NetworkImage(photoURL)
-                        : const AssetImage('assets/default.png') as ImageProvider,
-                    backgroundColor: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                displayName,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onPrimary,
-                ),
-              ),
-              Text(
-                user.email ?? '',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white70,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 20),
-        _buildDrawerItem(
-          icon: Icons.dashboard_rounded,
-          title: local.dashboard,
-          onTap: () => Navigator.of(context).pop(),
-        ),
-        const SizedBox(height: 20),
-        _buildDrawerItem(
-          icon: Icons.trending_up_rounded,
-          title: local.analytics,
-          onTap: () {Navigator.pushNamed(context, '/analytics');},
-        ),
-        const SizedBox(height: 20),
-        _buildDrawerItem(
-          icon: Icons.notifications_rounded,
-          title: local.notifications,
-          onTap: () {},
-        ),
-        const SizedBox(height: 20),
-        _buildDrawerItem(
-          icon: Icons.settings_rounded,
-          title: local.settings,
-          onTap: () {},
-        ),
-        const SizedBox(height: 100),
-        const Divider(
-          color: Colors.white,
-          thickness: 2,
-          indent: 0,
-          endIndent: 20,
-        ),
-        _buildDrawerItem(
-          icon: Icons.help_outline_rounded,
-          title: local.helpSupport,
-          onTap: () {},
-        ),
-        const SizedBox(height: 20),
-        _buildDrawerItem(
-          icon: Icons.logout_rounded,
-          title: local.logout,
-          onTap: () async {
-            await FirebaseAuth.instance.signOut();
-            Navigator.pushReplacementNamed(context, '/');
-          },
-        ),
-      ],
-    ),
-  ),
-),
-
+                    ),
                     appBar: AppBar(
-                      title:  Text(
-                        local.welcome,
-                        style: TextStyle(
+                      title: Text(
+                        local?.welcome ?? 'Welcome',
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.8,
                         ),
                       ),
-                      backgroundColor: colorScheme.surface,
+                      backgroundColor: colorScheme.surface.withOpacity(0.9),
                       elevation: 0,
                       flexibleSpace: ClipRRect(
                         child: BackdropFilter(
@@ -197,96 +210,73 @@ class ConnectScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
-      body:  Container(
-                      decoration:  BoxDecoration(
-                        //gradient: LinearGradient(
-                          color: colorScheme.surface,
-                            
-                          
-                         // stops: const [0.3, 0.7, 0.9],
-                          //begin: Alignment.topCenter,
-                          //end: Alignment.bottomRight,
-                        //),
+                    body: Container(
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
                       ),
                       child: SafeArea(
                         top: true,
-                        child: ListView(
+                        child: SingleChildScrollView(
                           padding: const EdgeInsets.only(
                               top: 10, left: 20, right: 20, bottom: 20),
                           physics: const BouncingScrollPhysics(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                            Container(
-                              decoration: BoxDecoration(
-                              color: colorScheme.surface, // Change this to your desired background color
-                              borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.symmetric(horizontal: 12),
-                              child: DropdownButton<Locale>(
-                              value: Localizations.localeOf(context),
-                              dropdownColor: colorScheme.surface, // Dropdown menu background
-                              onChanged: (Locale? newLocale) {
-                                if (newLocale != null) {
-                                App.setLocale(context, newLocale);
-                                }
-                              },
-                              underline: SizedBox(), // Removes the default underline
-                              items:  [
-                                DropdownMenuItem(
-                                value: Locale('en'),
-                                child: Text(
-                                  'English',
-                                  style: TextStyle(
-                                  color: colorScheme.onSurface,
+                              // Language Selector
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surface,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: colorScheme.outline.withOpacity(0.3),
                                   ),
                                 ),
-            
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                child: DropdownButton<Locale>(
+                                  value: Localizations.localeOf(context),
+                                  dropdownColor: colorScheme.surface,
+                                  onChanged: (Locale? newLocale) {
+                                    if (newLocale != null) {
+                                      App.setLocale(context, newLocale);
+                                    }
+                                  },
+                                  underline: const SizedBox(),
+                                  isExpanded: true,
+                                  items: const [
+                                    DropdownMenuItem(
+                                      value: Locale('en'),
+                                      child: Text('English'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: Locale('hi'),
+                                      child: Text('हिंदी'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: Locale('mr'),
+                                      child: Text('मराठी'),
+                                    ),
+                                  ],
                                 ),
-                                DropdownMenuItem(
-                                value: Locale('hi'),
-                                child: Text('हिंदी',
-                                style: TextStyle(
-                                  color: colorScheme.onSurface,
-                                  ),),
-                                ),
-                                DropdownMenuItem(
-                                value: Locale('mr'),
-                                child: Text('मराठी',
-                                style: TextStyle(
-                                  color: colorScheme.onSurface,
-                                  ),),
-                                ),
-                              ],
                               ),
-                            ),
+                              const SizedBox(height: 20),
 
-                            // User Profile Card
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: Hero(
+                              // User Profile Card
+                              Hero(
                                 tag: 'role-badge',
                                 child: Material(
-                                  color: colorScheme.surface,
+                                  color: Colors.transparent,
                                   child: Container(
-                                    height: 140,
+                                    width: double.infinity,
                                     padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(                    
+                                    decoration: BoxDecoration(
                                       color: colorScheme.surface,
-                                      /*gradient: LinearGradient(
-                                        colors: [
-                                          Colors.white.withOpacity(0.1),
-                                          Colors.white.withOpacity(0.05),
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),*/
                                       borderRadius: BorderRadius.circular(20),
-                                      //border: Border.all(color: Colors.white24),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: colorScheme.onSurface.withOpacity(0.2),
+                                          color: colorScheme.shadow.withOpacity(0.1),
                                           blurRadius: 8,
-                                          //offset: const Offset(0, 8),
+                                          offset: const Offset(0, 2),
                                         )
                                       ],
                                     ),
@@ -299,11 +289,11 @@ class ConnectScreen extends StatelessWidget {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             border: Border.all(
-                                                color: Colors.white, width: 2),
+                                                color: colorScheme.primary,
+                                                width: 2),
                                             image: photoURL != null
                                                 ? DecorationImage(
-                                                    image:
-                                                        NetworkImage(photoURL),
+                                                    image: NetworkImage(photoURL),
                                                     fit: BoxFit.cover,
                                                   )
                                                 : const DecorationImage(
@@ -311,13 +301,6 @@ class ConnectScreen extends StatelessWidget {
                                                         'assets/default.png'),
                                                     fit: BoxFit.cover,
                                                   ),
-                                            boxShadow: [
-                                             /* BoxShadow(
-                                                color: colorScheme.surface,
-                                                blurRadius: 5,
-                                                offset: const Offset(0, 4),
-                                              ),*/
-                                            ],
                                           ),
                                         ),
                                         const SizedBox(width: 20),
@@ -332,29 +315,24 @@ class ConnectScreen extends StatelessWidget {
                                                 style: TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.bold,
-                                                  color:colorScheme.onSurface,
+                                                  color: colorScheme.onSurface,
                                                 ),
+                                                overflow: TextOverflow.ellipsis,
                                               ),
-                                              const SizedBox(height: 5),
+                                              const SizedBox(height: 8),
                                               Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 6),
+                                                padding: const EdgeInsets.symmetric(
+                                                    horizontal: 12, vertical: 6),
                                                 decoration: BoxDecoration(
-                                                  color: colorScheme.tertiary.withOpacity(0.2),
-                                                  borderRadius:
-                                                      BorderRadius.circular(30),
-                                                  border: Border.all(
-                                                    color: colorScheme.tertiary                                               ,
-                                                  ),
+                                                  color: colorScheme.primaryContainer,
+                                                  borderRadius: BorderRadius.circular(20),
                                                 ),
                                                 child: Text(
                                                   role,
                                                   style: TextStyle(
                                                     fontSize: 14,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: colorScheme.tertiary
+                                                    fontWeight: FontWeight.w600,
+                                                    color: colorScheme.onPrimaryContainer,
                                                   ),
                                                 ),
                                               ),
@@ -362,7 +340,7 @@ class ConnectScreen extends StatelessWidget {
                                           ),
                                         ),
                                         IconButton(
-                                          icon:Icon(
+                                          icon: Icon(
                                             Icons.edit_rounded,
                                             color: colorScheme.onSurface,
                                           ),
@@ -373,145 +351,122 @@ class ConnectScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                            ),
+                              const SizedBox(height: 30),
 
-                            // Section Title
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                             Padding(
-                              padding: EdgeInsets.only(left: 5, bottom: 15),
-                              child: Text(
-                                local.quickAccess,
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color:colorScheme.onSurface,
-                                  letterSpacing: 0.5,
+                              // Section Title
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5, bottom: 15),
+                                child: Text(
+                                  local?.quickAccess ?? 'Quick Access',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onSurface,
+                                    letterSpacing: 0.5,
+                                  ),
                                 ),
                               ),
-                            ),
 
-                            // Navigation Buttons Grid
-                            GridView.count(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.85,
-                              crossAxisSpacing: 15,
-                              mainAxisSpacing: 15,
-                              children: [
-                                _buildFeatureButton(
-                                  context,
-                                  label: local.games,
-                                  description: local.gamesDescription,
-                                  textColor: colorScheme.surface,
-                                  icon: Icons.sports_esports_rounded,
-                                  /*gradientStart: const Color(0xFF4776E6),
-                                  gradientEnd: const Color(0xFF8E54E9),*/
-                                  color: colorScheme.tertiary,
-                                  route: '/puzzles',
-                                  tag: 'btn1',
-                                ),
-                                _buildFeatureButton(
-                                  context,
-                                  label: local.medicineReminders,
-                                  description: local.medicineRemindersDescription,// 'Remember your medicines!',
-                                  textColor: colorScheme.onSurface,
-                                  icon: Icons.medical_services_rounded,
-                                  color: colorScheme.primary,
-                                  route: '/medicine',
-                                  tag: 'btn2',
-                                ),
-                                _buildFeatureButton(
-                                  context,
-                                  label: local.memoryAid,
-                                  description: local.memoryAidDescription,// 'Use memory aids to help you remember things',
-                                  textColor: colorScheme.onSurface,
-                                  icon: Icons.psychology_rounded,
-                                  color: colorScheme.primary,
-                                  route: '/memoryAid',
-                                  tag: 'btn3',
-                                ),
-                                _buildFeatureButton(
-                                  context,
-                                  label: local.chatbot,
-                                  description: local.chatbotDescription,// 'Chat with our AI assistant for support',
-                                  textColor: colorScheme.surface,
-                                  icon: Icons.volunteer_activism_rounded,
-                                  color: colorScheme.tertiary,
-                                  route: '/message',
-                                  tag: 'btn4',
-                                ),
-                              ],
-                            ),
-                          ],
+                              // Navigation Buttons Grid
+                              GridView.count(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                crossAxisCount: 2,
+                                childAspectRatio: 0.85,
+                                crossAxisSpacing: 15,
+                                mainAxisSpacing: 15,
+                                children: [
+                                  _buildFeatureButton(
+                                    context,
+                                    label: local?.games ?? 'Games',
+                                    description: local?.gamesDescription ?? 'Play games',
+                                    textColor: colorScheme.onPrimary,
+                                    icon: Icons.sports_esports_rounded,
+                                    color: colorScheme.primary,
+                                    route: '/puzzles',
+                                    tag: 'btn1',
+                                  ),
+                                  _buildFeatureButton(
+                                    context,
+                                    label: local?.medicineReminders ?? 'Medicine',
+                                    description: local?.medicineRemindersDescription ?? 
+                                        'Remember your medicines!',
+                                    textColor: colorScheme.onSecondary,
+                                    icon: Icons.medical_services_rounded,
+                                    color: colorScheme.secondary,
+                                    route: '/medicine',
+                                    tag: 'btn2',
+                                  ),
+                                  _buildFeatureButton(
+                                    context,
+                                    label: local?.memoryAid ?? 'Memory Aid',
+                                    description: local?.memoryAidDescription ?? 
+                                        'Memory assistance tools',
+                                    textColor: colorScheme.onTertiary,
+                                    icon: Icons.psychology_rounded,
+                                    color: colorScheme.tertiary,
+                                    route: '/memoryAid',
+                                    tag: 'btn3',
+                                  ),
+                                  _buildFeatureButton(
+                                    context,
+                                    label: local?.chatbot ?? 'Chatbot',
+                                    description: local?.chatbotDescription ?? 
+                                        'Chat with AI assistant',
+                                    textColor: colorScheme.onError,
+                                    icon: Icons.volunteer_activism_rounded,
+                                    color: colorScheme.error,
+                                    route: '/message',
+                                    tag: 'btn4',
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 100), // Space for bottom nav
+                            ],
+                          ),
                         ),
-                          ]
                       ),
                     ),
-                  ),
-  
-                    /*floatingActionButton: FloatingActionButton.extended(
-                      onPressed: () {
-                        showNotification(
-                          title: "New Message!",
-                          body: "Caregiver sent you a new text",
-                        );
-                        Navigator.pushNamed(context, '/message');
-                      },
-                      
-                      backgroundColor: colorScheme.surface,
-                      foregroundColor: colorScheme.tertiary,
-                      elevation: 8,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)
-                      ),
-                      icon: const Icon(Icons.volunteer_activism_rounded),
-                      label: const Text(
-                        "Chatbot",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ),*/
                     bottomNavigationBar: const BottomNavBar(),
                   );
                 }
               },
             );
           } else {
-            return  Center(child: Text(local.userDataMissing));
+            return Scaffold(
+              body: Center(child: Text(local?.userDataMissing ?? 'User data missing')),
+            );
           }
         } else {
-          return  Center(child: Text(local.noUserFound));
+          return Scaffold(
+            body: Center(child: Text(local?.noUserFound ?? 'No user found')),
+          );
         }
       },
     );
   }
 
   Widget _buildDrawerItem({
-    
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    required ColorScheme colorScheme,
   }) {
     return ListTile(
       leading: Icon(
         icon,
-        color: Colors.white,
+        color: colorScheme.onSurface,
         size: 28,
       ),
       title: Text(
         title,
         style: TextStyle(
-          color: Colors.white,
+          color: colorScheme.onSurface,
           fontWeight: FontWeight.bold,
-          fontSize: 22,
+          fontSize: 18,
           fontFamily: GoogleFonts.nunito().fontFamily,
         ),
+        overflow: TextOverflow.ellipsis,
       ),
       onTap: onTap,
       dense: true,
@@ -525,13 +480,10 @@ class ConnectScreen extends StatelessWidget {
     required String label,
     required String description,
     required IconData icon,
-    //required Color gradientStart,
-    //required Color gradientEnd,
     required String route,
     required String tag,
     required Color color,
     required Color textColor,
-    
   }) {
     return Hero(
       tag: tag,
@@ -544,18 +496,13 @@ class ConnectScreen extends StatelessWidget {
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               color: color,
-              /*gradient: LinearGradient(
-                colors: [gradientStart, gradientEnd],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),*/
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
-                  spreadRadius: 2,
+                  color: color.withOpacity(0.3),
+                  spreadRadius: 1,
                   blurRadius: 8,
-                  //offset: const Offset(0, 8),
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -574,24 +521,31 @@ class ConnectScreen extends StatelessWidget {
                     size: 32,
                   ),
                 ),
-                //const Spacer(),
                 const SizedBox(height: 10),
-                Text(
-                  label,
-                  style:  TextStyle(
-                    color: textColor,
-                    fontSize: 21,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
+                Flexible(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ),
                 const SizedBox(height: 5),
-                Text(
-                  description,
-                  style: TextStyle(
-                    color: textColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
+                Flexible(
+                  child: Text(
+                    description,
+                    style: TextStyle(
+                      color: textColor.withOpacity(0.9),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ),
               ],

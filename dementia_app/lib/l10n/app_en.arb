@@ -1,157 +1,623 @@
 {
   "@@locale": "en",
   "unknownUser": "Unknown User",
+  "@unknownUser": {
+    "description": "Default text shown when user identity cannot be determined"
+  },
   "noRole": "No Role",
+  "@noRole": {
+    "description": "Text displayed when user has no assigned role in the system"
+  },
   "errorFetchingUserData": "Error occurred while fetching user data.",
+  "@errorFetchingUserData": {
+    "description": "Error message shown when user data cannot be retrieved from server"
+  },
   "failedToLoadRole": "Failed to load role",
+  "@failedToLoadRole": {
+    "description": "Error message when user role information cannot be loaded"
+  },
   "dashboard": "Dashboard",
+  "@dashboard": {
+    "description": "Navigation menu item for main dashboard page"
+  },
   "analytics": "Analytics",
+  "@analytics": {
+    "description": "Navigation menu item for analytics/statistics page"
+  },
   "notifications": "Notifications",
+  "@notifications": {
+    "description": "Navigation menu item for notifications page"
+  },
   "settings": "Settings",
+  "@settings": {
+    "description": "Navigation menu item for user settings page"
+  },
   "helpSupport": "Help & Support",
+  "@helpSupport": {
+    "description": "Navigation menu item for help and support section"
+  },
   "logout": "Logout",
+  "@logout": {
+    "description": "Button text for user logout action"
+  },
   "welcome": "Welcome",
+  "@welcome": {
+    "description": "Greeting text displayed to users"
+  },
   "quickAccess": "Quick Access",
+  "@quickAccess": {
+    "description": "Section header for frequently used features"
+  },
   "games": "Games",
+  "@games": {
+    "description": "Label for games section or menu item"
+  },
   "gamesDescription": "Play brain games",
+  "@gamesDescription": {
+    "description": "Brief description of the games feature"
+  },
   "medicineReminders": "Medicine Reminders",
+  "@medicineReminders": {
+    "description": "Label for medication reminder feature"
+  },
   "medicineRemindersDescription": "",
+  "@medicineRemindersDescription": {
+    "description": "Brief description of the medicine reminders feature (currently empty)"
+  },
   "memoryAid": "Memory Aid",
+  "@memoryAid": {
+    "description": "Label for memory assistance feature"
+  },
   "memoryAidDescription": "Remember important things",
+  "@memoryAidDescription": {
+    "description": "Brief description of the memory aid feature"
+  },
   "chatbot": "Chatbot",
+  "@chatbot": {
+    "description": "Label for AI chatbot feature"
+  },
   "chatbotDescription": "Chat with your friendly bot",
+  "@chatbotDescription": {
+    "description": "Brief description of the chatbot feature"
+  },
   "userDataMissing": "User data is missing.",
+  "@userDataMissing": {
+    "description": "Error message when required user data is not available"
+  },
   "noUserFound": "No user found. Please login.",
-   "continueAsGuest": "Continue as Guest",
+  "@noUserFound": {
+    "description": "Message shown when no authenticated user is detected"
+  },
+  "continueAsGuest": "Continue as Guest",
+  "@continueAsGuest": {
+    "description": "Button text to proceed without authentication"
+  },
   "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Button text for Google authentication"
+  },
   "signInWithApple": "Sign in with Apple",
+  "@signInWithApple": {
+    "description": "Button text for Apple authentication"
+  },
   "medicationReminders": "Medication Reminders",
+  "@medicationReminders": {
+    "description": "Page title for medication reminder management"
+  },
   "noMedicationReminders": "No medication reminders",
+  "@noMedicationReminders": {
+    "description": "Message shown when user has no medication reminders set"
+  },
   "tapToAddReminder": "Tap the + button to add a reminder",
+  "@tapToAddReminder": {
+    "description": "Instructions for adding new medication reminders"
+  },
   "dosage": "Dosage",
+  "@dosage": {
+    "description": "Label for medication dosage field"
+  },
   "time": "Time:",
+  "@time": {
+    "description": "Label for time selection field"
+  },
   "recurringReminder": "Recurring Reminder",
+  "@recurringReminder": {
+    "description": "Label for recurring reminder toggle/option"
+  },
   "date": "Date:",
+  "@date": {
+    "description": "Label for date selection field"
+  },
   "repeatOnDays": "Repeat on days:",
+  "@repeatOnDays": {
+    "description": "Label for selecting days of the week for recurring reminders"
+  },
   "addMedicationReminder": "Add Medication Reminder",
+  "@addMedicationReminder": {
+    "description": "Title for add medication reminder form/page"
+  },
   "editMedicationReminder": "Edit Medication Reminder",
+  "@editMedicationReminder": {
+    "description": "Title for edit medication reminder form/page"
+  },
   "medicationName": "Medication Name",
+  "@medicationName": {
+    "description": "Label for medication name input field"
+  },
   "cancel": "CANCEL",
+  "@cancel": {
+    "description": "Button text to cancel current action"
+  },
   "delete": "DELETE",
+  "@delete": {
+    "description": "Button text to delete an item"
+  },
   "update": "UPDATE",
+  "@update": {
+    "description": "Button text to save changes to an existing item"
+  },
   "add": "ADD",
+  "@add": {
+    "description": "Button text to create a new item"
+  },
   "pleaseFillAllFields": "Please fill all fields",
+  "@pleaseFillAllFields": {
+    "description": "Validation message when required form fields are empty"
+  },
   "pleaseSelectAtLeastOneDay": "Please select at least one day",
+  "@pleaseSelectAtLeastOneDay": {
+    "description": "Validation message for recurring reminders without selected days"
+  },
   "deleteReminderTitle": "Delete Reminder",
+  "@deleteReminderTitle": {
+    "description": "Title for delete confirmation dialog"
+  },
   "deleteReminderContent": "Are you sure you want to delete the reminder for",
+  "@deleteReminderContent": {
+    "description": "Confirmation message for deleting medication reminders"
+  },
   "oneTimeAt": "One time at",
+  "@oneTimeAt": {
+    "description": "Prefix for displaying one-time reminder schedule"
+  },
   "every": "Every",
+  "@every": {
+    "description": "Prefix for displaying recurring reminder frequency"
+  },
   "on": "on",
+  "@on": {
+    "description": "Preposition used in schedule descriptions"
+  },
   "at": "at",
+  "@at": {
+    "description": "Preposition used before time in schedule descriptions"
+  },
   "familyTree": "Family Tree",
+  "@familyTree": {
+    "description": "Title for family tree feature/page"
+  },
   "addFamilyMember": "Add Family Member",
+  "@addFamilyMember": {
+    "description": "Button text or form title for adding family members"
+  },
   "name": "Name",
+  "@name": {
+    "description": "Label for name input field"
+  },
   "relation": "Relation",
+  "@relation": {
+    "description": "Label for family relationship selection field"
+  },
   "selectParentOptional": "Select Parent (Optional)",
+  "@selectParentOptional": {
+    "description": "Label for optional parent selection dropdown"
+  },
   "selectParent": "Select Parent",
+  "@selectParent": {
+    "description": "Label for parent selection dropdown"
+  },
   "noParent": "No Parent",
+  "@noParent": {
+    "description": "Option in parent selection for members with no parent"
+  },
   "pleaseFillInAllFields": "Please fill in all fields",
+  "@pleaseFillInAllFields": {
+    "description": "Validation message for incomplete family member form"
+  },
   "familyMemberAdded": "Family member added successfully",
+  "@familyMemberAdded": {
+    "description": "Success message after adding a family member"
+  },
   "failedToAddFamilyMember": "Failed to add family member:",
+  "@failedToAddFamilyMember": {
+    "description": "Error message when family member creation fails"
+  },
   "failedToLoadFamilyMembers": "Failed to load family members:",
+  "@failedToLoadFamilyMembers": {
+    "description": "Error message when family member data cannot be retrieved"
+  },
   "noFamilyMembersYet": "No family members yet. Tap + to add.",
+  "@noFamilyMembersYet": {
+    "description": "Empty state message for family tree with instructions"
+  },
   "healthcareChatBot": "Healthcare ChatBot",
+  "@healthcareChatBot": {
+    "description": "Title for healthcare AI chatbot feature"
+  },
   "online": "Online",
+  "@online": {
+    "description": "Status indicator showing chatbot is available"
+  },
   "offline": "Offline",
+  "@offline": {
+    "description": "Status indicator showing chatbot is unavailable"
+  },
   "typeYourMessage": "Type your message...",
+  "@typeYourMessage": {
+    "description": "Placeholder text for chat message input field"
+  },
   "geminiTyping": "Gemini AI is typing",
+  "@geminiTyping": {
+    "description": "Status message showing AI is composing a response"
+  },
   "errorSendingMessage": "Error sending message. Please check your connection.",
+  "@errorSendingMessage": {
+    "description": "Error message when chat message fails to send"
+  },
   "todayAt": "Today",
+  "@todayAt": {
+    "description": "Timestamp prefix for messages sent today"
+  },
   "senderAI": "Gemini AI",
+  "@senderAI": {
+    "description": "Display name for AI chatbot messages"
+  },
   "senderOffline": "AI Assistant (Offline)",
+  "@senderOffline": {
+    "description": "Display name for AI when offline"
+  },
   "senderUser": "You",
+  "@senderUser": {
+    "description": "Display name for user's own messages"
+  },
   "loading": "loading...",
+  "@loading": {
+    "description": "Generic loading state message"
+  },
   "hey": "Hey",
+  "@hey": {
+    "description": "Casual greeting from AI chatbot"
+  },
   "howCanIHelp": "how can I help you today?",
+  "@howCanIHelp": {
+    "description": "AI chatbot's offer to assist the user"
+  },
   "myProfile": "My Profile",
+  "@myProfile": {
+    "description": "Title for user profile page"
+  },
   "patient": "Patient",
+  "@patient": {
+    "description": "Label for patient user role"
+  },
   "caregiver": "Caregiver",
+  "@caregiver": {
+    "description": "Label for caregiver user role"
+  },
   "gamesPlayed": "Games Played",
+  "@gamesPlayed": {
+    "description": "Profile statistic showing number of games completed"
+  },
   "memoryNotes": "Memory Notes",
+  "@memoryNotes": {
+    "description": "Profile section for user's memory aid notes"
+  },
   "noPatientConnected": "No patient connected",
+  "@noPatientConnected": {
+    "description": "Message for caregivers who haven't connected to a patient"
+  },
   "noLogsAvailable": "No logs available.",
+  "@noLogsAvailable": {
+    "description": "Message when no activity logs exist"
+  },
   "noActivitiesLoggedYet": "No activities logged yet",
+  "@noActivitiesLoggedYet": {
+    "description": "Empty state message for activity history"
+  },
   "connectWithCaregiver": "Connect with a Caregiver",
+  "@connectWithCaregiver": {
+    "description": "Feature title for patient-caregiver connection"
+  },
   "shareCodeWithCaregiver": "Share a one-time code with your caregiver to establish a secure connection.",
+  "@shareCodeWithCaregiver": {
+    "description": "Instructions for patients to connect with caregivers"
+  },
   "generateConnectionCode": "Generate Connection Code",
+  "@generateConnectionCode": {
+    "description": "Button text to create a connection code"
+  },
   "yourCodeIs": "Your code is:",
+  "@yourCodeIs": {
+    "description": "Prefix for displaying generated connection code"
+  },
   "shareThisCodeWithCaregiver": "Share this code with your caregiver",
+  "@shareThisCodeWithCaregiver": {
+    "description": "Instructions for sharing the connection code"
+  },
   "connectWithPatient": "Connect with a Patient",
+  "@connectWithPatient": {
+    "description": "Feature title for caregiver-patient connection"
+  },
   "enterCodeFromPatient": "Enter the one-time code provided by your patient to establish a secure connection.",
+  "@enterCodeFromPatient": {
+    "description": "Instructions for caregivers to connect with patients"
+  },
   "enterPatientCode": "Enter patient code",
+  "@enterPatientCode": {
+    "description": "Label for patient code input field"
+  },
   "verifyCode": "Verify Code",
+  "@verifyCode": {
+    "description": "Button text to validate connection code"
+  },
   "patientActivity": "Patient Activity",
+  "@patientActivity": {
+    "description": "Title for patient activity monitoring section"
+  },
   "otpSentToCaregiver": "OTP sent to caregiver!",
+  "@otpSentToCaregiver": {
+    "description": "Success message when connection code is sent"
+  },
   "failedToSendOtp": "Failed to send OTP to caregiver",
+  "@failedToSendOtp": {
+    "description": "Error message when connection code cannot be sent"
+  },
   "invalidCode": "Invalid code. Please try again.",
+  "@invalidCode": {
+    "description": "Error message for incorrect connection codes"
+  },
   "connectedToPatientSuccess": "Connected to ",
+  "@connectedToPatientSuccess": {
+    "description": "First part of success message for patient connection"
+  },
   "successfully": "successfully!",
+  "@successfully": {
+    "description": "Second part of success message for patient connection"
+  },
   "error": "Error:",
+  "@error": {
+    "description": "Generic error message prefix"
+  },
   "memoryGames": "Memory Games",
+  "@memoryGames": {
+    "description": "Title for memory training games section"
+  },
   "speechGame": "Speech Game",
+  "@speechGame": {
+    "description": "Title for speech-based memory game"
+  },
+  "speechGameTitle": "Speech Game",
+  "@speechGameTitle": {
+    "description": "Title for the speech-based memory game"
+  },
   "sequenceMemory": "Sequence Memory",
+  "@sequenceMemory": {
+    "description": "Title for sequence memory training game"
+  },
   "patternMemory": "Pattern Memory",
+  "@patternMemory": {
+    "description": "Title for pattern memory training game"
+  },
   "nameAnimalPrompt": "Name an animal that starts with the letter ",
+  "@nameAnimalPrompt": {
+    "description": "Speech game prompt asking user to name an animal"
+  },
   "correctAnswer": "Correct! You said: ",
+  "@correctAnswer": {
+    "description": "Positive feedback for correct speech game answers"
+  },
   "tryAgain": "Try again! You said: ",
+  "@tryAgain": {
+    "description": "Feedback for incorrect speech game answers"
+  },
   "listening": "Listening...",
+  "@listening": {
+    "description": "Status message during speech recognition"
+  },
   "tapMicToStart": "Tap the microphone to start",
+  "@tapMicToStart": {
+    "description": "Instructions to begin speech recognition"
+  },
   "speechRecognitionNotAvailable": "Speech recognition not available",
+  "@speechRecognitionNotAvailable": {
+    "description": "Error message when speech recognition is not supported"
+  },
   "microphonePermissionRequired": "Microphone permission required",
+  "@microphonePermissionRequired": {
+    "description": "Error message when microphone access is denied"
+  },
   "errorDuringSpeechRecognition": "Error during speech recognition",
+  "@errorDuringSpeechRecognition": {
+    "description": "Generic error message for speech recognition failures"
+  },
   "errorInitializingSpeechRecognition": "Error initializing speech recognition",
+  "@errorInitializingSpeechRecognition": {
+    "description": "Error message when speech recognition cannot be started"
+  },
   "stopListening": "Stop Listening",
+  "@stopListening": {
+    "description": "Button text to end speech recognition"
+  },
   "startSpeaking": "Start Speaking",
+  "@startSpeaking": {
+    "description": "Button text to begin speech recognition"
+  },
   "newQuestion": "New Question",
+  "@newQuestion": {
+    "description": "Button text to generate a new game question"
+  },
   "score": "Score:",
+  "@score": {
+    "description": "Label for displaying user's game score"
+  },
   "sequenceMemoryGame": "Sequence Memory Game",
+  "@sequenceMemoryGame": {
+    "description": "Full title for sequence memory training game"
+  },
   "levelScore": "Level:",
+  "@levelScore": {
+    "description": "Label for displaying current game level"
+  },
   "watchSequence": "Watch the sequence...",
+  "@watchSequence": {
+    "description": "Instruction to observe the sequence in memory game"
+  },
   "repeatSequence": "Repeat the sequence!",
+  "@repeatSequence": {
+    "description": "Instruction to reproduce the sequence in memory game"
+  },
   "getReady": "Get ready...",
+  "@getReady": {
+    "description": "Countdown message before game starts"
+  },
   "restartLevel": "Restart Level",
+  "@restartLevel": {
+    "description": "Button text to restart current game level"
+  },
   "patternMemoryGame": "Pattern Memory Game",
+  "@patternMemoryGame": {
+    "description": "Full title for pattern memory training game"
+  },
   "grid": "Grid:",
+  "@grid": {
+    "description": "Label for grid-based game interface"
+  },
   "memorizePattern": "Memorize the pattern...",
+  "@memorizePattern": {
+    "description": "Instruction to study the pattern in memory game"
+  },
   "recreatePattern": "Recreate the pattern!",
+  "@recreatePattern": {
+    "description": "Instruction to reproduce the pattern in memory game"
+  },
   "checkPattern": "Check Pattern",
+  "@checkPattern": {
+    "description": "Button text to verify pattern recreation"
+  },
   "newPattern": "New Pattern",
+  "@newPattern": {
+    "description": "Button text to generate a new pattern"
+  },
   "selectYourRole": "Select Your Role",
+  "@selectYourRole": {
+    "description": "Title for role selection screen"
+  },
   "imAPatient": "I'm a Patient",
+  "@imAPatient": {
+    "description": "Button text for selecting patient role"
+  },
   "imACaregiver": "I'm a Caregiver",
+  "@imACaregiver": {
+    "description": "Button text for selecting caregiver role"
+  },
   "home": "Home",
+  "@home": {
+    "description": "Navigation tab label for home/dashboard screen"
+  },
   "voice": "Voice",
+  "@voice": {
+    "description": "Navigation tab label for voice assistant feature"
+  },
   "profile": "Profile",
+  "@profile": {
+    "description": "Navigation tab label for user profile screen"
+  },
   "voiceAssistant": "Voice Assistant",
+  "@voiceAssistant": {
+    "description": "Title for voice-activated AI assistant feature"
+  },
   "initializing": "Initializing...",
+  "@initializing": {
+    "description": "Status message during voice assistant startup"
+  },
   "checkingPermissions": "Checking permissions...",
+  "@checkingPermissions": {
+    "description": "Status message during permission verification"
+  },
   "initializingLanguageDetection": "Initializing language detection...",
+  "@initializingLanguageDetection": {
+    "description": "Status message during language detection setup"
+  },
   "initializingSpeechRecognition": "Initializing speech recognition...",
+  "@initializingSpeechRecognition": {
+    "description": "Status message during speech recognition setup"
+  },
   "configuringTextToSpeech": "Configuring text-to-speech...",
+  "@configuringTextToSpeech": {
+    "description": "Status message during text-to-speech setup"
+  },
   "readyToListen": "Ready to listen!",
+  "@readyToListen": {
+    "description": "Status message when voice assistant is ready"
+  },
   "stoppedListening": "Stopped listening",
+  "@stoppedListening": {
+    "description": "Status message when voice recognition has ended"
+  },
   "speechError": "Speech error:",
+  "@speechError": {
+    "description": "Error message prefix for speech recognition failures"
+  },
   "youSaid": "You said:",
+  "@youSaid": {
+    "description": "Prefix for displaying recognized speech text"
+  },
   "response": "Response:",
+  "@response": {
+    "description": "Prefix for displaying AI assistant responses"
+  },
   "conversationHistory": "Conversation History",
+  "@conversationHistory": {
+    "description": "Title for voice assistant conversation log"
+  },
   "start": "Start",
+  "@start": {
+    "description": "Button text to begin voice recognition"
+  },
   "stop": "Stop",
+  "@stop": {
+    "description": "Button text to end voice recognition"
+  },
   "clear": "Clear",
+  "@clear": {
+    "description": "Button text to clear conversation history"
+  },
   "language": "Language:",
+  "@language": {
+    "description": "Label for language selection setting"
+  },
   "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
   "hindi": "Hindi (हिंदी)",
+  "@hindi": {
+    "description": "Hindi language option with native script"
+  },
   "marathi": "Marathi (मराठी)",
+  "@marathi": {
+    "description": "Marathi language option with native script"
+  },
   "unknown": "Unknown",
+  "@unknown": {
+    "description": "Label for unidentified or unrecognized items"
+  },
   "iHearYou": "I hear you. Please tell me how I can help.",
-  "sorryTroubleUnderstanding": "Sorry, I had trouble understanding. Please try again."
+  "@iHearYou": {
+    "description": "Voice assistant acknowledgment and offer to help"
+  },
+  "sorryTroubleUnderstanding": "Sorry, I had trouble understanding. Please try again.",
+  "@sorryTroubleUnderstanding": {
+    "description": "Voice assistant apology for speech recognition failure"
+  }
 }

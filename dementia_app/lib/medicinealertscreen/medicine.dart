@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // Import your service file
 import 'package:mytestapp/services/medicinealert.dart';
@@ -24,7 +25,7 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   bool _isLoading = true;
 
   // Replace with your actual IP address
-  static const String _backendUrl = 'http://192.168.191.125:5000';
+   static final String _backendUrl = dotenv.env['BACKEND_URL'] ?? 'http://localhost:5000';
 
   @override
   void initState() {
