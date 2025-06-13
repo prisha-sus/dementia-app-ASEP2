@@ -25,7 +25,7 @@ class _MessageScreenState extends State<MessageScreen> {
   // Gemini API configuration
  final String _geminiApiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
   final String _geminiApiUrl =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent";
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
   // Fallback settings for handling API issues
   bool _useLocalFallback =

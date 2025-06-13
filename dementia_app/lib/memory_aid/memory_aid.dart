@@ -8,7 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:graphview/GraphView.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
-import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
+// Remove this import if you don't have localization set up
+// import 'package:mytestapp/flutter_gen/gen_l10n/app_localizations.dart';
 
 // Add your ImgBB API key here - you'll need to register at https://api.imgbb.com/
 const String IMGBB_API_KEY = 'ae07899cbeb3f0f95743db787f6b613e';
@@ -22,9 +23,8 @@ void main() async {
 class FamilyTreeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final local = Localizations.of(context, AppLocalizations);
     return MaterialApp(
-      title: local.familyTree,
+      title: 'Family Tree',
       theme: ThemeData(
         primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -53,10 +53,10 @@ class FamilyMember {
 
   factory FamilyMember.fromMap(Map<String, dynamic> data) {
     return FamilyMember(
-      id: data['id'],
-      name: data['name'],
-      relation: data['relation'],
-      imageUrl: data['imageUrl'],
+      id: data['id'] ?? '',
+      name: data['name'] ?? '',
+      relation: data['relation'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
       parentId: data['parentId'],
       dateAdded: data['dateAdded'] != null 
           ? DateTime.fromMillisecondsSinceEpoch(data['dateAdded'])
@@ -89,26 +89,14 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
   String? _selectedParentId;
   bool _showListView = false;
 
-  // Graph configuration
-  Graph graph = Graph()..isTree = true;
-  BuchheimWalkerConfiguration builder = BuchheimWalkerConfiguration();
-
   @override
   void initState() {
     super.initState();
-    _setupGraphBuilder();
     _loadFamilyMembers();
   }
 
-  void _setupGraphBuilder() {
-    builder
-      ..siblingSeparation = (100)
-      ..levelSeparation = (150)
-      ..subtreeSeparation = (150)
-      ..orientation = (BuchheimWalkerConfiguration.ORIENTATION_TOP_BOTTOM);
-  }
-
   Future<void> _loadFamilyMembers() async {
+    print('Starting to load family members...');
     setState(() {
       _isLoading = true;
     });
@@ -120,142 +108,142 @@ class _FamilyTreeScreenState extends State<FamilyTreeScreen> {
           .collection('family-members')
           .get();
 
+      print('Firestore query completed. Found ${snapshot.docs.length} documents');
+
       final loadedMembers = snapshot.docs
-          .map((doc) => FamilyMember.fromMap(doc.data()))
+          .map((doc) {
+            print('Processing document: ${doc.id}');
+            return FamilyMember.fromMap(doc.data());
+          })
           .toList();
+
+      print('Successfully loaded ${loadedMembers.length} family members');
 
       setState(() {
         members = loadedMembers;
-        _buildFamilyTreeGraph();
       });
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('Error loading family members: $e');
+      print('Stack trace: $stackTrace');
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load family members: $e')),
       );
     } finally {
+      print('Setting loading to false');
       setState(() {
         _isLoading = false;
       });
     }
   }
 
-  void _buildFamilyTreeGraph() {
-    graph = Graph()..isTree = true;
-    
-    if (members.isEmpty) return;
+  Future<void> _addFamilyMember() async {
+    try {
+      final pickedImage = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
 
-    // Create nodes for each family member
-    Map<String, Node> nodeMap = {};
-    for (FamilyMember member in members) {
-      Node node = Node.Id(member.id);
-      nodeMap[member.id] = node;
-      graph.addNode(node);
-    }
-
-    // Create edges based on parent-child relationships
-    for (FamilyMember member in members) {
-      if (member.parentId != null && nodeMap.containsKey(member.parentId)) {
-        graph.addEdge(nodeMap[member.parentId]!, nodeMap[member.id]!);
+      if (pickedImage == null) {
+        print('No image selected');
+        return;
       }
+
+      final imageFile = File(pickedImage.path);
+      String name = '';
+      String relation = '';
+      String? parentId = _selectedParentId;
+
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Add Family Member'),
+          content: StatefulBuilder(
+            builder: (context, setStateDialog) {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: FileImage(imageFile),
+                      radius: 50,
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Name'),
+                      onChanged: (value) => name = value,
+                    ),
+                    SizedBox(height: 12),
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Relation'),
+                      onChanged: (value) => relation = value,
+                    ),
+                    SizedBox(height: 16),
+                    if (members.isNotEmpty) ...[
+                      Text('Select Parent (Optional)'),
+                      DropdownButton<String>(
+                        hint: Text('Select Parent'),
+                        value: parentId,
+                        isExpanded: true,
+                        onChanged: (value) {
+                          setStateDialog(() {
+                            parentId = value;
+                          });
+                        },
+                        items: [
+                          DropdownMenuItem<String>(
+                            value: null,
+                            child: Text('No Parent'),
+                          ),
+                          ...members.map((member) {
+                            return DropdownMenuItem<String>(
+                              value: member.id,
+                              child: Text(member.name),
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (name.isNotEmpty && relation.isNotEmpty) {
+                  Navigator.of(context).pop();
+                  await _saveNewMember(name, relation, imageFile, parentId);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Please fill in all fields')),
+                  );
+                }
+              },
+              child: Text('Add'),
+            ),
+          ],
+        ),
+      );
+    } catch (e, stackTrace) {
+      print('Error in _addFamilyMember: $e');
+      print('Stack trace: $stackTrace');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error adding family member: $e')),
+      );
     }
   }
-
-Future<void> _addFamilyMember() async {
-  final local = Localizations.of(context, AppLocalizations);
-  final pickedImage = await ImagePicker().pickImage(
-    source: ImageSource.gallery,
-    imageQuality: 80,
-  );
-
-  if (pickedImage == null) return;
-
-  final imageFile = File(pickedImage.path);
-  String name = '';
-  String relation = '';
-  String? parentId = _selectedParentId;
-
-  await showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(local.addFamilyMember),
-      content: StatefulBuilder(
-        builder: (context, setStateDialog) {
-          return SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircleAvatar(
-                  backgroundImage: FileImage(imageFile),
-                  radius: 50,
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  decoration: InputDecoration(labelText: local.name),
-                  onChanged: (value) => name = value,
-                ),
-                SizedBox(height: 12),
-                TextField(
-                  decoration: InputDecoration(labelText: local.relation),
-                  onChanged: (value) => relation = value,
-                ),
-                SizedBox(height: 16),
-                if (members.isNotEmpty) ...[
-                  Text(local.selectParentOptional),
-                  DropdownButton<String>(
-                    hint: Text(local.selectParent),
-                    value: parentId,
-                    isExpanded: true,
-                    onChanged: (value) {
-                      setStateDialog(() {
-                        parentId = value;
-                      });
-                    },
-                    items: [
-                      DropdownMenuItem<String>(
-                        value: null,
-                        child: Text(local.noParent),
-                      ),
-                      ...members.map((member) {
-                        return DropdownMenuItem<String>(
-                          value: member.id, // Make sure `id` is a field in your member model
-                          child: Text(member.name),
-                        );
-                      }).toList(),
-                    ],
-                  ),
-                ],
-              ],
-            ),
-          );
-        },
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(local.cancel),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            if (name.isNotEmpty && relation.isNotEmpty) {
-              Navigator.of(context).pop();
-              await _saveNewMember(name, relation, imageFile, parentId);
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(local.pleaseFillInAllFields)),
-              );
-            }
-          },
-          child: Text(local.add),
-        ),
-      ],
-    ),
-  );
-}
-
 
   // Upload image to ImgBB API and return the URL
   Future<String> _uploadImageToImgBB(File imageFile) async {
     try {
+      print('Starting image upload to ImgBB...');
+      
       // Convert image to base64
       final bytes = await imageFile.readAsBytes();
       final base64Image = base64Encode(bytes);
@@ -285,7 +273,9 @@ Future<void> _addFamilyMember() async {
       }
 
       // Return the direct URL of the uploaded image
-      return jsonResponse['data']['url'];
+      final imageUrl = jsonResponse['data']['url'];
+      print('Image uploaded successfully. URL: $imageUrl');
+      return imageUrl;
     } catch (e) {
       print('Error during ImgBB upload: $e');
       throw Exception('Failed to upload image to ImgBB: $e');
@@ -293,6 +283,8 @@ Future<void> _addFamilyMember() async {
   }
 
   Future<void> _saveNewMember(String name, String relation, File imageFile, String? parentId) async {
+    print('Starting to save new member: $name');
+    
     setState(() {
       _isLoading = true;
     });
@@ -305,11 +297,6 @@ Future<void> _addFamilyMember() async {
         await [Permission.photos].request();
       }
 
-      // Safety check for userId
-      if (userId.isEmpty) {
-        throw Exception("User ID is not set.");
-      }
-
       // Check if image file exists and is readable
       final fileExists = await imageFile.exists();
       if (!fileExists) {
@@ -318,11 +305,9 @@ Future<void> _addFamilyMember() async {
 
       // Generate a unique ID for the new family member
       final memberId = Uuid().v4();
-      final local = Localizations.of(context, AppLocalizations);
 
       print('Uploading image to ImgBB...');
       final imageUrl = await _uploadImageToImgBB(imageFile);
-      print("Image uploaded successfully to ImgBB, URL: $imageUrl");
 
       // Create FamilyMember instance
       final newMember = FamilyMember(
@@ -333,6 +318,7 @@ Future<void> _addFamilyMember() async {
         parentId: parentId,
       );
 
+      print('Saving member data to Firestore...');
       // Save member data to Firestore
       await _firestore
           .collection('users')
@@ -341,24 +327,25 @@ Future<void> _addFamilyMember() async {
           .doc(memberId)
           .set(newMember.toMap());
 
-      // Add the new member to local state and rebuild graph
+      print('Member saved successfully to Firestore');
+
+      // Add the new member to local state
       setState(() {
         members.add(newMember);
-        _buildFamilyTreeGraph();
       });
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(local.familyMemberAdded)),
+        SnackBar(content: Text('Family member added successfully')),
       );
-    } catch (e, st) {
-      final local = Localizations.of(context, AppLocalizations);
-      // Show error message and print stacktrace
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${local.failedToAddFamilyMember} $e')),
-      );
+    } catch (e, stackTrace) {
       print('Error adding family member: $e');
-      print('Stack trace: $st');
+      print('Stack trace: $stackTrace');
+      
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add family member: $e')),
+      );
     } finally {
       setState(() {
         _isLoading = false;
@@ -407,7 +394,6 @@ Future<void> _addFamilyMember() async {
 
         setState(() {
           members.removeWhere((m) => m.id == member.id);
-          _buildFamilyTreeGraph();
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -419,99 +405,6 @@ Future<void> _addFamilyMember() async {
         );
       }
     }
-  }
-
-  Widget _buildMemberNode(String memberId) {
-    final member = members.firstWhere((m) => m.id == memberId);
-    
-    return GestureDetector(
-      onLongPress: () => _deleteMember(member),
-      child: Container(
-        width: 120,
-        height: 140,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: NetworkImage(member.imageUrl),
-              backgroundColor: Colors.grey[300],
-            ),
-            SizedBox(height: 8),
-            Text(
-              member.name,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              member.relation,
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTreeView() {
-    if (members.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.family_restroom, size: 80, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
-              'No family members yet',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Tap the + button to add your first family member',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return InteractiveViewer(
-      constrained: false,
-      boundaryMargin: EdgeInsets.all(100),
-      minScale: 0.01,
-      maxScale: 5.6,
-      child: GraphView(
-        graph: graph,
-        algorithm: BuchheimWalkerAlgorithm(builder, TreeEdgeRenderer(builder)),
-        paint: Paint()
-          ..color = Colors.green
-          ..strokeWidth = 1
-          ..style = PaintingStyle.stroke,
-        builder: (Node node) {
-          return _buildMemberNode(node.key!.value as String);
-        },
-      ),
-    );
   }
 
   Widget _buildListView() {
@@ -542,7 +435,10 @@ Future<void> _addFamilyMember() async {
       itemBuilder: (context, index) {
         final member = members[index];
         final parent = member.parentId != null 
-            ? members.firstWhere((m) => m.id == member.parentId, orElse: () => null as FamilyMember)
+            ? members.cast<FamilyMember?>().firstWhere(
+                (m) => m?.id == member.parentId, 
+                orElse: () => null
+              )
             : null;
 
         return Card(
@@ -551,6 +447,9 @@ Future<void> _addFamilyMember() async {
             leading: CircleAvatar(
               backgroundImage: NetworkImage(member.imageUrl),
               backgroundColor: Colors.grey[300],
+              onBackgroundImageError: (exception, stackTrace) {
+                print('Error loading image: $exception');
+              },
             ),
             title: Text(member.name, style: TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Column(
@@ -574,13 +473,11 @@ Future<void> _addFamilyMember() async {
 
   @override
   Widget build(BuildContext context) {
-    final local = AppLocalizations.of(context);
-     if (local == null) {
-    return const Center(child: CircularProgressIndicator());
-  }
+    print('Building FamilyTreeScreen. Loading: $_isLoading, Members count: ${members.length}');
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text(local.familyTree),
+        title: Text('Family Tree'),
         actions: [
           IconButton(
             icon: Icon(_showListView ? Icons.account_tree : Icons.list),
@@ -601,22 +498,38 @@ Future<void> _addFamilyMember() async {
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : members.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.family_restroom, size: 80, color: Colors.grey),
-                      SizedBox(height: 16),
-                      Text(
-                        local.noFamilyMembersYet,
-                        style: TextStyle(fontSize: 16),
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Loading family members...'),
+                ],
+              ),
+            )
+          : _showListView
+              ? _buildListView()
+              : members.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.family_restroom, size: 80, color: Colors.grey),
+                          SizedBox(height: 16),
+                          Text(
+                            'No family members yet',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Tap the + button to add your first family member',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                )
-              : FamilyTreeView(members: members),
+                    )
+                  : FamilyTreeView(members: members),
     );
   }
 }
@@ -638,86 +551,157 @@ class _FamilyTreeViewState extends State<FamilyTreeView> {
   @override
   void initState() {
     super.initState();
-    graph = Graph()..isTree = true;
-    
-    var builder = BuchheimWalkerConfiguration()
-      ..siblingSeparation = (100)
-      ..levelSeparation = (150)
-      ..subtreeSeparation = (150)
-      ..orientation = BuchheimWalkerConfiguration.ORIENTATION_TOP_BOTTOM;
+    print('Initializing FamilyTreeView with ${widget.members.length} members');
+    _setupGraph();
+  }
+  
+  void _setupGraph() {
+    try {
+      graph = Graph()..isTree = true;
       
-    algorithm = BuchheimWalkerAlgorithm(
-      builder, 
-      TreeEdgeRenderer(builder)
-    );
-    
-    _buildGraph();
+      var builder = BuchheimWalkerConfiguration()
+        ..siblingSeparation = (100)
+        ..levelSeparation = (150)
+        ..subtreeSeparation = (150)
+        ..orientation = BuchheimWalkerConfiguration.ORIENTATION_TOP_BOTTOM;
+        
+      algorithm = BuchheimWalkerAlgorithm(
+        builder, 
+        TreeEdgeRenderer(builder)
+      );
+      
+      _buildGraph();
+      print('Graph setup completed successfully');
+    } catch (e, stackTrace) {
+      print('Error setting up graph: $e');
+      print('Stack trace: $stackTrace');
+    }
   }
   
   void _buildGraph() {
-    // First, find root nodes (members without parents or with non-existent parent IDs)
-    final rootMembers = widget.members.where((member) {
-      if (member.parentId == null || member.parentId!.isEmpty) return true;
-      return !widget.members.any((m) => m.id == member.parentId);
-    }).toList();
-    
-    // If no root members, use first member as root
-    if (rootMembers.isEmpty && widget.members.isNotEmpty) {
-      rootMembers.add(widget.members.first);
+    if (widget.members.isEmpty) {
+      print('No members to build graph');
+      return;
     }
-    
-    // Add root nodes to graph
-    for (final rootMember in rootMembers) {
-      final rootNode = Node.Id(rootMember.id);
-      graph.addNode(rootNode);
+
+    try {
+      // First, find root nodes (members without parents or with non-existent parent IDs)
+      final rootMembers = widget.members.where((member) {
+        if (member.parentId == null || member.parentId!.isEmpty) return true;
+        return !widget.members.any((m) => m.id == member.parentId);
+      }).toList();
       
-      // Add children recursively
-      _addChildrenToGraph(rootMember);
+      print('Found ${rootMembers.length} root members');
+      
+      // If no root members, use first member as root
+      if (rootMembers.isEmpty && widget.members.isNotEmpty) {
+        rootMembers.add(widget.members.first);
+        print('No root members found, using first member as root');
+      }
+      
+      // Add root nodes to graph
+      for (final rootMember in rootMembers) {
+        final rootNode = Node.Id(rootMember.id);
+        graph.addNode(rootNode);
+        print('Added root node: ${rootMember.name}');
+        
+        // Add children recursively
+        _addChildrenToGraph(rootMember);
+      }
+      
+      print('Graph building completed. Total nodes: ${graph.nodeCount()}');
+    } catch (e, stackTrace) {
+      print('Error building graph: $e');
+      print('Stack trace: $stackTrace');
     }
   }
   
   void _addChildrenToGraph(FamilyMember parent) {
-    final parentNode = Node.Id(parent.id);
-    
-    // Find all children of this parent
-    final children = widget.members.where((member) => 
-      member.parentId != null && member.parentId == parent.id
-    ).toList();
-    
-    // Add children and edges to graph
-    for (final child in children) {
-      final childNode = Node.Id(child.id);
-      graph.addNode(childNode);
-      graph.addEdge(parentNode, childNode);
+    try {
+      final parentNode = Node.Id(parent.id);
       
-      // Recursively add this child's children
-      _addChildrenToGraph(child);
+      // Find all children of this parent
+      final children = widget.members.where((member) => 
+        member.parentId != null && member.parentId == parent.id
+      ).toList();
+      
+      print('Adding ${children.length} children for ${parent.name}');
+      
+      // Add children and edges to graph
+      for (final child in children) {
+        final childNode = Node.Id(child.id);
+        graph.addNode(childNode);
+        graph.addEdge(parentNode, childNode);
+        print('Added child node and edge: ${child.name}');
+        
+        // Recursively add this child's children
+        _addChildrenToGraph(child);
+      }
+    } catch (e, stackTrace) {
+      print('Error adding children to graph: $e');
+      print('Stack trace: $stackTrace');
     }
   }
   
   @override
   Widget build(BuildContext context) {
-    return InteractiveViewer(
-      transformationController: _transformationController,
-      boundaryMargin: EdgeInsets.all(double.infinity),
-      minScale: 0.1,
-      maxScale: 2.5,
-      child: GraphView(
-        graph: graph,
-        algorithm: algorithm,
-        paint: Paint()
-          ..color = Colors.teal
-          ..strokeWidth = 2
-          ..style = PaintingStyle.stroke,
-        builder: (Node node) {
-          // Find the family member that corresponds to this node
-          final id = node.key!.value as String;
-          final member = widget.members.firstWhere((m) => m.id == id);
-          
-          return _buildFamilyMemberNode(member);
-        },
-      ),
-    );
+    print('Building FamilyTreeView widget');
+    
+    if (widget.members.isEmpty) {
+      return Center(
+        child: Text('No family members to display'),
+      );
+    }
+
+    try {
+      return InteractiveViewer(
+        transformationController: _transformationController,
+        boundaryMargin: EdgeInsets.all(100),
+        minScale: 0.1,
+        maxScale: 2.5,
+        child: GraphView(
+          graph: graph,
+          algorithm: algorithm,
+          paint: Paint()
+            ..color = Colors.teal
+            ..strokeWidth = 2
+            ..style = PaintingStyle.stroke,
+          builder: (Node node) {
+            try {
+              // Find the family member that corresponds to this node
+              final id = node.key!.value as String;
+              final member = widget.members.firstWhere((m) => m.id == id);
+              
+              return _buildFamilyMemberNode(member);
+            } catch (e) {
+              print('Error building node: $e');
+              return Container(
+                width: 150,
+                height: 100,
+                color: Colors.red,
+                child: Center(child: Text('Error')),
+              );
+            }
+          },
+        ),
+      );
+    } catch (e, stackTrace) {
+      print('Error building FamilyTreeView: $e');
+      print('Stack trace: $stackTrace');
+      
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error, size: 60, color: Colors.red),
+            SizedBox(height: 16),
+            Text('Error displaying family tree'),
+            SizedBox(height: 8),
+            Text('$e', style: TextStyle(fontSize: 12, color: Colors.grey)),
+          ],
+        ),
+      );
+    }
   }
   
   Widget _buildFamilyMemberNode(FamilyMember member) {
@@ -741,8 +725,9 @@ class _FamilyTreeViewState extends State<FamilyTreeView> {
           CircleAvatar(
             backgroundImage: NetworkImage(member.imageUrl),
             radius: 40,
+            backgroundColor: Colors.grey[300],
             onBackgroundImageError: (exception, stackTrace) {
-              print('Error loading image: $exception');
+              print('Error loading image for ${member.name}: $exception');
             },
           ),
           SizedBox(height: 8),
