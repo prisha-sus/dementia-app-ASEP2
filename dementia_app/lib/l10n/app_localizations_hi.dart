@@ -472,4 +472,10 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get sorryTroubleUnderstanding => 'माफ़ कीजिए, समझने में परेशानी हुई। कृपया फिर से प्रयास करें।';
+
+  @override
+  String get connectedToPatient => 'Connect to Patient';
+
+  @override
+  String get connectedToCaregiver => 'Connect to Caregiver';
 }

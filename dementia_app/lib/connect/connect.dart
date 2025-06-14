@@ -142,16 +142,11 @@ class ConnectScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 20),
                             _buildDrawerItem(
-                              icon: Icons.notifications_rounded,
-                              title: local?.notifications ?? 'Notifications',
-                              onTap: () {},
-                              colorScheme: colorScheme,
-                            ),
-                            const SizedBox(height: 20),
-                            _buildDrawerItem(
                               icon: Icons.settings_rounded,
                               title: local?.settings ?? 'Settings',
-                              onTap: () {},
+                                onTap: () {
+                                Navigator.pushNamed(context, '/profile');
+                                },
                               colorScheme: colorScheme,
                             ),
                             const SizedBox(height: 50),

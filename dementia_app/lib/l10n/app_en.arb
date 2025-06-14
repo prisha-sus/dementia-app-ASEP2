@@ -619,5 +619,13 @@
   "sorryTroubleUnderstanding": "Sorry, I had trouble understanding. Please try again.",
   "@sorryTroubleUnderstanding": {
     "description": "Voice assistant apology for speech recognition failure"
+  },
+  "connectedToPatient": "Connect to Patient",
+  "@connectedToPatient": {
+    "description": "Button text or label for connecting to a patient"
+  },
+  "connectedToCaregiver": "Connect to Caregiver",
+  "@connectedToCaregiver": {
+    "description": "Button text or label for connecting to a caregiver"
   }
 }

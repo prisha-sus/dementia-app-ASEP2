@@ -1026,6 +1026,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sorry, I had trouble understanding. Please try again.'**
   String get sorryTroubleUnderstanding;
+
+  /// Button text or label for connecting to a patient
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Patient'**
+  String get connectedToPatient;
+
+  /// Button text or label for connecting to a caregiver
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Caregiver'**
+  String get connectedToCaregiver;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +11,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logging/logging.dart';
 import 'dart:developer' as developer;
 import 'dart:async';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 // Import your service file
 import 'package:mytestapp/services/medicinealert.dart';
@@ -32,11 +37,43 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   static final String _backendUrl =
       dotenv.env['BACKEND_URL'] ?? 'http://localhost:5000';
 
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
   @override
   void initState() {
     super.initState();
+    _requestNotificationPermissions();
+    _initializeTimeZone();
     _initializeLogging();
     _initializeService();
+  }
+
+  Future<void> _requestNotificationPermissions() async {
+    if (Platform.isIOS) {
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+    } else if (Platform.isAndroid) {
+      // For Android 13+ (API 33+), request notification permission using the main plugin instance
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      // The permission request for Android 13+ should be handled in the main app using the permission_handler package or NotificationPermission.request()
+      // See: https://pub.dev/packages/flutter_local_notifications#android-13-notification-permission
+    }
+  }
+
+  Future<void> _initializeTimeZone() async {
+    tz.initializeTimeZones();
   }
 
   void _initializeLogging() {
@@ -227,29 +264,72 @@ class _MedicationAlertScreenState extends State<MedicationAlertScreen> {
   }
 
   void _checkReminders() {
-    _logger.fine('Checking reminders');
+    _logger.fine('Checking reminders at ${DateTime.now()}');
     final now = DateTime.now();
     final currentTime = TimeOfDay.fromDateTime(now);
-    final currentWeekday = now.weekday; // 1 = Monday, 7 = Sunday
+    final currentWeekday = now.weekday;
 
     for (final reminder in _reminders) {
       final reminderTime = TimeOfDay.fromDateTime(reminder.timeToTake);
 
+      _logger.info(
+          'Checking reminder: ${reminder.medicineName} scheduled for ${reminderTime.format(context)}');
+
       // Check if current time matches reminder time (within 1 minute)
       if (_timesMatch(currentTime, reminderTime)) {
+        _logger.info('Time matches for reminder: ${reminder.medicineName}');
+
         if (reminder.isRecurring) {
           // Check if today is one of the recurring days
           if (reminder.daysToRepeat.contains(currentWeekday)) {
+            _logger.info(
+                'Triggering recurring reminder: ${reminder.medicineName}');
+            _showNotification(reminder);
             triggerDispense(reminder);
           }
         } else {
           // Check if today is the scheduled date
           if (_isSameDate(now, reminder.timeToTake)) {
+            _logger
+                .info('Triggering one-time reminder: ${reminder.medicineName}');
+            _showNotification(reminder);
             triggerDispense(reminder);
           }
         }
       }
     }
+  }
+
+  Future<void> _showNotification(MedicationReminder reminder) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'medication_reminders',
+      'Medication Reminders',
+      channelDescription: 'Notifications for medication reminders',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+      enableVibration: true,
+      playSound: true,
+    );
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      reminder.id.hashCode,
+      'Medicine Reminder',
+      'Time to take ${reminder.medicineName} - ${reminder.dosage}',
+      platformDetails,
+    );
+
+    _logger.info('Notification shown for: ${reminder.medicineName}');
   }
 
   bool _timesMatch(TimeOfDay time1, TimeOfDay time2) {

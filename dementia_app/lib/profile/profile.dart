@@ -34,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool connectedToPatient = false;
   String? linkedPatientId;
   String? linkedPatientName; // Add this line
+  String? linkedCaregiverName; // Add this line
   final TextEditingController _otpController = TextEditingController();
 
   String generateOTP() {
@@ -89,29 +90,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> checkIfConnected() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final query = await FirebaseFirestore.instance
-          .collection('otps')
-          .where('caregiverId', isEqualTo: user.uid)
-          .where('verified', isEqualTo: true)
-          .limit(1)
-          .get();
-
-      if (query.docs.isNotEmpty) {
-        setState(() {
-          connectedToPatient = true;
-        });
-
-        final patientId = query.docs.first.get('patientId');
-        final patientDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(patientId)
+      if (role == 'caregiver') {
+        final query = await FirebaseFirestore.instance
+            .collection('otps')
+            .where('caregiverId', isEqualTo: user.uid)
+            .where('verified', isEqualTo: true)
+            .limit(1)
             .get();
 
-        if (patientDoc.exists) {
+        if (query.docs.isNotEmpty) {
           setState(() {
-            linkedPatientId = patientDoc.get('publicId');
-            linkedPatientName = patientDoc.get('name');
+            connectedToPatient = true;
           });
+
+          final patientId = query.docs.first.get('patientId');
+          final patientDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(patientId)
+              .get();
+
+          if (patientDoc.exists) {
+            setState(() {
+              linkedPatientId = patientDoc.get('publicId');
+              linkedPatientName = patientDoc.get('name');
+            });
+          }
+        }
+      } else if (role == 'patient') {
+        final query = await FirebaseFirestore.instance
+            .collection('otps')
+            .where('patientId', isEqualTo: user.uid)
+            .where('verified', isEqualTo: true)
+            .limit(1)
+            .get();
+
+        if (query.docs.isNotEmpty) {
+          final caregiverId = query.docs.first.get('caregiverId');
+          final caregiverDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(caregiverId)
+              .get();
+
+          if (caregiverDoc.exists) {
+            setState(() {
+              linkedCaregiverName = caregiverDoc.get('name');
+              connectedToPatient = true;
+            });
+          }
         }
       }
     }
@@ -122,7 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final theme = Theme.of(context);
     final local = Localizations.of(context, AppLocalizations)!;
     if (role == 'caregiver' && linkedPatientId == null) {
-      return  Center(
+      return Center(
         child: Text(
           local.noPatientConnected,
           style: TextStyle(color: colorScheme.onPrimary),
@@ -140,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .snapshots(includeMetadataChanges: true),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return  Center(
+          return Center(
             child: CircularProgressIndicator(color: colorScheme.onPrimary),
           );
         }
@@ -170,9 +195,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.history_toggle_off, size: 48, color: colorScheme.onPrimary),
+                Icon(Icons.history_toggle_off,
+                    size: 48, color: colorScheme.onPrimary),
                 const SizedBox(height: 16),
-                 Text(
+                Text(
                   local.noActivitiesLoggedYet,
                   style: TextStyle(
                     fontSize: 16,
@@ -211,7 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 trailing: Text(
                   formatTimestamp(log['timestamp']),
-                  style:  TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: colorScheme.onPrimary,
                   ),
@@ -229,78 +255,116 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final local = Localizations.of(context, AppLocalizations)!;
     final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
-    return Row(
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: _buildSummaryCard(
-            local.gamesPlayed,
-            "12",
-            Icons.sports_esports_rounded,
-            colorScheme.primary,
-            colorScheme.onPrimary,
-            colorScheme.onPrimary
+        Text(
+          'Game Statistics',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onPrimary,
           ),
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildSummaryCard(
-            local.memoryNotes,
-            "8",
-            Icons.note_alt_rounded,
-            colorScheme.tertiary,
-            theme.scaffoldBackgroundColor,
-            theme.scaffoldBackgroundColor,
+        SizedBox(height: 12),
+        Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white24),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.onPrimary.withOpacity(0.1),
+                blurRadius: 15,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              _buildGameStatRow(
+                'Pattern Memory',
+                '3x3 Grid',
+                'Best: Level 5',
+                Icons.grid_4x4,
+                colorScheme.tertiary,
+              ),
+              Divider(color: Colors.white24, height: 24),
+              _buildGameStatRow(
+                'Sequence Memory',
+                'Current: Level 3',
+                'Best: Level 8',
+                Icons.memory,
+                colorScheme.primary,
+              ),
+              Divider(color: Colors.white24, height: 24),
+              _buildGameStatRow(
+                'Speech Game',
+                'Today: 12 correct',
+                'Best: 15',
+                Icons.record_voice_over,
+                colorScheme.secondary,
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSummaryCard(
-      String title, String value, IconData icon, Color color, Color textColor, Color iconColor) {
+  Widget _buildGameStatRow(String title, String currentScore, String bestScore,
+      IconData icon, Color color) {
     final colorScheme = Theme.of(context).colorScheme;
-    final local = Localizations.of(context, AppLocalizations)!;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [color, color.withOpacity(0.7)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: color, size: 24),
         ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+        SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onPrimary,
+                ),
+              ),
+              SizedBox(height: 4),
+              Row(
+                children: [
+                  Text(
+                    currentScore,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: colorScheme.onPrimary.withOpacity(0.7),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Text(
+                    bestScore,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: color,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 24, color: iconColor),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style:  TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: textColor.withOpacity(0.8),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -308,7 +372,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       generatedOTP = generateOTP();
     });
-final local = Localizations.of(context, AppLocalizations)!;
+    final local = Localizations.of(context, AppLocalizations)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user != null && role == 'patient') {
       try {
@@ -391,7 +455,8 @@ final local = Localizations.of(context, AppLocalizations)!;
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${local.connectedToPatientSuccess} $linkedPatientName ${local.successfully}'),
+              content: Text(
+                  '${local.connectedToPatientSuccess} $linkedPatientName ${local.successfully}'),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ),
@@ -400,7 +465,7 @@ final local = Localizations.of(context, AppLocalizations)!;
           _otpController.clear();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(
+            SnackBar(
               content: Text(local.invalidCode),
               backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
@@ -417,6 +482,44 @@ final local = Localizations.of(context, AppLocalizations)!;
         );
       }
     }
+  }
+
+  Widget _buildConnectionInfo() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+
+    if (!connectedToPatient) return SizedBox.shrink();
+
+    String connectionText = role == 'caregiver'
+        ? 'Connected to patient: $linkedPatientName'
+        : 'Connected to caregiver: $linkedCaregiverName';
+
+    return Container(
+      margin: EdgeInsets.only(top: 8),
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color: colorScheme.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.link_rounded,
+            size: 16,
+            color: colorScheme.primary,
+          ),
+          SizedBox(width: 8),
+          Text(
+            connectionText,
+            style: TextStyle(
+              color: colorScheme.onPrimary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -436,7 +539,7 @@ final local = Localizations.of(context, AppLocalizations)!;
             child: Container(color: theme.scaffoldBackgroundColor),
           ),
         ),
-        title:  Text(
+        title: Text(
           local.myProfile,
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -447,7 +550,7 @@ final local = Localizations.of(context, AppLocalizations)!;
         centerTitle: true,
         actions: [
           IconButton(
-            icon:  Icon(Icons.logout_rounded, color: colorScheme.onPrimary),
+            icon: Icon(Icons.logout_rounded, color: colorScheme.onPrimary),
             onPressed: () async {
               await AuthService().signOut();
               Navigator.of(context)
@@ -458,7 +561,7 @@ final local = Localizations.of(context, AppLocalizations)!;
         ],
       ),
       body: Container(
-        decoration:  BoxDecoration(
+        decoration: BoxDecoration(
           color: theme.scaffoldBackgroundColor,
           /*gradient: LinearGradient(
             colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
@@ -494,7 +597,8 @@ final local = Localizations.of(context, AppLocalizations)!;
                         height: 70,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border: Border.all(color: theme.scaffoldBackgroundColor, width: 2),
+                          border: Border.all(
+                              color: theme.scaffoldBackgroundColor, width: 2),
                           boxShadow: [
                             BoxShadow(
                               color: colorScheme.onPrimary.withOpacity(0.2),
@@ -529,7 +633,9 @@ final local = Localizations.of(context, AppLocalizations)!;
                             ),
                             SizedBox(height: 4),
                             Text(
-                              role == 'patient' ? local.patient : local.caregiver,
+                              role == 'patient'
+                                  ? local.patient
+                                  : local.caregiver,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: colorScheme.onPrimary.withOpacity(0.8),
@@ -551,6 +657,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                     ],
                   ),
                 ),
+                _buildConnectionInfo(), // Add this after the profile info container
                 SizedBox(height: 24),
                 _buildActivitySummary(),
                 SizedBox(height: 24),
@@ -640,11 +747,13 @@ final local = Localizations.of(context, AppLocalizations)!;
                             decoration: BoxDecoration(
                               color: colorScheme.tertiary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: colorScheme.tertiary.withOpacity(0.2)),
+                              border: Border.all(
+                                  color: colorScheme.tertiary.withOpacity(0.2)),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.info_outline, color:colorScheme.tertiary, size: 32),
+                                Icon(Icons.info_outline,
+                                    color: colorScheme.tertiary, size: 32),
                                 SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
@@ -734,7 +843,8 @@ final local = Localizations.of(context, AppLocalizations)!;
                           controller: _otpController,
                           decoration: InputDecoration(
                             hintText: local.enterPatientCode,
-                            hintStyle: TextStyle(color: colorScheme.onPrimary.withOpacity(0.6)),
+                            hintStyle: TextStyle(
+                                color: colorScheme.onPrimary.withOpacity(0.6)),
                             prefixIcon: Icon(Icons.vpn_key_outlined,
                                 color: colorScheme.primary),
                             filled: true,
@@ -753,7 +863,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                             contentPadding:
                                 const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          style:  TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             letterSpacing: 1.5,
                             color: colorScheme.onPrimary,
@@ -822,7 +932,7 @@ final local = Localizations.of(context, AppLocalizations)!;
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text(
+                        Text(
                           local.patientActivity,
                           style: TextStyle(
                             fontSize: 20,

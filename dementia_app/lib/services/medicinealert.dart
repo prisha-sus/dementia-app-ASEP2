@@ -7,6 +7,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'dart:convert';
 
 /// Reminder model
@@ -17,7 +18,7 @@ class MedicationReminder {
   final DateTime timeToTake;
   final bool isRecurring;
   final List<int> daysToRepeat;
-  final int alarmDuration; // Duration in seconds the alarm should sound
+  final int alarmDuration;
 
   MedicationReminder({
     required this.id,
@@ -26,7 +27,7 @@ class MedicationReminder {
     required this.timeToTake,
     this.isRecurring = false,
     this.daysToRepeat = const [],
-    this.alarmDuration = 30, // Default to 30 seconds
+    this.alarmDuration = 30,
   });
 
   Map<String, dynamic> toMap() => {
@@ -51,10 +52,8 @@ class MedicationReminder {
         alarmDuration: map['alarmDuration'] ?? 30,
       );
 
-  // Serialize to JSON
   String toJson() => json.encode(toMap());
 
-  // Deserialize from JSON
   factory MedicationReminder.fromJson(String jsonString) {
     final Map<String, dynamic> map = json.decode(jsonString);
     return MedicationReminder.fromMap(map);
@@ -63,9 +62,7 @@ class MedicationReminder {
 
 /// Reminder service
 class MedicationReminderService {
-  // Add logger
   final _logger = Logger('MedicationReminderService');
-
   final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -102,16 +99,19 @@ class MedicationReminderService {
     if (_isInitialized) return;
 
     _logger.info('Initializing MedicationReminderService...');
-    await _initializeNotifications();
+    
+    // Initialize timezone data first
     tz_data.initializeTimeZones();
+    
+    await _initializeNotifications();
     _isInitialized = true;
     _logger.info('MedicationReminderService initialized successfully.');
   }
 
   Future<void> _initializeNotifications() async {
     _logger.info('Initializing notification plugin...');
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosSettings = DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
@@ -123,14 +123,14 @@ class MedicationReminderService {
       iOS: iosSettings,
     );
 
-    // Create notification channels with different importance levels
-    await _createNotificationChannels();
-
     // Handle notification responses
     await _notificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: _handleNotificationResponse,
     );
+
+    // Create notification channels AFTER initialization
+    await _createNotificationChannels();
 
     _logger.info('Notification plugin initialized successfully.');
   }
@@ -149,121 +149,37 @@ class MedicationReminderService {
   }
 
   Future<void> _createNotificationChannels() async {
-    // For standard reminders
-    const AndroidNotificationChannel medicationChannel =
-        AndroidNotificationChannel(
-      _medicationChannelId,
-      'Medication Reminders',
-      description: 'Notifications for medication reminders',
-      importance: Importance.high,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('notification_sound'),
-    );
-
-    // For alarm-style reminders (higher importance)
-    const AndroidNotificationChannel alarmChannel = AndroidNotificationChannel(
-      _medicationAlarmChannelId,
-      'Medication Alarms',
-      description: 'High priority medication alarms',
-      importance: Importance.max,
-      playSound: true,
-      sound: RawResourceAndroidNotificationSound('alarm_sound'),
-      enableVibration: true,
-      enableLights: true,
-      showBadge: true,
-    );
-
     final plugin = _notificationsPlugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
 
     if (plugin != null) {
-      await plugin.createNotificationChannel(medicationChannel);
-      await plugin.createNotificationChannel(alarmChannel);
-
-      // Request exact alarm permission and notifications permission on Android
-      await plugin.requestExactAlarmsPermission();
+      // Request permissions first
       await plugin.requestNotificationsPermission();
-    }
-  }
+      await plugin.requestExactAlarmsPermission();
 
-  // Play alarm directly in app
-  Future<void> _playAlarm(MedicationReminder reminder) async {
-    _logger.info('Playing alarm for reminder: ${reminder.id}');
-    _currentlyPlayingAlarmId = reminder.id;
-    try {
-      final audioPlayer = AudioPlayer();
-      await audioPlayer.setReleaseMode(ReleaseMode.loop);
-      await audioPlayer.play(AssetSource('sounds/alarm_sound.mp3'),
-          volume: 1.0);
+      // For alarm-style reminders (higher importance)
+      const AndroidNotificationChannel alarmChannel = AndroidNotificationChannel(
+        _medicationAlarmChannelId,
+        'Medication Alarms',
+        description: 'High priority medication alarms',
+        importance: Importance.max,
+        playSound: true,
+        enableVibration: true,
+        enableLights: true,
+        showBadge: true,
+      );
 
-      // Add vibration
-      HapticFeedback.heavyImpact();
+      // For standard reminders
+      const AndroidNotificationChannel medicationChannel = AndroidNotificationChannel(
+        _medicationChannelId,
+        'Medication Reminders',
+        description: 'Notifications for medication reminders',
+        importance: Importance.high,
+        playSound: true,
+      );
 
-      // Show persistent notification
-      await _showAlarmNotification(reminder);
-
-      // Schedule alarm stop after specified duration
-      Future.delayed(Duration(seconds: reminder.alarmDuration), () {
-        _stopAlarm(reminder.id);
-      });
-    } catch (e) {
-      _logger.severe('Error playing alarm: $e');
-    }
-  }
-
-  Future<void> _showAlarmNotification(MedicationReminder reminder) async {
-    final androidDetails = AndroidNotificationDetails(
-      _medicationAlarmChannelId,
-      'Medication Alarms',
-      channelDescription: 'High priority medication alarms',
-      importance: Importance.max,
-      priority: Priority.max,
-      sound: RawResourceAndroidNotificationSound('alarm_sound'),
-      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-      styleInformation: BigTextStyleInformation(''),
-      color: const Color(0xFF2C5364),
-      playSound: true,
-      enableVibration: true,
-      vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
-      fullScreenIntent: true,
-      category: AndroidNotificationCategory.alarm,
-      ongoing: true,
-    );
-
-    final iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      sound: 'alarm_sound.wav',
-      interruptionLevel: InterruptionLevel.critical,
-      categoryIdentifier: 'medication_alarm',
-    );
-
-    final notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
-    // Create a payload with reminder information to be used when notification is tapped
-    final payload =
-        '${reminder.id}|${reminder.medicineName}|${reminder.dosage}';
-
-    await _notificationsPlugin.show(
-      reminder.id.hashCode,
-      'Time to take ${reminder.medicineName}!',
-      '${reminder.dosage} - Tap to stop alarm',
-      notificationDetails,
-      payload: payload,
-    );
-  }
-
-  Future<void> _stopAlarm(String reminderId) async {
-    if (_currentlyPlayingAlarmId == reminderId) {
-      await _audioPlayer.stop();
-      _currentlyPlayingAlarmId = null;
-
-      // Cancel the persistent notification
-      await _notificationsPlugin.cancel(reminderId.hashCode);
+      await plugin.createNotificationChannel(alarmChannel);
+      await plugin.createNotificationChannel(medicationChannel);
     }
   }
 
@@ -304,23 +220,18 @@ class MedicationReminderService {
       channelDescription: 'High priority medication alarms',
       importance: Importance.max,
       priority: Priority.max,
-      sound: RawResourceAndroidNotificationSound('alarm_sound'),
-      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-      styleInformation: BigTextStyleInformation(''),
-      color: const Color(0xFF2C5364),
       playSound: true,
       enableVibration: true,
       vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
       fullScreenIntent: true,
       category: AndroidNotificationCategory.alarm,
-      ongoing: true,
+      // Remove ongoing: true for scheduled notifications
     );
 
     final iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
-      sound: 'alarm_sound.wav',
       interruptionLevel: InterruptionLevel.critical,
       categoryIdentifier: 'medication_alarm',
     );
@@ -330,53 +241,58 @@ class MedicationReminderService {
       iOS: iosDetails,
     );
 
-    // Create a payload with reminder information to be used when notification is tapped
-    final payload =
-        '${reminder.id}|${reminder.medicineName}|${reminder.dosage}';
+    final payload = '${reminder.id}|${reminder.medicineName}|${reminder.dosage}';
 
     try {
-      final scheduledTime = tz.TZDateTime.from(reminder.timeToTake, tz.local);
-      _logger.info('Scheduled time: $scheduledTime');
-
       if (reminder.isRecurring) {
         _logger.info('Setting up recurring notifications...');
         for (final day in reminder.daysToRepeat) {
           final nextDay = _nextInstanceOfDay(day, reminder.timeToTake);
           _logger.info('Next instance for weekday $day: $nextDay');
-          await _notificationsPlugin.zonedSchedule(
-            reminder.id.hashCode + day,
-            'Time to take ${reminder.medicineName}!',
-            '${reminder.dosage} - Tap to stop alarm',
-            nextDay,
-            notificationDetails,
-            androidAllowWhileIdle: true,
-            uiLocalNotificationDateInterpretation:
-                UILocalNotificationDateInterpretation.absoluteTime,
-            matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-            payload: payload,
-          );
+          
+          // Check if the scheduled time is in the future
+          if (nextDay.isAfter(tz.TZDateTime.now(tz.local))) {
+            await _notificationsPlugin.zonedSchedule(
+              reminder.id.hashCode + day, // Unique ID for each day
+              'Time to take ${reminder.medicineName}!',
+              '${reminder.dosage} - Tap to stop alarm',
+              nextDay,
+              notificationDetails,
+              androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+              uiLocalNotificationDateInterpretation:
+                  UILocalNotificationDateInterpretation.absoluteTime,
+              matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+              payload: payload,
+            );
+          }
         }
       } else {
         _logger.info('Setting one-time notification...');
-        await _notificationsPlugin.zonedSchedule(
-          reminder.id.hashCode,
-          'Time to take ${reminder.medicineName}!',
-          '${reminder.dosage} - Tap to stop alarm',
-          scheduledTime,
-          notificationDetails,
-          androidAllowWhileIdle: true,
-          uiLocalNotificationDateInterpretation:
-              UILocalNotificationDateInterpretation.absoluteTime,
-          payload: payload,
-        );
+        final scheduledTime = tz.TZDateTime.from(reminder.timeToTake, tz.local);
+        _logger.info('Scheduled time: $scheduledTime');
+        
+        // Check if the scheduled time is in the future
+        if (scheduledTime.isAfter(tz.TZDateTime.now(tz.local))) {
+          await _notificationsPlugin.zonedSchedule(
+            reminder.id.hashCode,
+            'Time to take ${reminder.medicineName}!',
+            '${reminder.dosage} - Tap to stop alarm',
+            scheduledTime,
+            notificationDetails,
+            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+            uiLocalNotificationDateInterpretation:
+                UILocalNotificationDateInterpretation.absoluteTime,
+            payload: payload,
+          );
+        } else {
+          _logger.warning('Scheduled time is in the past: $scheduledTime');
+        }
       }
 
-      // Schedule alarm and notification for this reminder
-      Future.delayed(scheduledTime.difference(DateTime.now()), () {
-        _playAlarm(reminder);
-      });
+      _logger.info('Notification scheduled successfully');
     } catch (e) {
-      _logger.severe('Error scheduling notification: $e', e);
+      _logger.severe('Error scheduling notification: $e');
+      rethrow;
     }
   }
 
@@ -394,6 +310,83 @@ class MedicationReminderService {
     }
 
     return scheduled;
+  }
+
+  // Play alarm directly in app
+  Future<void> _playAlarm(MedicationReminder reminder) async {
+    _logger.info('Playing alarm for reminder: ${reminder.id}');
+    _currentlyPlayingAlarmId = reminder.id;
+    
+    try {
+      // Create a new AudioPlayer instance for this alarm
+      final audioPlayer = AudioPlayer();
+      await audioPlayer.setReleaseMode(ReleaseMode.loop);
+      await audioPlayer.play(AssetSource('sounds/alarm_sound.mp3'), volume: 1.0);
+
+      // Add vibration
+      HapticFeedback.heavyImpact();
+
+      // Show persistent notification
+      await _showAlarmNotification(reminder);
+
+      // Schedule alarm stop after specified duration
+      Future.delayed(Duration(seconds: reminder.alarmDuration), () {
+        _stopAlarm(reminder.id);
+        audioPlayer.dispose();
+      });
+    } catch (e) {
+      _logger.severe('Error playing alarm: $e');
+    }
+  }
+
+  Future<void> _showAlarmNotification(MedicationReminder reminder) async {
+    final androidDetails = AndroidNotificationDetails(
+      _medicationAlarmChannelId,
+      'Medication Alarms',
+      channelDescription: 'High priority medication alarms',
+      importance: Importance.max,
+      priority: Priority.max,
+      playSound: true,
+      enableVibration: true,
+      vibrationPattern: Int64List.fromList([0, 500, 200, 500, 200, 500]),
+      fullScreenIntent: true,
+      category: AndroidNotificationCategory.alarm,
+      ongoing: true, // This is fine for active alarms
+      color: const Color(0xFF2C5364),
+    );
+
+    final iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      interruptionLevel: InterruptionLevel.critical,
+      categoryIdentifier: 'medication_alarm',
+    );
+
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    final payload = '${reminder.id}|${reminder.medicineName}|${reminder.dosage}';
+
+    await _notificationsPlugin.show(
+      reminder.id.hashCode,
+      'Time to take ${reminder.medicineName}!',
+      '${reminder.dosage} - Tap to stop alarm',
+      notificationDetails,
+      payload: payload,
+    );
+  }
+
+  Future<void> _stopAlarm(String reminderId) async {
+    if (_currentlyPlayingAlarmId == reminderId) {
+      await _audioPlayer.stop();
+      _currentlyPlayingAlarmId = null;
+
+      // Cancel the persistent notification
+      await _notificationsPlugin.cancel(reminderId.hashCode);
+    }
   }
 
   Future<List<MedicationReminder>> getMedicationReminders() async {
@@ -440,6 +433,7 @@ class MedicationReminderService {
       _logger.warning('No user logged in.');
       return;
     }
+    
     try {
       await _firestore
           .collection('users')
@@ -448,11 +442,16 @@ class MedicationReminderService {
           .doc(reminderId)
           .delete();
 
-      // Cancel notification
+      // Cancel all notifications for this reminder (including recurring ones)
       await _notificationsPlugin.cancel(reminderId.hashCode);
+      
+      // For recurring reminders, cancel all day-specific notifications
+      for (int day = 1; day <= 7; day++) {
+        await _notificationsPlugin.cancel(reminderId.hashCode + day);
+      }
 
       // Stop alarm if it's playing
-      _stopAlarm(reminderId);
+      await _stopAlarm(reminderId);
 
       _logger.info('Reminder and its notification cancelled.');
     } catch (e) {
@@ -511,5 +510,23 @@ class MedicationReminderService {
     } catch (e) {
       _logger.severe('Error clearing all reminders: $e');
     }
+  }
+
+  /// Test method to schedule a notification in 10 seconds for debugging
+  Future<void> testNotification() async {
+    if (!_isInitialized) {
+      await initialize();
+    }
+
+    final testTime = DateTime.now().add(const Duration(seconds: 10));
+    final testReminder = MedicationReminder(
+      id: 'test_${DateTime.now().millisecondsSinceEpoch}',
+      medicineName: 'Test Medicine',
+      dosage: '1 tablet',
+      timeToTake: testTime,
+    );
+
+    _logger.info('Scheduling test notification for: $testTime');
+    await _scheduleNotification(testReminder);
   }
 }

@@ -472,4 +472,10 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get sorryTroubleUnderstanding => 'माफ करा, समजण्यात अडचण आली. कृपया पुन्हा प्रयत्न करा.';
+
+  @override
+  String get connectedToPatient => 'Connect to Patient';
+
+  @override
+  String get connectedToCaregiver => 'Connect to Caregiver';
 }
