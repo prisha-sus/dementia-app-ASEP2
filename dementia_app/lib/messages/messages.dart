@@ -141,7 +141,7 @@ class _MessageScreenState extends State<MessageScreen> {
       } else {
         // Try to get response from Gemini API
         try {
-          aiResponse = await _getGeminiResponse();
+          aiResponse = await _getGeminiResponse(userMessage);
           _errorCount = 0; // Reset error count on success
         } catch (apiError) {
           print("API Error: $apiError");
@@ -197,133 +197,146 @@ class _MessageScreenState extends State<MessageScreen> {
     }
   }
 
-  // Function to get response from Gemini API
-  Future<String> _getGeminiResponse() async {
-    try {
-      // Create full conversation context including system message
-      List<Map<String, dynamic>> contents = [];
+Future<String> _getGeminiResponse(String userInput) async {
+  final stopwatch = Stopwatch()..start();
 
-      // Add system message as the first user message (Gemini handles system prompts differently)
-      if (_chatHistory.isEmpty ||
-          (_chatHistory.isNotEmpty && _chatHistory[0]['role'] != 'system')) {
-        contents.add({
-          'role': 'user',
-          'parts': [
-            {
-              'text':
-                  'You are a concise healthcare assistant providing brief responses. Please keep your answers focused, informative, and to the point. Your role is to provide healthcare information while being clear that you are not a substitute for professional medical advice. Use human language and empathetic answers only.Dont end every message with it not being a medical advice its okay'
-            }
-          ]
-        });
+  try {
+    // --- Build conversation context ---
+    List<Map<String, dynamic>> contents = [];
 
-        // Add model response to acknowledge the system prompt
-        contents.add({
-          'role': 'model',
-          'parts': [
-            {
-              'text':
-                  "I understand. I'll act as a concise healthcare assistant, providing brief, focused responses while making it clear I'm not a substitute for professional medical advice."
-            }
-          ]
-        });
-      }
-
-      // Add the actual conversation history (limit to last 5 messages to save tokens)
-      int historyStartIndex =
-          _chatHistory.length > 5 ? _chatHistory.length - 5 : 0;
-      contents.addAll(_chatHistory.sublist(historyStartIndex));
-
-      // Create the request body for Gemini API
-      final Map<String, dynamic> requestBody = {
-        'contents': contents,
-        'generationConfig': {
-          'temperature': 0.4,
-          'topK': 32,
-          'topP': 0.95,
-          'maxOutputTokens': 150,
-        },
-        'safetySettings': [
+    if (_chatHistory.isEmpty || _chatHistory[0]['role'] != 'system') {
+      contents.add({
+        'role': 'user',
+        'parts': [
           {
-            'category': 'HARM_CATEGORY_DANGEROUS_CONTENT',
-            'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
-          },
-          {
-            'category': 'HARM_CATEGORY_HATE_SPEECH',
-            'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
-          },
-          {
-            'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-            'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
-          },
-          {
-            'category': 'HARM_CATEGORY_HARASSMENT',
-            'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
+            'text':
+                'You are a concise healthcare assistant providing brief responses. Please keep your answers focused, informative, and to the point. Your role is to provide healthcare information while being clear that you are not a substitute for professional medical advice. Use human language and empathetic answers only. Don’t end every message with it not being a medical advice — it’s okay.'
           }
         ]
-      };
+      });
 
-      // Add API key as query parameter
-      final uri = Uri.parse('$_geminiApiUrl?key=$_geminiApiKey');
+      contents.add({
+        'role': 'model',
+        'parts': [
+          {
+            'text':
+                "I understand. I'll act as a concise healthcare assistant, providing brief, focused responses while making it clear I'm not a substitute for professional medical advice."
+          }
+        ]
+      });
+    }
 
-      // Send request to Gemini API
-      final response = await http.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
+    int historyStartIndex =
+        _chatHistory.length > 5 ? _chatHistory.length - 5 : 0;
+    contents.addAll(_chatHistory.sublist(historyStartIndex));
+
+    final Map<String, dynamic> requestBody = {
+      'contents': contents,
+      'generationConfig': {
+        'temperature': 0.4,
+        'topK': 32,
+        'topP': 0.95,
+        'maxOutputTokens': 150,
+      },
+      'safetySettings': [
+        {
+          'category': 'HARM_CATEGORY_DANGEROUS_CONTENT',
+          'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
         },
-        body: jsonEncode(requestBody),
+        {
+          'category': 'HARM_CATEGORY_HATE_SPEECH',
+          'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
+        },
+        {
+          'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+          'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
+        },
+        {
+          'category': 'HARM_CATEGORY_HARASSMENT',
+          'threshold': 'BLOCK_MEDIUM_AND_ABOVE'
+        }
+      ]
+    };
+
+    final uri = Uri.parse('$_geminiApiUrl?key=$_geminiApiKey');
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
+    );
+
+    stopwatch.stop();
+    final latency = stopwatch.elapsedMilliseconds;
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      String text = '';
+
+      if (responseData.containsKey('candidates') &&
+          responseData['candidates'].isNotEmpty &&
+          responseData['candidates'][0].containsKey('content') &&
+          responseData['candidates'][0]['content'].containsKey('parts') &&
+          responseData['candidates'][0]['content']['parts'].isNotEmpty) {
+        text = responseData['candidates'][0]['content']['parts'][0]['text'];
+      }
+
+      if (text.isEmpty) text = "I'm sorry, I don't have a response for that.";
+
+      // === METRIC BENCHMARKING ===
+      _logPerformanceMetrics(
+        input: userInput,
+        response: text,
+        latency: latency,
       );
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        // Extract text from the response
-        String text = '';
-        if (responseData.containsKey('candidates') &&
-            responseData['candidates'].isNotEmpty &&
-            responseData['candidates'][0].containsKey('content') &&
-            responseData['candidates'][0]['content'].containsKey('parts') &&
-            responseData['candidates'][0]['content']['parts'].isNotEmpty) {
-          text = responseData['candidates'][0]['content']['parts'][0]['text'];
-        }
-
-        return text.isNotEmpty
-            ? text
-            : "I'm sorry, I don't have a response for that.";
-      } else {
-        // Parse the error response
-        Map<String, dynamic> errorResponse = {};
-        try {
-          errorResponse = jsonDecode(response.body);
-        } catch (e) {
-          // If we can't parse the JSON, just use the raw response
-          print('Failed to parse error response: $e');
-        }
-
-        // Check for specific error types based on Gemini API error format
-        if (errorResponse.containsKey('error')) {
-          final error = errorResponse['error'];
-          final errorCode = error['code'];
-          final errorMessage = error['message'];
-
-          print('Gemini API Error: Code $errorCode - $errorMessage');
-
-          // Handle specific errors
-          if (errorCode == 429) {
-            return "I'm getting too many requests right now. Please try again in a minute.";
-          } else if (errorCode == 403) {
-            return "I'm unable to respond due to API access limitations. Please check your API key configuration.";
-          }
-        }
-
-        // Generic error handling
-        print('API Error: ${response.statusCode} - ${response.body}');
-        return "I'm sorry, I'm having trouble connecting to my knowledge base. Please try again later.";
-      }
-    } catch (e) {
-      print('Gemini API Error: $e');
-      return "I'm sorry, I encountered an error. Please try again.";
+      return text;
+    } else {
+      print('API Error: ${response.statusCode} - ${response.body}');
+      return "I'm sorry, I'm having trouble connecting to my knowledge base. Please try again later.";
     }
+  } catch (e) {
+    print('Gemini API Error: $e');
+    return "I'm sorry, I encountered an error. Please try again.";
   }
+}
+void _logPerformanceMetrics({
+  required String input,
+  required String response,
+  required int latency,
+}) {
+  // Heuristic distress detection
+  final inputLower = input.toLowerCase();
+  final responseLower = response.toLowerCase();
+  final isDistressInput = inputLower.contains("sad") ||
+      inputLower.contains("depressed") ||
+      inputLower.contains("help") ||
+      inputLower.contains("panic");
+  final detectedDistress = responseLower.contains("call") ||
+      responseLower.contains("emergency") ||
+      responseLower.contains("contact");
+
+  final isTP = isDistressInput && detectedDistress;
+  final isFN = isDistressInput && !detectedDistress;
+
+  print("🧪 Benchmark:");
+  print("💬 Input: $input");
+  print("🤖 Response: $response");
+  print("⏱️ Latency: ${latency} ms");
+  if (isTP) print("✅ Distress correctly detected (TP)");
+  if (isFN) print("❌ Distress missed (FN)");
+
+  // OPTIONAL: Save to Firestore
+  // _firestore.collection('chat_metrics').add({
+  //   'uid': _auth.currentUser?.uid ?? "anon",
+  //   'input': input,
+  //   'response': response,
+  //   'latency_ms': latency,
+  //   'is_distress': isDistressInput,
+  //   'detected_distress': detectedDistress,
+  //   'timestamp': FieldValue.serverTimestamp(),
+  // });
+}
+
 
   @override
   Widget build(BuildContext context) {
